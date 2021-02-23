@@ -1,44 +1,48 @@
 #include "game.hpp"
+#include "assets.hpp"
 
 using namespace blit;
 
-///////////////////////////////////////////////////////////////////////////
-//
-// init()
-//
-// setup your game here
-//
+static Surface *map_tiles;
+static TileMap *map;
+
+void load_tilemap() {
+    // some of this should really be in the API...
+    #pragma pack(push,1)
+    struct TMX {
+        char head[4];
+        uint8_t empty_tile;
+        uint16_t width;
+        uint16_t height;
+        uint16_t layers;
+        uint8_t data[];
+    };
+    #pragma pack(pop)
+
+    auto map_struct = reinterpret_cast<const TMX *>(asset_map);
+    auto layer_size = map_struct->width * map_struct->height;
+
+    // const_cast the tile data (not going to modify it)
+    map = new TileMap(
+        const_cast<uint8_t *>(map_struct->data),
+        const_cast<uint8_t *>(map_struct->data + layer_size),
+        Size(map_struct->width, map_struct->height),
+        map_tiles
+    );
+}
+
 void init() {
     set_screen_mode(ScreenMode::hires);
+
+    map_tiles = Surface::load(asset_tiles);
+    load_tilemap();
 }
 
-///////////////////////////////////////////////////////////////////////////
-//
-// render(time)
-//
-// This function is called to perform rendering of the game. time is the 
-// amount if milliseconds elapsed since the start of your game
-//
 void render(uint32_t time) {
-
-    // clear the screen -- screen is a reference to the frame buffer and can be used to draw all things with the 32blit
     screen.clear();
 
-    // draw some text at the top of the screen
-    screen.alpha = 255;
-    screen.mask = nullptr;
-    screen.pen = Pen(255, 255, 255);
-    screen.rectangle(Rect(0, 0, 320, 14));
-    screen.pen = Pen(0, 0, 0);
-    screen.text("Hello 32blit!", minimal_font, Point(5, 4));
+    map->draw(&screen, Rect(Point(0, 0), screen.bounds));
 }
 
-///////////////////////////////////////////////////////////////////////////
-//
-// update(time)
-//
-// This is called to update your game state. time is the 
-// amount if milliseconds elapsed since the start of your game
-//
 void update(uint32_t time) {
 }

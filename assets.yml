@@ -3,6 +3,10 @@
 # References can be picked up by including assets.hpp
 
 assets.cpp:
-  assets/no-image.png:
-    name: asset_no_image
+  prefix: asset_
 
+  assets/tiles.png: tiles
+
+  assets/map.tmx:
+    name: map
+    output_struct: true
