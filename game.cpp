@@ -40,8 +40,10 @@ public:
 static Surface *map_tiles;
 static TileMap *map;
 
-static Vec3 cam_base_pos(0.0f, 32.0f, 0.0f);
+static Vec3 cam_base_pos(-32.0f, 32.0f, -32.0f);
 static Camera cam;
+
+static Surface *cart_sprites;
 
 void load_tilemap() {
     // some of this should really be in the API...
@@ -73,6 +75,8 @@ void init() {
 
     map_tiles = Surface::load(asset_tiles);
     load_tilemap();
+
+    cart_sprites = Surface::load(asset_cart);
 
     cam.pos = cam_base_pos;
     cam.look_at = Vec3(64.0f, 0.0f, 64.0f);
@@ -119,17 +123,43 @@ void render(uint32_t time) {
 
     map->draw(&screen, Rect(Point(0, 0), screen.bounds), mode7_scanline_transform);
 
-    screen.sprites = map_tiles;
+    screen.sprites = cart_sprites;
 
-    for(int y = 0; y < 8; y++) {
-        for(int x = 0; x < 8; x++) {
-            Vec3 world_pos(x * 16 + 8, 0.0f, y * 16 + 8);
+    for(int y = 0; y < 2; y++) {
+        for(int x = 0; x < 2; x++) {
+            Vec3 world_pos(x * 64 + 32, 0.0f, y * 64 + 32);
 
-            Point origin(4, 8);
+            Point origin(16, 26);
             float scale;
             Point pos = cam.world_to_screen(world_pos, scale);
 
-            screen.sprite(1, pos, origin, scale);
+            // rotation
+            const int rotation_frames = 30; // 16 + 14 mirrored
+            Vec3 cam_to_sprite = world_pos - cam.pos;
+            Vec3 sprite_look = Vec3(64, 0, 64) - world_pos;
+
+            // ignore y
+            cam_to_sprite.y = 0;
+            sprite_look.y = 0;
+
+            cam_to_sprite.normalize();
+            sprite_look.normalize();
+
+            float ang = std::atan2(cam_to_sprite.x * sprite_look.z - cam_to_sprite.z * sprite_look.x, cam_to_sprite.dot(sprite_look));
+            ang = (blit::pi * 2.0f) - ang;
+
+            int rot = std::round((ang / (blit::pi * 2.0f)) * rotation_frames);
+
+            int frame = (rot + 15) % rotation_frames;
+            int transform = 0;
+
+            if(frame >= 16) {
+                // frames 16-29 are 14-1 mirrored
+                frame = 14 - (frame - 16);
+                transform = SpriteTransform::HORIZONTAL;
+            }
+
+            screen.sprite(Rect(frame * 4, 0, 4, 4), pos, origin, scale, transform);
         }
     }
 }

@@ -6,6 +6,7 @@ assets.cpp:
   prefix: asset_
 
   assets/tiles.png: tiles
+  assets/cart.png: cart
 
   assets/map.tmx:
     name: map
