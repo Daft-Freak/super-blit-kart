@@ -1,6 +1,7 @@
 #include "game.hpp"
 #include "assets.hpp"
 #include "camera.hpp"
+#include "sprite3d.hpp"
 
 using namespace blit;
 
@@ -11,6 +12,7 @@ static Vec3 cam_base_pos(256, 32.0f, 256);
 static Camera cam;
 
 static Surface *cart_sprites;
+static Sprite3D sprites[4];
 
 void load_tilemap() {
     // some of this should really be in the API...
@@ -48,6 +50,26 @@ void init() {
     cam.pos = cam_base_pos;
     cam.look_at = Vec3(512.0f, 0.0f, 512.0f);
     cam.update();
+
+    int i = 0;
+
+    for(int y = 0; y < 2; y++) {
+        for(int x = 0; x < 2; x++) {
+            Vec3 world_pos(x * 64 + 512 + 64, 0.0f, y * 64 + 512 - 32);
+
+            Point origin(16, 26);
+
+            sprites[i].world_pos = world_pos;
+            sprites[i].look_dir = Vec3(64, 0, 64) - world_pos;
+            sprites[i].origin = origin;
+
+            sprites[i].spritesheet = cart_sprites;
+            sprites[i].size = Size(4, 4);
+            sprites[i].rotation_frames = 16;
+
+            i++;
+        }
+     }
 }
 
 float r = 0.0f;// + 90;
@@ -91,45 +113,8 @@ void render(uint32_t time) {
     int horizon = (screen.bounds.h / 2) - ((-cam.forward.y * cam.focal_distance) / cam.up.y);
     map->draw(&screen, Rect(0, horizon, screen.bounds.w, screen.bounds.h - horizon), mode7_scanline_transform);
 
-    screen.sprites = cart_sprites;
-
-    for(int y = 0; y < 2; y++) {
-        for(int x = 0; x < 2; x++) {
-            Vec3 world_pos(x * 64 + 512 + 64, 0.0f, y * 64 + 512 - 32);
-
-            Point origin(16, 26);
-            float scale;
-            Point pos = cam.world_to_screen(world_pos, scale);
-
-            // rotation
-            const int rotation_frames = 30; // 16 + 14 mirrored
-            Vec3 cam_to_sprite = world_pos - cam.pos;
-            Vec3 sprite_look = Vec3(64, 0, 64) - world_pos;
-
-            // ignore y
-            cam_to_sprite.y = 0;
-            sprite_look.y = 0;
-
-            cam_to_sprite.normalize();
-            sprite_look.normalize();
-
-            float ang = std::atan2(cam_to_sprite.x * sprite_look.z - cam_to_sprite.z * sprite_look.x, cam_to_sprite.dot(sprite_look));
-            ang = (blit::pi * 2.0f) - ang;
-
-            int rot = std::round((ang / (blit::pi * 2.0f)) * rotation_frames);
-
-            int frame = (rot + 15) % rotation_frames;
-            int transform = 0;
-
-            if(frame >= 16) {
-                // frames 16-29 are 14-1 mirrored
-                frame = 14 - (frame - 16);
-                transform = SpriteTransform::HORIZONTAL;
-            }
-
-            screen.sprite(Rect(frame * 4, 0, 4, 4), pos, origin, scale, transform);
-        }
-    }
+    for(auto &sprite: sprites)
+        sprite.render(cam);
 }
 
 void update(uint32_t time) {
