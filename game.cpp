@@ -1,3 +1,5 @@
+#include <forward_list>
+
 #include "game.hpp"
 #include "assets.hpp"
 #include "camera.hpp"
@@ -13,6 +15,8 @@ static Camera cam;
 
 static Surface *cart_sprites;
 static Sprite3D sprites[4];
+
+static std::forward_list<Sprite3D *> display_sprites;
 
 void load_tilemap() {
     // some of this should really be in the API...
@@ -113,8 +117,8 @@ void render(uint32_t time) {
     int horizon = (screen.bounds.h / 2) - ((-cam.forward.y * cam.focal_distance) / cam.up.y);
     map->draw(&screen, Rect(0, horizon, screen.bounds.w, screen.bounds.h - horizon), mode7_scanline_transform);
 
-    for(auto &sprite: sprites)
-        sprite.render(cam);
+    for(auto &sprite : display_sprites)
+        sprite->render(cam);
 }
 
 void update(uint32_t time) {
@@ -130,4 +134,16 @@ void update(uint32_t time) {
 
     for(auto &sprite : sprites)
         sprite.update(cam);
+
+    // cull/sort
+    float near = 1.0f, far = 500.0f; // may need adjusting
+
+    display_sprites.clear();
+
+    for(auto &sprite : sprites) {
+        if(sprite.z >= near && sprite.z <= far)
+            display_sprites.push_front(&sprite);
+    }
+
+    display_sprites.sort([](Sprite3D *a, Sprite3D *b) {return a->z > b->z;});
 }
