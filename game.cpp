@@ -7,7 +7,7 @@ using namespace blit;
 static Surface *map_tiles;
 static TileMap *map;
 
-static Vec3 cam_base_pos(-32.0f, 32.0f, -32.0f);
+static Vec3 cam_base_pos(256, 32.0f, 256);
 static Camera cam;
 
 static Surface *cart_sprites;
@@ -46,7 +46,7 @@ void init() {
     cart_sprites = Surface::load(asset_cart);
 
     cam.pos = cam_base_pos;
-    cam.look_at = Vec3(64.0f, 0.0f, 64.0f);
+    cam.look_at = Vec3(512.0f, 0.0f, 512.0f);
     cam.update();
 }
 
@@ -95,7 +95,7 @@ void render(uint32_t time) {
 
     for(int y = 0; y < 2; y++) {
         for(int x = 0; x < 2; x++) {
-            Vec3 world_pos(x * 64 + 32, 0.0f, y * 64 + 32);
+            Vec3 world_pos(x * 64 + 512 + 64, 0.0f, y * 64 + 512 - 32);
 
             Point origin(16, 26);
             float scale;
