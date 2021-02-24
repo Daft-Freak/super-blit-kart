@@ -16,7 +16,7 @@ public:
         up = right.cross(forward);
     }
 
-    blit::Point world_to_screen(blit::Vec3 world_pos, float &scale) {
+    blit::Point world_to_screen(blit::Vec3 world_pos, float &scale) const {
         blit::Point screen_center(blit::screen.bounds.w / 2, blit::screen.bounds.h / 2);
 
         auto dist = world_pos - pos;
