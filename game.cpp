@@ -10,6 +10,7 @@ public:
         forward.normalize();
 
         right = Vec3(-forward.z, 0.0f, forward.x);
+        right.normalize();
 
         up = right.cross(forward);
     }
