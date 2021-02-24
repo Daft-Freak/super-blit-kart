@@ -11,7 +11,6 @@ using namespace blit;
 static Surface *map_tiles;
 static TileMap *map;
 
-static Vec3 cam_base_pos(256, 32.0f, 256);
 static Camera cam;
 
 static Surface *kart_sprites;
@@ -53,10 +52,6 @@ void init() {
 
     kart_sprites = Surface::load(asset_kart);
 
-    cam.pos = cam_base_pos;
-    cam.look_at = Vec3(512.0f, 0.0f, 512.0f);
-    cam.update();
-
     // setup kart
     Point finish_line[2]{{512, 32}, {512, 160}};
 
@@ -69,6 +64,10 @@ void init() {
         0.0f,
         (finish_line[0].y + finish_line[1].y) / 2
     ) - kart.sprite.look_dir * 48.0f;
+
+    cam.look_at = kart.sprite.world_pos;
+    cam.pos = cam.look_at - kart.sprite.look_dir * 64.0f + Vec3(0, 16.0f, 0);
+    cam.update();
 }
 
 Mat3 mode7_scanline_transform(uint8_t y) {
