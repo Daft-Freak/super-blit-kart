@@ -16,19 +16,18 @@ public:
         up = right.cross(forward);
     }
 
-    blit::Point world_to_screen(blit::Vec3 world_pos, float &scale) const {
+    blit::Point world_to_screen(blit::Vec3 world_pos, float &scale, float &z) const {
         blit::Point screen_center(blit::screen.bounds.w / 2, blit::screen.bounds.h / 2);
 
         auto dist = world_pos - pos;
 
-        blit::Vec3 tmp;
-        tmp.x = dist.dot(right);
-        tmp.y = -dist.dot(up);
-        tmp.z = dist.dot(forward);
+        float x = dist.dot(right);
+        float y = -dist.dot(up);
+        z = dist.dot(forward);
 
-        scale = focal_distance / tmp.z;
+        scale = focal_distance / z;
 
-        return blit::Point(blit::Vec2(tmp.x, tmp.y) * scale) + screen_center;
+        return blit::Point(blit::Vec2(x, y) * scale) + screen_center;
     }
 
     blit::Vec3 pos, look_at;

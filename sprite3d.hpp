@@ -9,6 +9,7 @@ class Camera;
 
 class Sprite3D final {
 public:
+    void update(const Camera &cam);
     void render(const Camera &cam);
 
     blit::Vec3 world_pos;
@@ -20,4 +21,8 @@ public:
     blit::Point sheet_base;
     blit::Size size = blit::Size(1, 1);
     int rotation_frames = 0;
+
+    blit::Point screen_pos;
+    float screen_scale = 1.0f;
+    float z = 0.0f; // used for sorting/culling
 };

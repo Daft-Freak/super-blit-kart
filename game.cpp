@@ -127,4 +127,7 @@ void update(uint32_t time) {
 
     cam.pos.y += std::sin(r / 100.0f) * 16.0f;
     cam.update();
+
+    for(auto &sprite : sprites)
+        sprite.update(cam);
 }

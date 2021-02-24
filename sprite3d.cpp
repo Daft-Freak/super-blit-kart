@@ -7,10 +7,11 @@
 
 using namespace blit;
 
-void Sprite3D::render(const Camera &cam) {
-    float scale;
-    Point pos = cam.world_to_screen(world_pos, scale);
+void Sprite3D::update(const Camera &cam) {
+    screen_pos = cam.world_to_screen(world_pos, screen_scale, z);
+}
 
+void Sprite3D::render(const Camera &cam) {
     int frame = 0;
     int transform = 0;
 
@@ -42,5 +43,5 @@ void Sprite3D::render(const Camera &cam) {
     }
 
     screen.sprites = spritesheet;
-    screen.sprite(Rect(sheet_base.x + frame * size.w, sheet_base.y, size.w, size.h), pos, origin, scale, transform);
+    screen.sprite(Rect(sheet_base.x + frame * size.w, sheet_base.y, size.w, size.h), screen_pos, origin, screen_scale, transform);
 }
