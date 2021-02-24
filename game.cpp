@@ -121,7 +121,8 @@ void render(uint32_t time) {
     screen.pen = Pen(0,0,0);
     screen.clear();
 
-    map->draw(&screen, Rect(Point(0, 0), screen.bounds), mode7_scanline_transform);
+    int horizon = (screen.bounds.h / 2) - ((-cam.forward.y * cam.focal_distance) / cam.up.y);
+    map->draw(&screen, Rect(0, horizon, screen.bounds.w, screen.bounds.h - horizon), mode7_scanline_transform);
 
     screen.sprites = cart_sprites;
 
