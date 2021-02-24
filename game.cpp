@@ -3,6 +3,7 @@
 #include "game.hpp"
 #include "assets.hpp"
 #include "camera.hpp"
+#include "kart.hpp"
 #include "sprite3d.hpp"
 
 using namespace blit;
@@ -14,7 +15,8 @@ static Vec3 cam_base_pos(256, 32.0f, 256);
 static Camera cam;
 
 static Surface *cart_sprites;
-static Sprite3D sprites[4];
+
+static Kart kart;
 
 static std::forward_list<Sprite3D *> display_sprites;
 
@@ -55,28 +57,19 @@ void init() {
     cam.look_at = Vec3(512.0f, 0.0f, 512.0f);
     cam.update();
 
-    int i = 0;
+    // setup kart
+    Point finish_line[2]{{512, 32}, {512, 160}};
 
-    for(int y = 0; y < 2; y++) {
-        for(int x = 0; x < 2; x++) {
-            Vec3 world_pos(x * 64 + 512 + 64, 0.0f, y * 64 + 512 - 32);
+    kart.is_player = true;
 
-            Point origin(16, 26);
-
-            sprites[i].world_pos = world_pos;
-            sprites[i].look_dir = Vec3(64, 0, 64) - world_pos;
-            sprites[i].origin = origin;
-
-            sprites[i].spritesheet = cart_sprites;
-            sprites[i].size = Size(4, 4);
-            sprites[i].rotation_frames = 16;
-
-            i++;
-        }
-     }
+    kart.sprite.spritesheet = cart_sprites;
+    kart.sprite.look_dir = Vec3(1.0f, 0.0f, 0.0f);
+    kart.sprite.world_pos = Vec3(
+        (finish_line[0].x + finish_line[1].x) / 2,
+        0.0f,
+        (finish_line[0].y + finish_line[1].y) / 2
+    ) - kart.sprite.look_dir * 48.0f;
 }
-
-float r = 0.0f;// + 90;
 
 Mat3 mode7_scanline_transform(uint8_t y) {
     float top = screen.bounds.h / 2;
@@ -122,28 +115,29 @@ void render(uint32_t time) {
 }
 
 void update(uint32_t time) {
-    r += 0.5f;
+    kart.update();
 
-    // move camera
-    cam.pos = cam_base_pos - cam.look_at;
-    cam.pos.transform(Mat4::rotation(r, Vec3(0,1,0)));
-    cam.pos += cam.look_at;
 
-    cam.pos.y += std::sin(r / 100.0f) * 16.0f;
+    // update camera
+    Vec3 cam_look_at_target = kart.sprite.world_pos;
+    Vec3 cam_pos_target = cam_look_at_target - kart.sprite.look_dir * 64.0f + Vec3(0, 16.0f, 0);
+
+    cam.pos += (cam_pos_target - cam.pos) * 0.03f;
+    cam.look_at += (cam_look_at_target - cam.look_at) * 0.1f;
     cam.update();
 
-    for(auto &sprite : sprites)
-        sprite.update(cam);
-
     // cull/sort
-    float near = 1.0f, far = 500.0f; // may need adjusting
+    auto check_sprite = [](Sprite3D &sprite) {
+        float near = 1.0f, far = 500.0f; // may need adjusting
+
+        if(sprite.z >= near && sprite.z <= far)
+            display_sprites.push_front(&sprite);
+    };
 
     display_sprites.clear();
 
-    for(auto &sprite : sprites) {
-        if(sprite.z >= near && sprite.z <= far)
-            display_sprites.push_front(&sprite);
-    }
+    kart.sprite.update(cam);
+    check_sprite(kart.sprite);
 
     display_sprites.sort([](Sprite3D *a, Sprite3D *b) {return a->z > b->z;});
 }
