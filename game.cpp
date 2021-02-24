@@ -15,6 +15,21 @@ public:
         up = right.cross(forward);
     }
 
+    Point world_to_screen(Vec3 world_pos, float &scale) {
+        Point screen_center(screen.bounds.w / 2, screen.bounds.h / 2);
+
+        auto dist = world_pos - pos;
+
+        Vec3 tmp;
+        tmp.x = dist.dot(right);
+        tmp.y = -dist.dot(up);
+        tmp.z = dist.dot(forward);
+
+        scale = focal_distance / tmp.z;
+
+        return Point(Vec2(tmp.x, tmp.y) * scale) + screen_center;
+    }
+
     Vec3 pos, look_at;
 
     Vec3 forward, right, up;
@@ -103,6 +118,20 @@ void render(uint32_t time) {
     screen.clear();
 
     map->draw(&screen, Rect(Point(0, 0), screen.bounds), mode7_scanline_transform);
+
+    screen.sprites = map_tiles;
+
+    for(int y = 0; y < 8; y++) {
+        for(int x = 0; x < 8; x++) {
+            Vec3 world_pos(x * 16 + 8, 0.0f, y * 16 + 8);
+
+            Point origin(4, 8);
+            float scale;
+            Point pos = cam.world_to_screen(world_pos, scale);
+
+            screen.sprite(1, pos, origin, scale);
+        }
+    }
 }
 
 void update(uint32_t time) {
