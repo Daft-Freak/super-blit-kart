@@ -1,41 +1,8 @@
 #include "game.hpp"
 #include "assets.hpp"
+#include "camera.hpp"
 
 using namespace blit;
-
-class Camera final {
-public:
-    void update() {
-        forward = look_at - pos;
-        forward.normalize();
-
-        right = Vec3(-forward.z, 0.0f, forward.x);
-        right.normalize();
-
-        up = right.cross(forward);
-    }
-
-    Point world_to_screen(Vec3 world_pos, float &scale) {
-        Point screen_center(screen.bounds.w / 2, screen.bounds.h / 2);
-
-        auto dist = world_pos - pos;
-
-        Vec3 tmp;
-        tmp.x = dist.dot(right);
-        tmp.y = -dist.dot(up);
-        tmp.z = dist.dot(forward);
-
-        scale = focal_distance / tmp.z;
-
-        return Point(Vec2(tmp.x, tmp.y) * scale) + screen_center;
-    }
-
-    Vec3 pos, look_at;
-
-    Vec3 forward, right, up;
-
-    float focal_distance = 320.0f;
-};
 
 static Surface *map_tiles;
 static TileMap *map;
