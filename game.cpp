@@ -14,7 +14,7 @@ static TileMap *map;
 static Vec3 cam_base_pos(256, 32.0f, 256);
 static Camera cam;
 
-static Surface *cart_sprites;
+static Surface *kart_sprites;
 
 static Kart kart;
 
@@ -51,7 +51,7 @@ void init() {
     map_tiles = Surface::load(asset_tiles);
     load_tilemap();
 
-    cart_sprites = Surface::load(asset_cart);
+    kart_sprites = Surface::load(asset_kart);
 
     cam.pos = cam_base_pos;
     cam.look_at = Vec3(512.0f, 0.0f, 512.0f);
@@ -62,7 +62,7 @@ void init() {
 
     kart.is_player = true;
 
-    kart.sprite.spritesheet = cart_sprites;
+    kart.sprite.spritesheet = kart_sprites;
     kart.sprite.look_dir = Vec3(1.0f, 0.0f, 0.0f);
     kart.sprite.world_pos = Vec3(
         (finish_line[0].x + finish_line[1].x) / 2,
