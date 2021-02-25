@@ -6,12 +6,22 @@
 #include "kart.hpp"
 #include "minimap.hpp"
 #include "sprite3d.hpp"
+#include "track.hpp"
 
 using namespace blit;
 
 static Surface *map_tiles;
 static TileMap *map;
 static Minimap minimap;
+
+static const Point track0_route[]{{512, 96}, {704, 96}, {928, 96}, {928, 704}, {928, 928}, {824, 928}, {624, 928}, {624, 672}, {624, 512}, {584, 512}, {360, 512}, {360, 736}, {360, 936}, {320, 936}, {96, 936}, {96, 320}, {96, 96}, {512, 96}};
+static const TrackInfo track_info[] {
+    {
+        {{512, 32}, {512, 160}}, // finish line
+        track0_route, std::size(track0_route), // route
+        asset_map, asset_tiles // assets
+    }
+};
 
 static Camera cam;
 
@@ -56,16 +66,20 @@ void init() {
     kart_sprites = Surface::load(asset_kart);
 
     // setup kart
-    Point finish_line[2]{{512, 32}, {512, 160}};
 
     kart.is_player = true;
 
+    auto &track = track_info[0];
+
+    auto track_start_dir = Vec2(track.route[1] - track.route[0]);
+    track_start_dir.normalize();
+
     kart.sprite.spritesheet = kart_sprites;
-    kart.sprite.look_dir = Vec3(1.0f, 0.0f, 0.0f);
+    kart.sprite.look_dir = Vec3(track_start_dir.x, 0.0f, track_start_dir.y);
     kart.sprite.world_pos = Vec3(
-        (finish_line[0].x + finish_line[1].x) / 2,
+        (track.finish_line[0].x + track.finish_line[1].x) / 2,
         0.0f,
-        (finish_line[0].y + finish_line[1].y) / 2
+        (track.finish_line[0].y + track.finish_line[1].y) / 2
     ) - kart.sprite.look_dir * 48.0f;
 
     cam.look_at = kart.sprite.world_pos;
