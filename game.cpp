@@ -4,12 +4,14 @@
 #include "assets.hpp"
 #include "camera.hpp"
 #include "kart.hpp"
+#include "minimap.hpp"
 #include "sprite3d.hpp"
 
 using namespace blit;
 
 static Surface *map_tiles;
 static TileMap *map;
+static Minimap minimap;
 
 static Camera cam;
 
@@ -49,6 +51,7 @@ void init() {
 
     map_tiles = Surface::load(asset_tiles);
     load_tilemap();
+    minimap.set_map(map);
 
     kart_sprites = Surface::load(asset_kart);
 
@@ -111,6 +114,8 @@ void render(uint32_t time) {
 
     for(auto &sprite : display_sprites)
         sprite->render(cam);
+
+    minimap.render();
 }
 
 void update(uint32_t time) {
@@ -139,4 +144,8 @@ void update(uint32_t time) {
     check_sprite(kart.sprite);
 
     display_sprites.sort([](Sprite3D *a, Sprite3D *b) {return a->z > b->z;});
+
+    // minimap
+    // TODO: maybe don't constantly recreate this
+    minimap.update(Point(kart.sprite.world_pos.x, kart.sprite.world_pos.z) / 8);
 }
