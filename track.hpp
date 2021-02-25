@@ -31,6 +31,8 @@ public:
 
     blit::TileMap &get_map();
 
+    unsigned int find_closest_route_segment(blit::Vec2 pos, float &segment_t) const;
+
 private:
     void load_tilemap();
 

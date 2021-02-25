@@ -51,6 +51,43 @@ void Track::render(const Camera &cam) {
     map->draw(&screen, Rect(0, horizon, screen.bounds.w, screen.bounds.h - horizon), std::bind(mode7_scanline_transform, cam, _1));
 }
 
+unsigned int Track::find_closest_route_segment(Vec2 pos, float &segment_t) const {
+    unsigned int ret = 0;
+    float min_dist = INFINITY;
+
+    for(size_t i = 0; i < info.route_len - 1; i++) {
+        Vec2 a(info.route[i]), b(info.route[i + 1]);
+
+        // intersection
+        Vec2 r = b - a;
+
+        Vec2 dir(r.y, -r.x);
+
+        float rxs = (r.x * dir.y) - (r.y * dir.x);
+        float t = ((pos.x - a.x) * dir.y - (pos.y - a.y) * dir.x) / rxs; // distance along route segment
+
+        // clamp to segment
+        Vec2 route_point;
+
+        if(t < 0.0f)
+            route_point = a;
+        else if(t > 1.0f)
+            route_point = b;
+        else
+            route_point = a + r * t;
+
+        float dist = (pos - route_point).length();
+
+        if(dist < min_dist) {
+            ret = i;
+            segment_t = t;
+            min_dist = dist;
+        }
+    }
+
+    return ret;
+}
+
 const TrackInfo &Track::get_info() const {
     return info;
 }
