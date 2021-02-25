@@ -10,6 +10,7 @@ set(PROJECT_SOURCE
   kart.cpp
   minimap.cpp
   sprite3d.cpp
+  track.cpp
 )
 
 # ... and any other files you want in the release here
