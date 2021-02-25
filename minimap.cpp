@@ -42,6 +42,8 @@ void Minimap::update(Point center_pos) {
         max.y = map->bounds.h;
     }
 
+    viewport = Rect(min, max);
+
     int out_i = 0;
     for(int y = min.y; y < max.y; y++) {
         for(int x = min.x; x < max.x; x++) {

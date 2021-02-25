@@ -15,6 +15,8 @@ public:
     void update(blit::Point center_pos);
     void render();
 
+    const blit::Rect &get_viewport() const {return viewport;}
+
     void set_map(blit::TileMap *map);
 
 private:
@@ -22,6 +24,8 @@ private:
     uint8_t data[size.area()];
 
     blit::Surface surface{data, blit::PixelFormat::P, size};
+
+    blit::Rect viewport;
 
     blit::TileMap *map = nullptr;
 };
