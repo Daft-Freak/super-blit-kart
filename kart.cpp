@@ -31,8 +31,6 @@ void Kart::update() {
             turn_speed = joystick.x * -kart_turn_speed;
     }
 
-    // workaround bug in Vec3.transform
-    sprite.look_dir.z *= -1;
     sprite.look_dir.transform(Mat4::rotation(turn_speed * dt, Vec3(0.0f, 1.0f, 0.0f)));
 
     auto drag = vel * -kart_drag * vel.length();
