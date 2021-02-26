@@ -1,5 +1,7 @@
 #include <forward_list>
 
+#include "graphics/color.hpp"
+
 #include "game.hpp"
 #include "assets.hpp"
 #include "camera.hpp"
@@ -93,6 +95,24 @@ void render(uint32_t time) {
         sprite->render(cam);
 
     minimap.render();
+
+    // kart locations on minimap
+    auto viewport = minimap.get_viewport();
+    Point minimap_pos(screen.bounds.w - viewport.w, screen.bounds.h  - viewport.h);
+    auto old_clip = screen.clip;
+
+    screen.clip = Rect(minimap_pos, viewport.size());
+
+    auto off = minimap_pos - viewport.tl();
+
+    int i = 0;
+    for(auto &kart : karts) {
+        // this will probably be a sprite eventually
+        screen.pen = hsv_to_rgba(i++ / 8.0f, 1.0f, 1.0f);
+        screen.rectangle(Rect(off + Point(kart.sprite.world_pos.x / 8 - 4, kart.sprite.world_pos.z / 8 - 4), Size(8, 8)));
+    }
+
+    screen.clip = old_clip;
 }
 
 void update(uint32_t time) {
