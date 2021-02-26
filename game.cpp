@@ -50,9 +50,9 @@ void init() {
     float w = finish_line.length();
     finish_line /= w;
 
-    Vec2 start_pos = Vec2(info.finish_line[0]) + finish_line * w * (1.0f / 6.0f);
+    Vec2 start_pos = Vec2(info.finish_line[0]) + finish_line * w * (1.0f / 5.0f);
 
-    float inc = (w / 3.0f) * 0.5f;
+    float inc = (w / 5.0f) * 3.0f / 3.0f;
 
     int i = 0;
     for(auto &kart : karts) {
@@ -73,7 +73,7 @@ void init() {
         } else
             start_pos += finish_line * inc;
 
-        start_pos -= track_start_dir * 12.0f;
+        start_pos -= track_start_dir * 8.0f;
     }
 
     // player kart
