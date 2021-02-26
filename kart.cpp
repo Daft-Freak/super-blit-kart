@@ -72,10 +72,12 @@ void Kart::update() {
 
     vel += (acc + drag + friction) * dt;
 
+    bool was_above = sprite.world_pos.y >= 0.0f;
+
     sprite.world_pos += vel * dt;
 
     // fell through the track
-    if(sprite.world_pos.y < 0.0f && track_friction > 0.0f)
+    if(sprite.world_pos.y < 0.0f && track_friction > 0.0f && was_above)
         sprite.world_pos.y = 0.0f;
 }
 
