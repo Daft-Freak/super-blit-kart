@@ -88,6 +88,21 @@ unsigned int Track::find_closest_route_segment(Vec2 pos, float &segment_t) const
     return ret;
 }
 
+float Track::get_friction(blit::Vec2 pos) {
+    Point tile_coord(pos / Vec2(8.0f, 8.0f));
+
+    if(tile_coord.x < 0 || tile_coord.y < 0 || tile_coord.x >= map->bounds.w || tile_coord.y >= map->bounds.h)
+        return 0.0f;
+
+    // "empty" tile
+    if(map->tile_at(tile_coord) == 0)
+        return 0.0f;
+
+    // TODO: tiles with more friction
+
+    return 1.0f;
+}
+
 const TrackInfo &Track::get_info() const {
     return info;
 }

@@ -33,6 +33,8 @@ public:
 
     unsigned int find_closest_route_segment(blit::Vec2 pos, float &segment_t) const;
 
+    float get_friction(blit::Vec2 pos);
+
 private:
     void load_tilemap();
 
