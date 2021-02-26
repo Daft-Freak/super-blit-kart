@@ -3,6 +3,7 @@
 #include "sprite3d.hpp"
 
 #include "types/vec2.hpp"
+#include "types/vec3.hpp"
 
 class Track;
 
@@ -21,7 +22,7 @@ public:
 private:
     void auto_drive();
 
-    blit::Vec2 vel, acc;
+    blit::Vec3 vel, acc;
     float turn_speed = 0.0f;
 
     Track *track = nullptr;
