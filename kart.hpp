@@ -4,16 +4,25 @@
 
 #include "types/vec2.hpp"
 
+class Track;
+
 class Kart final {
 public:
     Kart();
 
     void update();
 
+    void set_track(Track *track);
+
     Sprite3D sprite;
 
     bool is_player = false;
 
+private:
+    void auto_drive();
+
     blit::Vec2 vel, acc;
     float turn_speed = 0.0f;
+
+    Track *track = nullptr;
 };

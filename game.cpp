@@ -42,6 +42,7 @@ void init() {
 
     // setup kart
 
+    kart.set_track(track);
     kart.is_player = true;
 
     auto &info = track->get_info();
