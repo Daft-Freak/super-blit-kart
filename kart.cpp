@@ -5,7 +5,7 @@
 
 using namespace blit;
 
-static const float kart_accel = 200.0f, kart_drag = 0.005f, kart_friction = 0.75f, kart_turn_speed = 60.0f;
+static const float kart_accel = 200.0f, kart_drag = 0.005f, kart_friction = 0.85f, kart_turn_speed = 60.0f;
 
 Kart::Kart() {
     sprite.origin = Point(16, 26);
