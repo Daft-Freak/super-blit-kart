@@ -99,6 +99,32 @@ void update(uint32_t time) {
     for(auto &kart : karts)
         kart.update();
 
+    // collisions
+    auto num_karts = std::size(karts);
+
+    for(size_t i = 0; i < num_karts; i++) {
+        for(size_t j = i + 1; j < num_karts; j++) {
+            auto &kart_a = karts[i], &kart_b = karts[j];
+
+            if(std::abs(kart_a.sprite.world_pos.y - kart_b.sprite.world_pos.y) > 1.0f)
+                continue;
+
+            const float kart_radius = 10.0f;
+
+            auto vec = Vec2(kart_a.sprite.world_pos.x, kart_a.sprite.world_pos.z) - Vec2(kart_b.sprite.world_pos.x, kart_b.sprite.world_pos.z);
+            float dist = vec.length();
+
+            if(dist >= kart_radius * 2.0f)
+                continue;
+
+            vec /= dist;
+
+            float penetration = kart_radius * 2.0f - dist;
+
+            kart_a.vel += Vec3(vec.x, 0.0f, vec.y) * penetration;// * 0.5f;
+            kart_b.vel -= Vec3(vec.x, 0.0f, vec.y) * penetration;// * 0.5f;
+        }
+    }
 
     // update camera
     Vec3 cam_look_at_target = karts[0].sprite.world_pos;
