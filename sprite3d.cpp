@@ -43,5 +43,5 @@ void Sprite3D::render(const Camera &cam) {
     }
 
     screen.sprites = spritesheet;
-    screen.sprite(Rect(sheet_base.x + frame * size.w, sheet_base.y, size.w, size.h), screen_pos, origin, screen_scale, transform);
+    screen.sprite(Rect(sheet_base.x + frame * size.w, sheet_base.y, size.w, size.h), screen_pos, origin, screen_scale * scale, transform);
 }
