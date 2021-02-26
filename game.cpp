@@ -26,7 +26,7 @@ static Camera cam;
 
 static Surface *kart_sprites;
 
-static Kart kart;
+static Kart karts[8];
 
 static std::forward_list<Sprite3D *> display_sprites;
 
@@ -40,26 +40,46 @@ void init() {
 
     kart_sprites = Surface::load(asset_kart);
 
-    // setup kart
-
-    kart.set_track(track);
-    kart.is_player = true;
-
+    // setup karts
     auto &info = track->get_info();
 
     auto track_start_dir = Vec2(info.route[1] - info.route[0]);
     track_start_dir.normalize();
 
-    kart.sprite.spritesheet = kart_sprites;
-    kart.sprite.look_dir = Vec3(track_start_dir.x, 0.0f, track_start_dir.y);
-    kart.sprite.world_pos = Vec3(
-        (info.finish_line[0].x + info.finish_line[1].x) / 2,
-        0.0f,
-        (info.finish_line[0].y + info.finish_line[1].y) / 2
-    ) - kart.sprite.look_dir * 48.0f;
+    Vec2 finish_line(info.finish_line[1] - info.finish_line[0]);
+    float w = finish_line.length();
+    finish_line /= w;
 
-    cam.look_at = kart.sprite.world_pos;
-    cam.pos = cam.look_at - kart.sprite.look_dir * 64.0f + Vec3(0, 16.0f, 0);
+    Vec2 start_pos = Vec2(info.finish_line[0]) + finish_line * w * (1.0f / 6.0f);
+
+    float inc = (w / 3.0f) * 0.5f;
+
+    int i = 0;
+    for(auto &kart : karts) {
+        kart.set_track(track);
+        kart.sprite.scale = 0.75f;
+
+        kart.sprite.spritesheet = kart_sprites;
+        kart.sprite.look_dir = Vec3(track_start_dir.x, 0.0f, track_start_dir.y);
+        kart.sprite.world_pos = Vec3(
+            start_pos.x,
+            0.0f,
+            start_pos.y
+        ) - kart.sprite.look_dir * 48.0f;
+
+        i++;
+        if(i == 4) {
+            start_pos -= finish_line * inc * 3.0f;
+        } else
+            start_pos += finish_line * inc;
+
+        start_pos -= track_start_dir * 12.0f;
+    }
+
+    // player kart
+    karts[0].is_player = true;
+    cam.look_at = karts[0].sprite.world_pos;
+    cam.pos = cam.look_at - karts[0].sprite.look_dir * 64.0f + Vec3(0, 16.0f, 0);
     cam.update();
 }
 
@@ -76,12 +96,13 @@ void render(uint32_t time) {
 }
 
 void update(uint32_t time) {
-    kart.update();
+    for(auto &kart : karts)
+        kart.update();
 
 
     // update camera
-    Vec3 cam_look_at_target = kart.sprite.world_pos;
-    Vec3 cam_pos_target = cam_look_at_target - kart.sprite.look_dir * 64.0f + Vec3(0, 16.0f, 0);
+    Vec3 cam_look_at_target = karts[0].sprite.world_pos;
+    Vec3 cam_pos_target = cam_look_at_target - karts[0].sprite.look_dir * 64.0f + Vec3(0, 16.0f, 0);
 
     cam.pos += (cam_pos_target - cam.pos) * 0.03f;
     cam.look_at += (cam_look_at_target - cam.look_at) * 0.1f;
@@ -97,12 +118,14 @@ void update(uint32_t time) {
 
     display_sprites.clear();
 
-    kart.sprite.update(cam);
-    check_sprite(kart.sprite);
+    for(auto &kart : karts) {
+        kart.sprite.update(cam);
+        check_sprite(kart.sprite);
+    }
 
     display_sprites.sort([](Sprite3D *a, Sprite3D *b) {return a->z > b->z;});
 
     // minimap
     // TODO: maybe don't constantly recreate this
-    minimap.update(Point(kart.sprite.world_pos.x, kart.sprite.world_pos.z) / 8);
+    minimap.update(Point(karts[0].sprite.world_pos.x, karts[0].sprite.world_pos.z) / 8);
 }
