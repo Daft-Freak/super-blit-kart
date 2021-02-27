@@ -83,10 +83,6 @@ void init() {
     cam.update();
 }
 
-static Mat3 scroll_callback(uint8_t y) {
-    return Mat3::translation(Vec2(cam.look_at.x - screen.bounds.w / 2, cam.look_at.z - screen.bounds.h / 2));
-}
-
 void render(uint32_t time) {
     screen.pen = Pen(0,0,0);
     screen.clear();
