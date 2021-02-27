@@ -103,6 +103,12 @@ float Track::get_friction(blit::Vec2 pos) {
     return 1.0f;
 }
 
+Vec2 Track::get_starting_dir() const {
+    Vec2 dir(info.route[1] - info.route[0]);
+    dir.normalize();
+    return dir;
+}
+
 const TrackInfo &Track::get_info() const {
     return info;
 }

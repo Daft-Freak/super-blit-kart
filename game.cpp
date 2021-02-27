@@ -44,8 +44,7 @@ void init() {
     // setup karts
     auto &info = state.track->get_info();
 
-    auto track_start_dir = Vec2(info.route[1] - info.route[0]);
-    track_start_dir.normalize();
+    auto track_start_dir = state.track->get_starting_dir();
 
     Vec2 finish_line(info.finish_line[1] - info.finish_line[0]);
     float w = finish_line.length();

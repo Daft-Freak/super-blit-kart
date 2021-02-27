@@ -35,6 +35,8 @@ public:
 
     float get_friction(blit::Vec2 pos);
 
+    blit::Vec2 get_starting_dir() const;
+
 private:
     void load_tilemap();
 
