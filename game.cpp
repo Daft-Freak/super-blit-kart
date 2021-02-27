@@ -99,12 +99,17 @@ void render(uint32_t time) {
     for(auto &sprite : display_sprites)
         sprite->render(cam);
 
+    screen.pen = Pen(255, 255, 255);
+
     if(state.countdown) {
         int num = std::ceil(state.countdown / 1000.0f);
-        screen.pen = Pen(255, 255, 255);
         // TODO: big obvious numbers so this can be closer to the center
         screen.text(std::to_string(num), minimal_font, Point(screen.bounds.w / 2, screen.bounds.h / 8), true, center_center);
     }
+
+    char buf[20];
+    snprintf(buf, 20, "Place: %i\nLap: %i", state.karts[0].current_place, std::max(0, state.karts[0].get_current_lap()) + 1);
+    screen.text(buf, minimal_font, Point(8, 8));
 
     minimap.render();
 
@@ -135,8 +140,29 @@ void update(uint32_t time) {
     if(state.started && state.countdown)
         state.countdown -= 10;
 
-    for(auto &kart : state.karts)
+    // kart index, "progress"
+    std::tuple<int, float> kart_progress[8];
+
+    int i = 0;
+    for(auto &kart : state.karts) {
         kart.update();
+
+        // appox progress through race
+        float route_t;
+        float progress = kart.get_current_lap() * state.track->get_info().route_len
+                       + state.track->find_closest_route_segment(kart.get_2d_pos(), route_t) + route_t;
+
+        kart_progress[i] = std::make_tuple(i, progress);
+        i++;
+    }
+
+    // sort by progress
+    std::sort(std::begin(kart_progress), std::end(kart_progress), [](const std::tuple<int, float> &a, const std::tuple<int, float> &b) {
+        return std::get<1>(a) > std::get<1>(b);
+    });
+
+    for(int i = 0; i < 8; i++)
+        state.karts[std::get<0>(kart_progress[i])].current_place = i + 1;
 
     // update camera
     Vec3 cam_look_at_target = state.karts[0].get_pos();
