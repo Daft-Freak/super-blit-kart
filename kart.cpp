@@ -1,6 +1,7 @@
 #include "kart.hpp"
 
 #include "engine/api.hpp"
+#include "engine/engine.hpp"
 #include "math/constants.hpp"
 #include "types/mat4.hpp"
 
@@ -128,11 +129,16 @@ void Kart::update() {
     // check if we crossed the finish line
     bool crossed_finish = line_segment_intersection(Vec2(track_info.finish_line[0]), Vec2(track_info.finish_line[1]), pos_2d, pos_2d + Vec2(vel.x, vel.z) * dt);
 
-    if(crossed_finish) {
+    if(crossed_finish && !has_finished()) {
         float angle = Vec2(vel.x, vel.z).angle(race_state->track->get_starting_dir());
         bool forwards = std::abs(angle) < pi / 2.0f;
 
         current_lap += forwards ? 1 : -1; // uh, negative laps just so you can't cheat
+
+        if(has_finished()) {
+            is_player = false; // take over after race is done
+            finish_time = now();
+        }
     }
 
     // fell through the track
@@ -165,6 +171,10 @@ void Kart::update() {
 
 void Kart::set_race_state(RaceState *race_state) {
     this->race_state = race_state;
+}
+
+bool Kart::has_finished() const {
+    return current_lap >= 3;
 }
 
 void Kart::auto_drive() {

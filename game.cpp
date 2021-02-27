@@ -83,6 +83,53 @@ void init() {
     cam.update();
 }
 
+static void render_result() {
+    screen.pen = Pen(0, 0, 0, 150);
+    screen.clear();
+
+    screen.pen = Pen(255, 255, 255);
+
+    // kart index, finish time
+    std::tuple<int, uint32_t> kart_finish_times[8];
+
+    int i = 0;
+    for(auto &kart : state.karts) {
+        if(!kart.has_finished())
+            kart_finish_times[i] = std::make_tuple(i, ~0u);
+        else
+            kart_finish_times[i] = std::make_tuple(i, kart.get_finish_time());
+
+        i++;
+    }
+
+    std::sort(std::begin(kart_finish_times), std::end(kart_finish_times), [](const std::tuple<int, uint32_t> &a, const std::tuple<int, uint32_t> &b) {
+        return std::get<1>(a) < std::get<1>(b);
+    });
+
+
+    const int item_height = 10;
+    int leaderboard_height = 8 * item_height;
+    int y = (screen.bounds.h - leaderboard_height) / 2;
+
+    char buf[20];
+
+    i = 0;
+    for(auto &ft : kart_finish_times) {
+        
+        // reached the non-finished players
+        if(std::get<1>(ft) == ~0u)
+            break;
+
+        int kart_idx = std::get<0>(ft);
+
+        snprintf(buf, sizeof(buf), "%i - %s", i + 1, kart_idx == 0 ? "You" : "CPU");
+        screen.text(buf, minimal_font, Point(screen.bounds.w / 2, y), true, TextAlign::top_center);
+
+        y += item_height;
+        i++;
+    }
+}
+
 void render(uint32_t time) {
     screen.pen = Pen(0,0,0);
     screen.clear();
@@ -126,6 +173,10 @@ void render(uint32_t time) {
     }
 
     screen.clip = old_clip;
+
+    // we've finished - display the result
+    if(state.karts[0].has_finished())
+        render_result();
 }
 
 void update(uint32_t time) {
