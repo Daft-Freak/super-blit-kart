@@ -35,7 +35,7 @@ void Kart::update() {
     } else
         auto_drive();
 
-    Vec2 pos_2d(sprite.world_pos.x, sprite.world_pos.z);
+    auto pos_2d = get_2d_pos();
     float track_friction = track->get_friction(pos_2d);
     bool on_track = track_friction != 0.0f;
 
@@ -91,7 +91,7 @@ void Kart::auto_drive() {
 
     // try to face the right way
     Vec2 look_2d(sprite.look_dir.x, sprite.look_dir.z);
-    Vec2 pos_2d(sprite.world_pos.x, sprite.world_pos.z);
+    auto pos_2d = get_2d_pos();
     float route_t;
     auto route_index = track->find_closest_route_segment(pos_2d, route_t);
     auto &info = track->get_info();

@@ -80,7 +80,7 @@ void init() {
 
     // player kart
     karts[0].is_player = true;
-    cam.look_at = karts[0].sprite.world_pos;
+    cam.look_at = karts[0].get_pos();
     cam.pos = cam.look_at - karts[0].sprite.look_dir * 64.0f + Vec3(0, 16.0f, 0);
     cam.update();
 }
@@ -109,7 +109,7 @@ void render(uint32_t time) {
     for(auto &kart : karts) {
         // this will probably be a sprite eventually
         screen.pen = hsv_to_rgba(i++ / 8.0f, 1.0f, 1.0f);
-        screen.rectangle(Rect(off + Point(kart.sprite.world_pos.x / 8 - 4, kart.sprite.world_pos.z / 8 - 4), Size(8, 8)));
+        screen.rectangle(Rect(off + kart.get_tile_pos() - Point(4, 4), Size(8, 8)));
     }
 
     screen.clip = old_clip;
@@ -131,7 +131,7 @@ void update(uint32_t time) {
 
             const float kart_radius = 10.0f;
 
-            auto vec = Vec2(kart_a.sprite.world_pos.x, kart_a.sprite.world_pos.z) - Vec2(kart_b.sprite.world_pos.x, kart_b.sprite.world_pos.z);
+            auto vec = kart_a.get_2d_pos() - kart_b.get_2d_pos();
             float dist = vec.length();
 
             if(dist >= kart_radius * 2.0f)
@@ -147,7 +147,7 @@ void update(uint32_t time) {
     }
 
     // update camera
-    Vec3 cam_look_at_target = karts[0].sprite.world_pos;
+    Vec3 cam_look_at_target = karts[0].get_pos();
     Vec3 cam_pos_target = cam_look_at_target - karts[0].sprite.look_dir * 64.0f + Vec3(0, 16.0f, 0);
 
     cam.pos += (cam_pos_target - cam.pos) * 0.03f;
@@ -173,5 +173,5 @@ void update(uint32_t time) {
 
     // minimap
     // TODO: maybe don't constantly recreate this
-    minimap.update(Point(karts[0].sprite.world_pos.x, karts[0].sprite.world_pos.z) / 8);
+    minimap.update(karts[0].get_tile_pos());
 }
