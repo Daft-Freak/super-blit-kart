@@ -71,7 +71,8 @@ void Kart::update() {
     auto drag = vel * -kart_drag * vel.length();
     auto friction = vel * -kart_friction * track_friction;
 
-    vel += (acc + drag + friction) * dt;
+    if(race_state->started)
+        vel += (acc + drag + friction) * dt;
 
     bool was_above = sprite.world_pos.y >= 0.0f;
 

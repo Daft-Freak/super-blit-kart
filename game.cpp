@@ -119,6 +119,10 @@ void render(uint32_t time) {
 }
 
 void update(uint32_t time) {
+
+    if(!state.started && buttons)
+        state.started = true;
+
     for(auto &kart : state.karts)
         kart.update();
 
