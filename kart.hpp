@@ -31,5 +31,8 @@ private:
     blit::Vec3 vel, acc;
     float turn_speed = 0.0f;
 
+    float return_to_track_timer = 0.0f;
+    blit::Vec3 return_pos_v, return_look_v;
+
     RaceState *race_state = nullptr;
 };

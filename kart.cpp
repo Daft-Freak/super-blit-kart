@@ -11,6 +11,8 @@ using namespace blit;
 
 static const float kart_accel = 200.0f, kart_drag = 0.005f, kart_friction = 0.85f, kart_turn_speed = 60.0f;
 
+static const float return_to_track_time = 2.0f;
+
 Kart::Kart() {
     sprite.origin = Point(16, 26);
 
@@ -20,6 +22,24 @@ Kart::Kart() {
 
 void Kart::update() {
     const float dt = 0.01f;
+
+    // put back on track
+    if(return_to_track_timer > 0.0f) {
+        const float half = return_to_track_time / 2.0f;
+
+        if(return_to_track_timer > half) {
+            sprite.world_pos.y += return_pos_v.y;
+        } else {
+            return_pos_v.y = 0.0f;
+
+            sprite.world_pos += return_pos_v;
+            sprite.look_dir += return_look_v;
+            sprite.look_dir.normalize();
+        }
+
+        return_to_track_timer -= dt;
+        return;
+    }
 
     if(is_player) {
         if(buttons & Button::A)
@@ -41,10 +61,12 @@ void Kart::update() {
     bool on_track = track_friction != 0.0f;
 
     // under track
-    if(sprite.world_pos.y < -50.0f) {
-        // put back on the track
+    if(sprite.world_pos.y < -30.0f) {
+        // start putting back on the track
         vel = acc = Vec3();
+        return_to_track_timer = return_to_track_time;
 
+        // find a position somewhere on the nearest segment
         float route_t;
         auto route_index = race_state->track->find_closest_route_segment(pos_2d, route_t);
         auto &info = race_state->track->get_info();
@@ -53,11 +75,17 @@ void Kart::update() {
         route_t = std::max(0.0f, std::min(1.0f, route_t));
         Vec2 route_point = Vec2(info.route[route_index]) + route_vec * route_t;
 
-        sprite.world_pos = Vec3(route_point.x, 16.0f, route_point.y);
+        Vec3 return_pos(route_point.x, 16.0f, route_point.y);
 
-        sprite.look_dir.x = route_vec.x;
-        sprite.look_dir.z = route_vec.y;
-        sprite.look_dir.normalize();
+        // return to pointing the right way
+        Vec3 return_look;
+        return_look.x = route_vec.x;
+        return_look.z = route_vec.y;
+        return_look.normalize();
+
+        // pre-calc how much we need to add at each step
+        return_pos_v = (return_pos - get_pos()) / (return_to_track_time / 2.0f) * dt;
+        return_look_v = (return_look - sprite.look_dir) / (return_to_track_time / 2.0f) * dt;
 
         return;
     } else if(sprite.world_pos.y != 0.0f)
