@@ -215,8 +215,17 @@ void update(uint32_t time) {
     Vec3 cam_look_at_target = state.karts[0].get_pos();
     Vec3 cam_pos_target = cam_look_at_target - state.karts[0].sprite.look_dir * 64.0f + Vec3(0, 16.0f, 0);
 
-    cam.pos += (cam_pos_target - cam.pos) * 0.03f;
     cam.look_at += (cam_look_at_target - cam.look_at) * 0.1f;
+
+    if(state.karts[0].has_finished()) {
+        // spin camera around after race finished
+        cam.pos += (cam_look_at_target - cam.look_at) * 0.1f; // follow
+
+        cam.pos -= cam.look_at;
+        cam.pos.transform(Mat4::rotation(0.2f, Vec3(0.0f, 1.0f, 0.0f)));
+        cam.pos += cam.look_at;
+    } else
+        cam.pos += (cam_pos_target - cam.pos) * 0.03f;
 
     cam.pos.y = std::max(1.0f, cam.pos.y); // prevent the camera going below the track
     cam.update();
