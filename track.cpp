@@ -47,7 +47,7 @@ Track::Track(const TrackInfo &info) : info(info) {
 void Track::render(const Camera &cam) {
     using namespace std::placeholders;
 
-    int horizon = (screen.bounds.h / 2) - ((-cam.forward.y * cam.focal_distance) / cam.up.y);
+    int horizon = (screen.bounds.h / 2) - ((-cam.forward.y * cam.focal_distance) / cam.up.y) + 2; // TODO: use far plane
     map->draw(&screen, Rect(0, horizon, screen.bounds.w, screen.bounds.h - horizon), std::bind(mode7_scanline_transform, cam, _1));
 }
 
