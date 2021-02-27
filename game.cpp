@@ -142,6 +142,8 @@ void update(uint32_t time) {
 
     cam.pos += (cam_pos_target - cam.pos) * 0.03f;
     cam.look_at += (cam_look_at_target - cam.look_at) * 0.1f;
+
+    cam.pos.y = std::max(1.0f, cam.pos.y); // prevent the camera going below the track
     cam.update();
 
     // cull/sort
