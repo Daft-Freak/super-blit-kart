@@ -13,6 +13,21 @@ static const float kart_accel = 200.0f, kart_drag = 0.005f, kart_friction = 0.85
 
 static const float return_to_track_time = 2.0f;
 
+// didn't steal this from the geometry example...
+static bool line_segment_intersection(Vec2 a, Vec2 b, Vec2 c, Vec2 d) {
+    Vec2 r = b - a;
+    Vec2 s = d - c;
+
+    float rxs = (r.x * s.y) - (r.y * s.x);
+    float u = ((c.x - a.x) * r.y - (c.y - a.y) * r.x) / rxs;
+    float t = ((c.x - a.x) * s.y - (c.y - a.y) * s.x) / rxs;
+
+    if(u >= 0.0f && u <= 1.0f && t >= 0.0f && t <= 1.0f)
+        return true;
+
+    return false;
+}
+
 Kart::Kart() {
     sprite.origin = Point(16, 26);
 
@@ -60,6 +75,8 @@ void Kart::update() {
     float track_friction = race_state->track->get_friction(pos_2d);
     bool on_track = track_friction != 0.0f;
 
+    auto &track_info = race_state->track->get_info();
+
     // under track
     if(sprite.world_pos.y < -30.0f) {
         // start putting back on the track
@@ -96,6 +113,7 @@ void Kart::update() {
     else
         sprite.look_dir.transform(Mat4::rotation(turn_speed * dt, Vec3(0.0f, 1.0f, 0.0f)));
 
+    // update velocity
     auto drag = vel * -kart_drag * vel.length();
     auto friction = vel * -kart_friction * track_friction;
 
@@ -104,7 +122,18 @@ void Kart::update() {
 
     bool was_above = sprite.world_pos.y >= 0.0f;
 
+    // apply velocity
     sprite.world_pos += vel * dt;
+
+    // check if we crossed the finish line
+    bool crossed_finish = line_segment_intersection(Vec2(track_info.finish_line[0]), Vec2(track_info.finish_line[1]), pos_2d, pos_2d + Vec2(vel.x, vel.z) * dt);
+
+    if(crossed_finish) {
+        float angle = Vec2(vel.x, vel.z).angle(race_state->track->get_starting_dir());
+        bool forwards = std::abs(angle) < pi / 2.0f;
+
+        current_lap += forwards ? 1 : -1; // uh, negative laps just so you can't cheat
+    }
 
     // fell through the track
     if(sprite.world_pos.y < 0.0f && track_friction > 0.0f && was_above)

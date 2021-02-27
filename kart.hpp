@@ -34,5 +34,7 @@ private:
     float return_to_track_timer = 0.0f;
     blit::Vec3 return_pos_v, return_look_v;
 
+    int current_lap = -1; // -1 because we start behind the finish line
+
     RaceState *race_state = nullptr;
 };
