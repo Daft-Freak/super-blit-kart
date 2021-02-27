@@ -25,12 +25,10 @@ public:
 
     bool is_player = false;
 
-    blit::Vec3 vel;
-
 private:
     void auto_drive();
 
-    blit::Vec3 acc;
+    blit::Vec3 vel, acc;
     float turn_speed = 0.0f;
 
     RaceState *race_state = nullptr;

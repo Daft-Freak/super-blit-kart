@@ -80,6 +80,29 @@ void Kart::update() {
     // fell through the track
     if(sprite.world_pos.y < 0.0f && track_friction > 0.0f && was_above)
         sprite.world_pos.y = 0.0f;
+
+    // collisions - check every kart before this one
+    for(auto other_kart = race_state->karts; other_kart != this; other_kart++) {
+        auto &kart_a = *this, &kart_b = *other_kart;
+
+        if(std::abs(kart_a.sprite.world_pos.y - kart_b.sprite.world_pos.y) > 1.0f)
+            continue;
+
+        const float kart_radius = 10.0f;
+
+        auto vec = kart_a.get_2d_pos() - kart_b.get_2d_pos();
+        float dist = vec.length();
+
+        if(dist >= kart_radius * 2.0f)
+            continue;
+
+        vec /= dist;
+
+        float penetration = kart_radius * 2.0f - dist;
+
+        kart_a.vel += Vec3(vec.x, 0.0f, vec.y) * penetration;// * 0.5f;
+        kart_b.vel -= Vec3(vec.x, 0.0f, vec.y) * penetration;// * 0.5f;
+    }
 }
 
 void Kart::set_race_state(RaceState *race_state) {
