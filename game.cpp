@@ -97,6 +97,13 @@ void render(uint32_t time) {
     for(auto &sprite : display_sprites)
         sprite->render(cam);
 
+    if(state.countdown) {
+        int num = std::ceil(state.countdown / 1000.0f);
+        screen.pen = Pen(255, 255, 255);
+        // TODO: big obvious numbers so this can be closer to the center
+        screen.text(std::to_string(num), minimal_font, Point(screen.bounds.w / 2, screen.bounds.h / 8), true, center_center);
+    }
+
     minimap.render();
 
     // kart locations on minimap
@@ -122,6 +129,9 @@ void update(uint32_t time) {
 
     if(!state.started && buttons)
         state.started = true;
+
+    if(state.started && state.countdown)
+        state.countdown -= 10;
 
     for(auto &kart : state.karts)
         kart.update();
