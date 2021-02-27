@@ -4,6 +4,7 @@
 #include "math/constants.hpp"
 #include "types/mat4.hpp"
 
+#include "race-state.hpp"
 #include "track.hpp"
 
 using namespace blit;
@@ -36,7 +37,7 @@ void Kart::update() {
         auto_drive();
 
     auto pos_2d = get_2d_pos();
-    float track_friction = track->get_friction(pos_2d);
+    float track_friction = race_state->track->get_friction(pos_2d);
     bool on_track = track_friction != 0.0f;
 
     // under track
@@ -45,8 +46,8 @@ void Kart::update() {
         vel = acc = Vec3();
 
         float route_t;
-        auto route_index = track->find_closest_route_segment(pos_2d, route_t);
-        auto &info = track->get_info();
+        auto route_index = race_state->track->find_closest_route_segment(pos_2d, route_t);
+        auto &info = race_state->track->get_info();
 
         Vec2 route_vec(info.route[route_index + 1] - info.route[route_index]);
         route_t = std::max(0.0f, std::min(1.0f, route_t));
@@ -81,8 +82,8 @@ void Kart::update() {
         sprite.world_pos.y = 0.0f;
 }
 
-void Kart::set_track(Track *track) {
-    this->track = track;
+void Kart::set_race_state(RaceState *race_state) {
+    this->race_state = race_state;
 }
 
 void Kart::auto_drive() {
@@ -93,8 +94,8 @@ void Kart::auto_drive() {
     Vec2 look_2d(sprite.look_dir.x, sprite.look_dir.z);
     auto pos_2d = get_2d_pos();
     float route_t;
-    auto route_index = track->find_closest_route_segment(pos_2d, route_t);
-    auto &info = track->get_info();
+    auto route_index = race_state->track->find_closest_route_segment(pos_2d, route_t);
+    auto &info = race_state->track->get_info();
 
     Vec2 route_vec(info.route[route_index + 1] - info.route[route_index]);
     Vec2 route_point = Vec2(info.route[route_index]) + route_vec * route_t;

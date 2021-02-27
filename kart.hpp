@@ -6,7 +6,7 @@
 #include "types/vec2.hpp"
 #include "types/vec3.hpp"
 
-class Track;
+class RaceState;
 
 class Kart final {
 public:
@@ -14,7 +14,7 @@ public:
 
     void update();
 
-    void set_track(Track *track);
+    void set_race_state(RaceState *race_state);
 
     // position helpers
     const blit::Vec3 &get_pos() const {return sprite.world_pos;}
@@ -33,5 +33,5 @@ private:
     blit::Vec3 acc;
     float turn_speed = 0.0f;
 
-    Track *track = nullptr;
+    RaceState *race_state = nullptr;
 };
