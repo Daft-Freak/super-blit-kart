@@ -28,7 +28,7 @@ static Camera cam;
 
 static Surface *kart_sprites;
 
-static std::forward_list<Sprite3D *> display_sprites;
+static std::forward_list<Sprite3D *> display_sprites, display_sprites_below;
 
 static RaceState state;
 
@@ -92,6 +92,9 @@ void render(uint32_t time) {
     screen.pen = Pen(0,0,0);
     screen.clear();
 
+    for(auto &sprite : display_sprites_below)
+        sprite->render(cam);
+
     state.track->render(cam);
 
     for(auto &sprite : display_sprites)
@@ -150,18 +153,25 @@ void update(uint32_t time) {
     auto check_sprite = [](Sprite3D &sprite) {
         float near = 1.0f, far = 500.0f; // may need adjusting
 
-        if(sprite.z >= near && sprite.z <= far)
-            display_sprites.push_front(&sprite);
+        if(sprite.z >= near && sprite.z <= far) {
+            if(sprite.world_pos.y < 0.0f)
+                display_sprites_below.push_front(&sprite);
+            else
+                display_sprites.push_front(&sprite);
+        }
     };
 
     display_sprites.clear();
+    display_sprites_below.clear();
 
     for(auto &kart : state.karts) {
         kart.sprite.update(cam);
         check_sprite(kart.sprite);
     }
 
-    display_sprites.sort([](Sprite3D *a, Sprite3D *b) {return a->z > b->z;});
+    auto sort_func = [](Sprite3D *a, Sprite3D *b) {return a->z > b->z;};
+    display_sprites.sort(sort_func);
+    display_sprites_below.sort(sort_func);
 
     // minimap
     // TODO: maybe don't constantly recreate this
