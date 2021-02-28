@@ -32,14 +32,8 @@ static std::forward_list<Sprite3D *> display_sprites, display_sprites_below;
 
 static RaceState state;
 
-void init() {
-    set_screen_mode(ScreenMode::hires);
-
-    state.track = new Track(track_info[0]);
-
-    minimap.set_map(&state.track->get_map());
-
-    kart_sprites = Surface::load(asset_kart);
+static void setup_race() {
+    state.countdown = 3000;
 
     // setup karts
     auto &info = state.track->get_info();
@@ -56,6 +50,7 @@ void init() {
 
     int i = 0;
     for(auto &kart : state.karts) {
+        kart = Kart();
         kart.set_race_state(&state);
         kart.sprite.scale = 0.75f;
 
@@ -81,6 +76,18 @@ void init() {
     cam.look_at = state.karts[0].get_pos();
     cam.pos = cam.look_at - state.karts[0].sprite.look_dir * 64.0f + Vec3(0, 16.0f, 0);
     cam.update();
+}
+
+void init() {
+    set_screen_mode(ScreenMode::hires);
+
+    state.track = new Track(track_info[0]);
+
+    minimap.set_map(&state.track->get_map());
+
+    kart_sprites = Surface::load(asset_kart);
+
+    setup_race();
 }
 
 static void render_result() {
@@ -189,10 +196,13 @@ void update(uint32_t time) {
 
     // kart index, "progress"
     std::tuple<int, float> kart_progress[8];
+    bool all_finished = true; // TODO: don't bother with the last one
 
     int i = 0;
     for(auto &kart : state.karts) {
         kart.update();
+
+        all_finished = all_finished && kart.has_finished();
 
         // appox progress through race
         float route_t;
@@ -210,6 +220,12 @@ void update(uint32_t time) {
 
     for(int i = 0; i < 8; i++)
         state.karts[std::get<0>(kart_progress[i])].current_place = i + 1;
+
+    if(all_finished && buttons.released & Button::A) {
+        // restart race
+        setup_race();
+        return;
+    }
 
     // update camera
     Vec3 cam_look_at_target = state.karts[0].get_pos();
