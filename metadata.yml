@@ -1,10 +1,10 @@
-title: game title
-description: game description
-author: you
+title: Super Blit Kart?
+description: '"Mode7"-based racing game.'
+author: Daft_Freak
 splash:
   file: assets/no-image.png
 icon:
   file: assets/no-icon.png
-version: v0.0.1
-category: game # game, demo, utility, ...
-url: https://github.com/32blit/32blit-boilerplate
+version: v0.1.0
+category: game
+#url: https://github.com/32blit/32blit-boilerplate
