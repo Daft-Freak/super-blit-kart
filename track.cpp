@@ -36,6 +36,8 @@ static Mat3 mode7_scanline_transform(const Camera &cam, uint8_t y) {
 
     mat.v02 = tx; mat.v12 = ty;
 
+    screen.alpha = 255 - std::max(0.0f, std::min(255.0f, (l - 0.2f) * 170.0f));
+
     return mat;
 }
 
@@ -51,6 +53,8 @@ void Track::render(const Camera &cam) {
     int horizon = (screen.bounds.h / 2) - (((far * -cam.forward.y) - cam.pos.y) * cam.focal_distance) /  (far * cam.up.y);
 
     map->draw(&screen, Rect(0, horizon, screen.bounds.w, screen.bounds.h - horizon), std::bind(mode7_scanline_transform, cam, _1));
+
+    screen.alpha = 255;
 }
 
 unsigned int Track::find_closest_route_segment(Vec2 pos, float &segment_t) const {
