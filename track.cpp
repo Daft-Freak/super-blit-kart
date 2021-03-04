@@ -100,13 +100,13 @@ float Track::get_friction(blit::Vec2 pos) {
     if(tile_coord.x < 0 || tile_coord.y < 0 || tile_coord.x >= map->bounds.w || tile_coord.y >= map->bounds.h)
         return 0.0f;
 
-    // "empty" tile
-    if(map->tile_at(tile_coord) == 0)
-        return 0.0f;
+    auto tile_id = map->tile_at(tile_coord);
 
-    // TODO: tiles with more friction
+    // default
+    if(tile_id >= info.tile_friction_len)
+        return 1.0f;
 
-    return 1.0f;
+    return info.tile_friction[tile_id];
 }
 
 Vec2 Track::get_starting_dir() const {

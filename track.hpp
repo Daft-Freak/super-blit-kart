@@ -14,8 +14,12 @@ namespace blit {
 class TrackInfo final {
 public:
     blit::Point finish_line[2];
+
     const blit::Point *route;
     size_t route_len;
+
+    const float *tile_friction;
+    size_t tile_friction_len;
 
     const uint8_t *map_asset, *tiles_asset;
 };
