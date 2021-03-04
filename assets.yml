@@ -5,9 +5,9 @@
 assets.cpp:
   prefix: asset_
 
-  assets/tiles.png: tiles
+  assets/tileset.png: tileset_tiles
   assets/kart.png: kart
 
-  assets/map.tmx:
-    name: map
+  assets/*.tmx:
+    name: "{filename}_map"
     output_struct: true

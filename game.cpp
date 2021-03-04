@@ -20,7 +20,7 @@ static const TrackInfo track_info[] {
     {
         {{512, 32}, {512, 160}}, // finish line
         track0_route, std::size(track0_route), // route
-        asset_map, asset_tiles // assets
+        asset_rainbow_map, asset_tileset_tiles // assets
     }
 };
 
