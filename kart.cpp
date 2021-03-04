@@ -14,21 +14,6 @@ static const float kart_accel = 200.0f, kart_drag = 0.005f, kart_friction = 0.85
 
 static const float return_to_track_time = 2.0f;
 
-// didn't steal this from the geometry example...
-static bool line_segment_intersection(Vec2 a, Vec2 b, Vec2 c, Vec2 d) {
-    Vec2 r = b - a;
-    Vec2 s = d - c;
-
-    float rxs = (r.x * s.y) - (r.y * s.x);
-    float u = ((c.x - a.x) * r.y - (c.y - a.y) * r.x) / rxs;
-    float t = ((c.x - a.x) * s.y - (c.y - a.y) * s.x) / rxs;
-
-    if(u >= 0.0f && u <= 1.0f && t >= 0.0f && t <= 1.0f)
-        return true;
-
-    return false;
-}
-
 Kart::Kart() {
     sprite.origin = Point(16, 26);
 
@@ -127,17 +112,27 @@ void Kart::update() {
     sprite.world_pos += vel * dt;
 
     // check if we crossed the finish line
-    bool crossed_finish = line_segment_intersection(Vec2(track_info.finish_line[0]), Vec2(track_info.finish_line[1]), pos_2d, pos_2d + Vec2(vel.x, vel.z) * dt);
+    Vec2 finish_vec(track_info.finish_line[1] - track_info.finish_line[0]);
+
+    float finish_side_before = finish_vec.x * (pos_2d.y - track_info.finish_line[0].y) - finish_vec.y * (pos_2d.x - track_info.finish_line[0].x);
+    float finish_side_after = finish_vec.x * ((pos_2d.y + vel.y * dt) - track_info.finish_line[0].y) - finish_vec.y * ((pos_2d.x + vel.x * dt) - track_info.finish_line[0].x);
+    bool crossed_finish = (finish_side_before < 0.0f) != (finish_side_after < 0.0f);
 
     if(crossed_finish && !has_finished()) {
-        float angle = Vec2(vel.x, vel.z).angle(race_state->track->get_starting_dir());
-        bool forwards = std::abs(angle) < pi / 2.0f;
 
-        current_lap += forwards ? 1 : -1; // uh, negative laps just so you can't cheat
+        float route_t;
+        auto route_index = race_state->track->find_closest_route_segment(pos_2d, route_t);
 
-        if(has_finished()) {
-            is_player = false; // take over after race is done
-            finish_time = now();
+        // if we're not at the start/end of the route, we didn't cross the line
+        if(route_index == 0 || route_index == track_info.route_len - 2) {
+            bool forwards = finish_side_after < 0.0f;
+
+            current_lap += forwards ? 1 : -1; // uh, negative laps just so you can't cheat
+
+            if(has_finished()) {
+                is_player = false; // take over after race is done
+                finish_time = now();
+            }
         }
     }
 
