@@ -25,6 +25,14 @@ endif()
 
 find_package (32BLIT CONFIG REQUIRED PATHS ../32blit-sdk)
 
+# track info generation
+add_custom_command(COMMAND
+  ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/extract_track_info.py "${CMAKE_CURRENT_SOURCE_DIR}" "${CMAKE_CURRENT_BINARY_DIR}"
+  OUTPUT track-info.cpp
+  DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/extract_track_info.py ${CMAKE_CURRENT_BINARY_DIR}/assets.hpp
+)
+list(APPEND PROJECT_SOURCE track-info.cpp)
+
 blit_executable (${PROJECT_NAME} ${PROJECT_SOURCE})
 blit_assets_yaml (${PROJECT_NAME} assets.yml)
 blit_metadata (${PROJECT_NAME} metadata.yml)

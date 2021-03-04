@@ -15,14 +15,8 @@ using namespace blit;
 
 static Minimap minimap;
 
-static const Point track0_route[]{{512, 96}, {704, 96}, {928, 96}, {928, 704}, {928, 928}, {824, 928}, {624, 928}, {624, 672}, {624, 512}, {584, 512}, {360, 512}, {360, 736}, {360, 936}, {320, 936}, {96, 936}, {96, 320}, {96, 96}, {512, 96}};
-static const TrackInfo track_info[] {
-    {
-        {{512, 32}, {512, 160}}, // finish line
-        track0_route, std::size(track0_route), // route
-        asset_rainbow_map, asset_tileset_tiles // assets
-    }
-};
+extern const TrackInfo track_info[];
+extern const int num_tracks;
 
 static Camera cam;
 
