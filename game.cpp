@@ -77,7 +77,7 @@ void init() {
 
     state.track = new Track(track_info[0]);
 
-    minimap.set_map(&state.track->get_map());
+    minimap.set_track(state.track);
 
     kart_sprites = Surface::load(asset_kart);
 

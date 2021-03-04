@@ -2,6 +2,8 @@
 
 #include "graphics/tilemap.hpp"
 
+#include "track.hpp"
+
 using namespace blit;
 
 static const blit::Pen minimap_palette[] {
@@ -31,15 +33,17 @@ void Minimap::update(Point center_pos) {
         min.y = 0;
     }
 
+    auto &map = track->get_map();
+
     // assuming map size >= minimap size
-    if(max.x > map->bounds.w) {
-        min.x -= (max.x - map->bounds.w);
-        max.x = map->bounds.w;
+    if(max.x > map.bounds.w) {
+        min.x -= (max.x - map.bounds.w);
+        max.x = map.bounds.w;
     }
 
-    if(max.y > map->bounds.h) {
-        min.y -= (max.y - map->bounds.h);
-        max.y = map->bounds.h;
+    if(max.y > map.bounds.h) {
+        min.y -= (max.y - map.bounds.h);
+        max.y = map.bounds.h;
     }
 
     viewport = Rect(min, max);
@@ -50,7 +54,7 @@ void Minimap::update(Point center_pos) {
             if(center_pos.x == x && center_pos.y == y)
                 data[out_i++] = 3;
             else
-                data[out_i++] = map->tiles[x + y * map->bounds.w] == 0 ? 1 : 2;
+                data[out_i++] = map.tiles[x + y * map.bounds.w] == 0 ? 1 : 2;
         }
     }
 }
@@ -59,6 +63,6 @@ void Minimap::render() {
     screen.blit(&surface, Rect(Point(0, 0), size), Point(screen.bounds.w - size.w, screen.bounds.h - size.h));
 }
 
-void Minimap::set_map(blit::TileMap *map) {
-    this->map = map;
+void Minimap::set_track(Track *track) {
+    this->track = track;
 }

@@ -4,9 +4,7 @@
 #include "graphics/surface.hpp"
 #include "types/size.hpp"
 
-namespace blit {
-    class TileMap;
-}
+class Track;
 
 class Minimap final {
 public:
@@ -17,7 +15,7 @@ public:
 
     const blit::Rect &get_viewport() const {return viewport;}
 
-    void set_map(blit::TileMap *map);
+    void set_track(Track *map);
 
 private:
     static constexpr blit::Size size{96, 96};
@@ -27,5 +25,5 @@ private:
 
     blit::Rect viewport;
 
-    blit::TileMap *map = nullptr;
+    Track *track = nullptr;
 };
