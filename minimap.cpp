@@ -9,8 +9,8 @@ using namespace blit;
 static const blit::Pen minimap_palette[] {
     {  0,   0,   0,   0},
     {  0,   0,   0, 128},
-    {255, 255, 255, 128},
-    {255,   0,   0, 255}
+    {128, 128, 128, 128},
+    {255, 255, 255, 128}
 };
 
 Minimap::Minimap() {
@@ -51,10 +51,15 @@ void Minimap::update(Point center_pos) {
     int out_i = 0;
     for(int y = min.y; y < max.y; y++) {
         for(int x = min.x; x < max.x; x++) {
-            if(center_pos.x == x && center_pos.y == y)
-                data[out_i++] = 3;
+
+            float friction = track->get_friction(Vec2(x, y) * 8.0f);
+
+            if(friction == 0.0f)
+                data[out_i++] = 1;
+            else if(friction > 1.0f)
+                data[out_i++] = 2;
             else
-                data[out_i++] = map.tiles[x + y * map.bounds.w] == 0 ? 1 : 2;
+                data[out_i++] = 3;
         }
     }
 }
