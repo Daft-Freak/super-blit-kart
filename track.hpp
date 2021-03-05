@@ -2,6 +2,7 @@
 #include <cstdint>
 
 #include "types/point.hpp"
+#include "types/rect.hpp"
 #include "types/vec2.hpp"
 
 class Camera;
@@ -17,6 +18,9 @@ public:
 
     const blit::Point *route;
     size_t route_len;
+
+    const blit::Rect *collision_rects;
+    size_t num_collision_rects;
 
     const float *tile_friction;
     size_t tile_friction_len;

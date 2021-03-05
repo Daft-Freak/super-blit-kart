@@ -18,6 +18,7 @@ def parse_points(points_str):
 tileset_friction = {}
 
 track_routes = []
+track_collisions = []
 track_structs = []
 
 for name in tracks:
@@ -30,6 +31,7 @@ for name in tracks:
     tileset_filename = Path(tmx_filename).parent / tileset_filename
 
     objects = root.findall('.//objectgroup[@name="meta"]/object')
+    collision_objects = root.findall('.//objectgroup[@name="collisions"]/object')
 
     map_name = Path(tmx_filename).stem
     tileset_name = Path(tileset_filename).stem
@@ -37,6 +39,7 @@ for name in tracks:
     finish_list = ""
     route_list = ""
 
+    # route/finish objects
     for obj in objects:
         name = obj.get('name')
 
@@ -58,6 +61,19 @@ for name in tracks:
             
             points = [[p[0] + x, p[1] + y] for p in points]
             route_list = ', '.join([f'{{{p[0]}, {p[1]}}}' for p in points])
+
+    # collisions (all rects)
+    collsion_rects = []
+    for obj in collision_objects:
+        x = int(obj.get('x'))
+        y = int(obj.get('y'))
+        w = int(obj.get('width'))
+        h = int(obj.get('height'))
+
+        collsion_rects.append(f'{{{x}, {y}, {w}, {h}}}')
+
+    if not collsion_rects:
+        collsion_rects.append('{0, 0, 0, 0}')
 
     # now the tileset
     if tileset_name not in tileset_friction:
@@ -86,13 +102,20 @@ for name in tracks:
         {{
             {{{finish_list}}}, // finish line
             {map_name}_route, std::size({map_name}_route), // route
+            {map_name}_collisions, std::size({map_name}_collisions), // collision rects
             {tileset_name}_friction, std::size({tileset_name}_friction), // tile meta
             asset_{map_name}_map, asset_{tileset_name}_tiles // assets
         }}'''.format(finish_list=finish_list, map_name=map_name, tileset_name=tileset_name)))
 
+    joined = ', '.join(collsion_rects)
+
+    track_collisions.append(f'static const blit::Rect {map_name}_collisions[]{{{joined}}};')
+
 
 indented_tracks = textwrap.indent(','.join(track_structs), '    ')
 joined_routes = '\n'.join(track_routes)
+
+joined_collisions = '\n'.join(track_collisions)
 
 joined_friction = '\n'.join(tileset_friction.values())
 
@@ -108,8 +131,11 @@ out_f.write('''
 #include "assets.hpp"
 
 #include "types/point.hpp"
+#include "types/rect.hpp"
 
 {joined_friction}
+
+{joined_collisions}
 
 {joined_routes}
 
@@ -117,4 +143,4 @@ extern const TrackInfo track_info[] {{{indented_tracks}
 }};
 
 extern const int num_tracks = std::size(track_info);
-'''.format(rel_to_src=rel_to_src, joined_routes=joined_routes, indented_tracks=indented_tracks, joined_friction=joined_friction))
+'''.format(rel_to_src=rel_to_src, joined_routes=joined_routes, indented_tracks=indented_tracks, joined_friction=joined_friction, joined_collisions=joined_collisions))
