@@ -7,7 +7,7 @@ import sys
 import textwrap
 from xml.etree import ElementTree as ET
 
-tracks = ['rainbow']
+tracks = ['rainbow', 'desert']
 
 src_dir = sys.argv[1]
 build_dir = sys.argv[2]

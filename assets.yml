@@ -6,6 +6,7 @@ assets.cpp:
   prefix: asset_
 
   assets/tileset.png: tileset_tiles
+  assets/track.png: track_tiles
   assets/kart.png: kart
 
   assets/*.tmx:
