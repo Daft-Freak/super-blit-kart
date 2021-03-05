@@ -39,6 +39,16 @@ for name in tracks:
     finish_list = ""
     route_list = ""
 
+    background_col = root.getroot().get('backgroundcolor')
+
+    if background_col is None:
+        background_col = (0, 0, 0, 255)
+    else:
+        r = int(background_col[1:3], 16)
+        g = int(background_col[3:5], 16)
+        b = int(background_col[5:7], 16)
+        background_col = (r, g, b, 255)
+
     # route/finish objects
     for obj in objects:
         name = obj.get('name')
@@ -98,14 +108,17 @@ for name in tracks:
     # build arrays/structs
     track_routes.append(f'static const blit::Point {map_name}_route[]{{{route_list}}};')
 
+    bg_pen = ", ".join([str(x) for x in background_col])
+
     track_structs.append(textwrap.dedent('''
         {{
             {{{finish_list}}}, // finish line
             {map_name}_route, std::size({map_name}_route), // route
             {map_name}_collisions, std::size({map_name}_collisions), // collision rects
             {tileset_name}_friction, std::size({tileset_name}_friction), // tile meta
-            asset_{map_name}_map, asset_{tileset_name}_tiles // assets
-        }}'''.format(finish_list=finish_list, map_name=map_name, tileset_name=tileset_name)))
+            asset_{map_name}_map, asset_{tileset_name}_tiles, // assets
+            {{{bg_pen}}}
+        }}'''.format(finish_list=finish_list, map_name=map_name, tileset_name=tileset_name, bg_pen=bg_pen)))
 
     joined = ', '.join(collsion_rects)
 

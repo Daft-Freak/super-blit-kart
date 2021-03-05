@@ -1,6 +1,7 @@
 #pragma once
 #include <cstdint>
 
+#include "graphics/surface.hpp"
 #include "types/point.hpp"
 #include "types/rect.hpp"
 #include "types/vec2.hpp"
@@ -8,7 +9,6 @@
 class Camera;
 
 namespace blit {
-    class Surface;
     class TileMap;
 }
 
@@ -26,6 +26,8 @@ public:
     size_t tile_friction_len;
 
     const uint8_t *map_asset, *tiles_asset;
+
+    blit::Pen background_col;
 };
 
 class Track final {

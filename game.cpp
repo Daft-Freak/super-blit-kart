@@ -132,7 +132,7 @@ static void render_result() {
 }
 
 void render(uint32_t time) {
-    screen.pen = Pen(0,0,0);
+    screen.pen = state.track->get_info().background_col;
     screen.clear();
 
     for(auto &sprite : display_sprites_below)
