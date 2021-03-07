@@ -1,6 +1,8 @@
 #include <forward_list>
 
+#include "engine/api.hpp"
 #include "graphics/color.hpp"
+#include "types/mat4.hpp"
 
 #include "game.hpp"
 #include "assets.hpp"
@@ -13,20 +15,68 @@
 
 using namespace blit;
 
-static Minimap minimap;
+Game::Game() {
+}
+
+Game::~Game() {
+    delete state;
+    delete next_state;
+}
+
+void Game::update(uint32_t time) {
+    if(state)
+        state->update(time);
+
+    // change state if requested
+    if(next_state) {
+        delete state;
+        state = next_state;
+        next_state = nullptr;
+    }
+}
+
+void Game::render() {
+    if(state)
+        state->render();
+}
+
+class Race final : public GameState {
+public:
+    Race(Game *game);
+
+    void update(uint32_t time) override;
+    void render() override;
+
+private:
+    void setup_race();
+
+    void render_result();
+
+    RaceState state;
+
+    Camera cam;
+
+    std::forward_list<Sprite3D *> display_sprites, display_sprites_below;
+
+    Surface *kart_sprites;
+
+    Minimap minimap;
+};
 
 extern const TrackInfo track_info[];
 extern const int num_tracks;
 
-static Camera cam;
+Race::Race(Game *game) {
+    state.track = new Track(track_info[0]);
 
-static Surface *kart_sprites;
+    minimap.set_track(state.track);
 
-static std::forward_list<Sprite3D *> display_sprites, display_sprites_below;
+    kart_sprites = Surface::load(asset_kart);
 
-static RaceState state;
+    setup_race();
+}
 
-static void setup_race() {
+void Race::setup_race() {
     state.countdown = 3000;
 
     // setup karts
@@ -72,19 +122,9 @@ static void setup_race() {
     cam.update();
 }
 
-void init() {
-    set_screen_mode(ScreenMode::hires);
 
-    state.track = new Track(track_info[0]);
 
-    minimap.set_track(state.track);
-
-    kart_sprites = Surface::load(asset_kart);
-
-    setup_race();
-}
-
-static void render_result() {
+void Race::render_result() {
     screen.pen = Pen(0, 0, 0, 150);
     screen.clear();
 
@@ -131,7 +171,7 @@ static void render_result() {
     }
 }
 
-void render(uint32_t time) {
+void Race::render() {
     screen.pen = state.track->get_info().background_col;
     screen.clear();
 
@@ -180,7 +220,7 @@ void render(uint32_t time) {
         render_result();
 }
 
-void update(uint32_t time) {
+void Race::update(uint32_t time) {
 
     if(!state.started && buttons)
         state.started = true;
@@ -241,7 +281,7 @@ void update(uint32_t time) {
     cam.update();
 
     // cull/sort
-    auto check_sprite = [](Sprite3D &sprite) {
+    auto check_sprite = [this](Sprite3D &sprite) {
         float near = 1.0f, far = 500.0f; // may need adjusting
 
         if(sprite.z >= near && sprite.z <= far) {
@@ -267,4 +307,19 @@ void update(uint32_t time) {
     // minimap
     // TODO: maybe don't constantly recreate this
     minimap.update(state.karts[0].get_tile_pos());
+}
+
+static Game game;
+
+void init() {
+    set_screen_mode(ScreenMode::hires);
+    game.change_state<Race>();
+}
+
+void render(uint32_t time) {
+    game.render();
+}
+
+void update(uint32_t time) {
+    game.update(time);
 }
