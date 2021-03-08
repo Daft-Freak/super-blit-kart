@@ -9,6 +9,7 @@ set(PROJECT_SOURCE
   game.cpp
   kart.cpp
   minimap.cpp
+  race.cpp
   sprite3d.cpp
   track.cpp
 )
