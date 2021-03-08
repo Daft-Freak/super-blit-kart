@@ -7,7 +7,7 @@
 
 using namespace blit;
 
-static Mat3 mode7_scanline_transform(const Camera &cam, uint8_t y) {
+static Mat3 mode7_scanline_transform(const Camera &cam, float fog, uint8_t y) {
     float top = cam.viewport.h / 2;
     float left = -cam.viewport.w / 2;
 
@@ -36,7 +36,7 @@ static Mat3 mode7_scanline_transform(const Camera &cam, uint8_t y) {
 
     mat.v02 = tx; mat.v12 = ty;
 
-    screen.alpha = 255 - std::max(0.0f, std::min(255.0f, (l - 0.2f) * 170.0f));
+    screen.alpha = 255 - std::max(0.0f, std::min(255.0f, (l - 0.2f) * fog));
 
     return mat;
 }
@@ -61,7 +61,7 @@ void Track::render(const Camera &cam) {
 
     int horizon = (screen.bounds.h / 2) - (((cam.far * -cam.forward.y) - cam.pos.y) * cam.focal_distance) /  (cam.far * cam.up.y);
 
-    map->draw(&screen, Rect(cam.viewport.x, cam.viewport.y + horizon, cam.viewport.w, cam.viewport.h - horizon), std::bind(mode7_scanline_transform, cam, _1));
+    map->draw(&screen, Rect(cam.viewport.x, cam.viewport.y + horizon, cam.viewport.w, cam.viewport.h - horizon), std::bind(mode7_scanline_transform, cam, fog, _1));
 
     screen.alpha = 255;
 }
@@ -122,6 +122,10 @@ Vec2 Track::get_starting_dir() const {
     Vec2 dir(info.route[1] - info.route[0]);
     dir.normalize();
     return dir;
+}
+
+void Track::set_fog(float fog) {
+    this->fog = fog;
 }
 
 const TrackInfo &Track::get_info() const {

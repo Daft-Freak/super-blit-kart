@@ -47,6 +47,8 @@ public:
 
     blit::Vec2 get_starting_dir() const;
 
+    void set_fog(float fog);
+
 private:
     void load_tilemap();
 
@@ -54,4 +56,6 @@ private:
 
     blit::Surface *tiles;
     blit::TileMap *map;
+
+    float fog = 170.0f;
 };
