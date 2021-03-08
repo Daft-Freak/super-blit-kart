@@ -28,6 +28,10 @@ TrackSelect::TrackSelect(Game *game) : game(game), track_menu("", {}, tall_font)
     track_menu.set_on_item_activated(std::bind(&TrackSelect::on_track_selected, this, std::placeholders::_1));
 }
 
+TrackSelect::~TrackSelect() {
+    delete track;
+}
+
 void TrackSelect::update(uint32_t time) {
     track_menu.update(time);
 

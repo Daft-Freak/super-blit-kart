@@ -10,6 +10,7 @@ class Track;
 class TrackSelect final : public GameState {
 public:
     TrackSelect(Game *game);
+    ~TrackSelect() override;
 
     void update(uint32_t time) override;
     void render() override;
