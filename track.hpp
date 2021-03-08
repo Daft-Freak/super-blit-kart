@@ -14,6 +14,7 @@ namespace blit {
 
 class TrackInfo final {
 public:
+    const char *name;
     blit::Point finish_line[2];
 
     const blit::Point *route;

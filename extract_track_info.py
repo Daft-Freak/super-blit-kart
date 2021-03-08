@@ -112,6 +112,7 @@ for name in tracks:
 
     track_structs.append(textwrap.dedent('''
         {{
+            "{map_name}",
             {{{finish_list}}}, // finish line
             {map_name}_route, std::size({map_name}_route), // route
             {map_name}_collisions, std::size({map_name}_collisions), // collision rects
