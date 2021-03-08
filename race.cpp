@@ -12,8 +12,8 @@ using namespace blit;
 extern const TrackInfo track_info[];
 extern const int num_tracks;
 
-Race::Race(Game *game) {
-    state.track = new Track(track_info[0]);
+Race::Race(Game *game, int track_index) {
+    state.track = new Track(track_info[track_index]);
 
     minimap.set_track(state.track);
 
