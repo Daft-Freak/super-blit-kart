@@ -8,6 +8,7 @@ project(game)
 set(PROJECT_SOURCE
   game.cpp
   kart.cpp
+  menu.cpp
   minimap.cpp
   race.cpp
   sprite3d.cpp
