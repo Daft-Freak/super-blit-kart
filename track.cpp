@@ -46,6 +46,16 @@ Track::Track(const TrackInfo &info) : info(info) {
     load_tilemap();
 }
 
+Track::~Track() {
+    if(tiles) {
+        delete[] tiles->palette;
+        delete[] tiles->data;
+        delete tiles;
+    }
+
+    delete map;
+}
+
 void Track::render(const Camera &cam) {
     using namespace std::placeholders;
 

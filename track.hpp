@@ -33,7 +33,7 @@ public:
 class Track final {
 public:
     Track(const TrackInfo &info);
-    // TODO: cleanup
+    ~Track();
 
     void render(const Camera &cam);
 
