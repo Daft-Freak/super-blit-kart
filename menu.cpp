@@ -25,7 +25,7 @@ void Menu::add_item(Item &&item) {
     num_items = items_vec.size();
 }
 
-void Menu::set_on_item_activated(void (*func)(const Item &)) {
+void Menu::set_on_item_activated(std::function<void(const Item &)> func) {
     on_item_pressed = func;
 }
 

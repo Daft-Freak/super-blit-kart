@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdint>
+#include <functional>
 #include <vector>
 
 #include "engine/menu.hpp"
@@ -11,7 +12,7 @@ public:
 
     void add_item(Item &&item);
 
-    void set_on_item_activated(void (*func)(const Item &));
+    void set_on_item_activated(std::function<void(const Item &)> func);
 
     int get_current_item() const {return current_item;}
 
@@ -20,5 +21,5 @@ private:
 
     std::vector<Item> items_vec;
 
-    void (*on_item_pressed)(const Item &) = nullptr;
+    std::function<void(const Item &)> on_item_pressed = nullptr;
 };
