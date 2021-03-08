@@ -6,10 +6,10 @@ Menu::Menu(std::string_view title, std::vector<Item> items, const blit::Font &fo
     this->items = items_vec.data();
     num_items = items_vec.size();
 
-    item_h = font.char_h + 2;
+    item_h = font.char_h + 10;
     item_adjust_y = 0;
 
-    header_h = item_h;
+    header_h = title.empty() ? 0 : item_h;
     footer_h = 0;
     margin_y = 0;
 
