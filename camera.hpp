@@ -35,4 +35,6 @@ public:
     blit::Vec3 forward, right, up;
 
     float focal_distance = 320.0f;
+
+    float near = 1.0f, far = 500.0f;
 };

@@ -228,9 +228,7 @@ void Race::update(uint32_t time) {
 
     // cull/sort
     auto check_sprite = [this](Sprite3D &sprite) {
-        float near = 1.0f, far = 500.0f; // may need adjusting
-
-        if(sprite.z >= near && sprite.z <= far) {
+        if(sprite.z >= cam.near && sprite.z <= cam.far) {
             if(sprite.world_pos.y < 0.0f)
                 display_sprites_below.push_front(&sprite);
             else
