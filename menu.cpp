@@ -18,6 +18,13 @@ Menu::Menu(std::string_view title, std::vector<Item> items, const blit::Font &fo
     selected_item_background = blit::Pen(0x22, 0x22, 0x22);
 }
 
+void Menu::add_item(Item &&item) {
+    items_vec.emplace_back(std::move(item));
+
+    items = items_vec.data();
+    num_items = items_vec.size();
+}
+
 void Menu::set_on_item_activated(void (*func)(const Item &)) {
     on_item_pressed = func;
 }
