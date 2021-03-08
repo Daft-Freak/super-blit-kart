@@ -12,19 +12,19 @@ public:
     void update(uint32_t time);
     void render();
 
-    template <class T>
-    void change_state();
+    template <class T, typename ...Args>
+    void change_state(Args ...args);
 
 private:
     // state of the game
     GameState *state = nullptr, *next_state = nullptr;
 };
 
-template<class T>
-void Game::change_state() {
+template<class T, typename ...Args>
+void Game::change_state(Args ...args) {
     // clean up pending state
     if(next_state)
         delete next_state;
 
-    next_state = new T(this);
+    next_state = new T(this, args...);
 }
