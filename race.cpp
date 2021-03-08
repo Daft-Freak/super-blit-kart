@@ -65,6 +65,7 @@ void Race::setup_race() {
     state.karts[0].is_player = true;
     cam.look_at = state.karts[0].get_pos();
     cam.pos = cam.look_at - state.karts[0].sprite.look_dir * 64.0f + Vec3(0, 16.0f, 0);
+    cam.viewport = {{0, 0}, screen.bounds};
     cam.update();
 }
 

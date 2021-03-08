@@ -17,7 +17,7 @@ public:
     }
 
     blit::Point world_to_screen(blit::Vec3 world_pos, float &scale, float &z) const {
-        blit::Point screen_center(blit::screen.bounds.w / 2, blit::screen.bounds.h / 2);
+        blit::Point screen_center(viewport.x + viewport.w / 2, viewport.y + viewport.h / 2);
 
         auto dist = world_pos - pos;
 
@@ -37,4 +37,6 @@ public:
     float focal_distance = 320.0f;
 
     float near = 1.0f, far = 500.0f;
+
+    blit::Rect viewport;
 };
