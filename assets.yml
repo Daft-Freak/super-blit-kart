@@ -12,3 +12,9 @@ assets.cpp:
   assets/*.tmx:
     name: "{filename}_map"
     output_struct: true
+
+  assets/8x12font.png:
+    name: tall_font
+    type: font/image
+    vertical_spacing: 0
+    space_width: 4
