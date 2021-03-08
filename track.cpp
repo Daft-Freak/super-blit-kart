@@ -146,4 +146,6 @@ void Track::load_tilemap() {
         Size(map_struct->width, map_struct->height),
         tiles
     );
+
+    map->empty_tile_id = map_struct->empty_tile;
 }
