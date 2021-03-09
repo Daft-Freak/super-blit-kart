@@ -15,7 +15,10 @@ using namespace blit;
 extern const TrackInfo track_info[];
 extern const int num_tracks;
 
-Race::Race(Game *game, int track_index) : game(game), pause_menu("Paused", {{Menu_Continue, "Continue"}, {Menu_Restart, "Restart"}, {Menu_Quit, "Quit"}}, tall_font) {
+Race::Race(Game *game, int track_index) : game(game),
+                                          pause_menu("Paused", {{Menu_Continue, "Continue"}, {Menu_Restart, "Restart"}, {Menu_Quit, "Quit"}}, tall_font),
+                                          end_menu("", {{Menu_Restart, "Restart"}, {Menu_Quit, "Quit"}}, tall_font) {
+
     state.track = new Track(track_info[track_index]);
 
     minimap.set_track(state.track);
@@ -27,6 +30,10 @@ Race::Race(Game *game, int track_index) : game(game), pause_menu("Paused", {{Men
     Size menu_size(90, 90);
     pause_menu.set_display_rect({{(screen.bounds.w - menu_size.w) / 2, (screen.bounds.h - menu_size.h) / 2}, menu_size});
     pause_menu.set_on_item_activated(std::bind(&Race::on_menu_activated, this, std::placeholders::_1));
+
+    menu_size.h = 44;
+    end_menu.set_display_rect({{(screen.bounds.w - menu_size.w) / 2, (screen.bounds.h - (menu_size.h + 16))}, menu_size});
+    end_menu.set_on_item_activated(std::bind(&Race::on_menu_activated, this, std::placeholders::_1));
 }
 
 Race::~Race() {
@@ -95,7 +102,8 @@ void Race::render() {
 }
 
 void Race::update(uint32_t time) {
-    if(buttons.pressed & Button::MENU)
+    // toggle pause menu, but not after the race ends
+    if((buttons.pressed & Button::MENU) && !state.karts[0].has_finished())
         paused = !paused;
 
     if(paused) {
@@ -111,7 +119,7 @@ void Race::update(uint32_t time) {
 
     // kart index, "progress"
     std::tuple<int, float> kart_progress[8];
-    bool all_finished = true; // TODO: don't bother with the last one
+    all_finished = true; // TODO: don't bother with the last one
 
     int i = 0;
     for(auto &kart : state.karts) {
@@ -136,11 +144,9 @@ void Race::update(uint32_t time) {
     for(int i = 0; i < 8; i++)
         state.karts[std::get<0>(kart_progress[i])].current_place = i + 1;
 
-    if(all_finished && buttons.released & Button::A) {
-        // restart race
-        setup_race();
-        return;
-    }
+    // end of race restart/quit menu
+    if(all_finished)
+        end_menu.update(time);
 
     // update camera
     Vec3 cam_look_at_target = state.karts[0].get_pos();
@@ -291,6 +297,9 @@ void Race::render_result() {
         y += item_height;
         i++;
     }
+
+    if(all_finished)
+        end_menu.render();
 }
 
 void Race::on_menu_activated(const ::Menu::Item &item) {

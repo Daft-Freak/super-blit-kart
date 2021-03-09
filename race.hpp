@@ -39,6 +39,7 @@ private:
     Game *game;
 
     RaceState state;
+    bool all_finished = false;
 
     Camera cam;
 
@@ -48,6 +49,6 @@ private:
 
     Minimap minimap;
 
-    Menu pause_menu;
+    Menu pause_menu, end_menu;
     bool paused = false;
 };
