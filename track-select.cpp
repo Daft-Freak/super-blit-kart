@@ -3,7 +3,7 @@
 
 #include "track-select.hpp"
 
-#include "assets.hpp"
+#include "fonts.hpp"
 #include "game.hpp"
 #include "race.hpp"
 #include "track.hpp"
@@ -11,8 +11,6 @@
 // duplicated!
 extern const TrackInfo track_info[];
 extern const int num_tracks;
-
-static blit::Font tall_font(asset_tall_font);
 
 TrackSelect::TrackSelect(Game *game) : game(game), track_menu("", {}, tall_font) {
     const int w = 120;
