@@ -13,6 +13,7 @@ set(PROJECT_SOURCE
   race.cpp
   sprite3d.cpp
   track.cpp
+  track-select.cpp
 )
 
 # ... and any other files you want in the release here
