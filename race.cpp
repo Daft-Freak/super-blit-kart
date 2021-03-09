@@ -99,18 +99,29 @@ void Race::render_result() {
     int leaderboard_height = 8 * item_height;
     int y = (screen.bounds.h - leaderboard_height) / 2;
 
-    char buf[20];
+    char buf[40];
 
     i = 0;
     for(auto &ft : kart_finish_times) {
-        
         // reached the non-finished players
         if(std::get<1>(ft) == ~0u)
             break;
 
         int kart_idx = std::get<0>(ft);
 
-        snprintf(buf, sizeof(buf), "%i - %s", i + 1, kart_idx == 0 ? "You" : "CPU");
+        auto &kart = state.karts[kart_idx];
+
+        int time_min, time_sec, time_frac;
+        int time = 0;
+
+        for(int lap = 0; lap < 3; lap++)
+            time += kart.get_lap_time(lap);
+
+        time_min = time / 60000;
+        time_sec = (time / 1000) % 60;
+        time_frac = (time % 1000) / 10;
+
+        snprintf(buf, sizeof(buf), "%i - %s - %02i:%02i.%02i", i + 1, kart_idx == 0 ? "You" : "CPU", time_min, time_sec, time_frac);
         screen.text(buf, minimal_font, Point(screen.bounds.w / 2, y), true, TextAlign::top_center);
 
         y += item_height;
