@@ -5,14 +5,17 @@
 #include "race.hpp"
 
 #include "assets.hpp"
+#include "fonts.hpp"
+#include "game.hpp"
 #include "track.hpp"
+#include "track-select.hpp"
 
 using namespace blit;
 
 extern const TrackInfo track_info[];
 extern const int num_tracks;
 
-Race::Race(Game *game, int track_index) {
+Race::Race(Game *game, int track_index) : game(game), pause_menu("Paused", {{Menu_Continue, "Continue"}, {Menu_Restart, "Restart"}, {Menu_Quit, "Quit"}}, tall_font) {
     state.track = new Track(track_info[track_index]);
 
     minimap.set_track(state.track);
@@ -20,6 +23,10 @@ Race::Race(Game *game, int track_index) {
     kart_sprites = Surface::load(asset_kart);
 
     setup_race();
+
+    Size menu_size(90, 90);
+    pause_menu.set_display_rect({{(screen.bounds.w - menu_size.w) / 2, (screen.bounds.h - menu_size.h) / 2}, menu_size});
+    pause_menu.set_on_item_activated(std::bind(&Race::on_menu_activated, this, std::placeholders::_1));
 }
 
 Race::~Race() {
@@ -78,8 +85,6 @@ void Race::setup_race() {
     cam.viewport = {{0, 0}, screen.bounds};
     cam.update();
 }
-
-
 
 void Race::render_result() {
     screen.pen = Pen(0, 0, 0, 150);
@@ -186,9 +191,22 @@ void Race::render() {
     // we've finished - display the result
     if(state.karts[0].has_finished())
         render_result();
+    else if(paused) {
+        screen.pen = Pen(0, 0, 0, 150);
+        screen.clear();
+        pause_menu.render();
+        return;
+    }
 }
 
 void Race::update(uint32_t time) {
+    if(buttons.pressed & Button::MENU)
+        paused = !paused;
+
+    if(paused) {
+        pause_menu.update(time);
+        return;
+    }
 
     if(!state.started && buttons)
         state.started = true;
@@ -273,4 +291,22 @@ void Race::update(uint32_t time) {
     // minimap
     // TODO: maybe don't constantly recreate this
     minimap.update(state.karts[0].get_tile_pos());
+}
+
+
+void Race::on_menu_activated(const ::Menu::Item &item) {
+    switch(item.id) {
+        case Menu_Continue:
+            break; // do nothing
+
+        case Menu_Restart:
+            setup_race();
+            break;
+
+        case Menu_Quit:
+            game->change_state<TrackSelect>(); // main menu?
+            break;
+    }
+
+    paused = false;
 }

@@ -5,6 +5,7 @@
 
 #include "camera.hpp"
 #include "game-state.hpp"
+#include "menu.hpp"
 #include "minimap.hpp"
 #include "race-state.hpp"
 
@@ -23,9 +24,19 @@ public:
     void render() override;
 
 private:
+    enum PauseMenuItem {
+        Menu_Continue = 0,
+        Menu_Restart,
+        Menu_Quit
+    };
+
     void setup_race();
 
     void render_result();
+
+    void on_menu_activated(const Menu::Item &item);
+
+    Game *game;
 
     RaceState state;
 
@@ -36,4 +47,7 @@ private:
     blit::Surface *kart_sprites;
 
     Minimap minimap;
+
+    Menu pause_menu;
+    bool paused = false;
 };
