@@ -22,6 +22,16 @@ Race::Race(Game *game, int track_index) {
     setup_race();
 }
 
+Race::~Race() {
+    delete state.track;
+
+    if(kart_sprites) {
+        delete[] kart_sprites->data;
+        delete[] kart_sprites->palette;
+        delete kart_sprites;
+    }
+}
+
 void Race::setup_race() {
     state.countdown = 3000;
 

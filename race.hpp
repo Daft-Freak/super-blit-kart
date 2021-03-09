@@ -17,6 +17,7 @@ class Game;
 class Race final : public GameState {
 public:
     Race(Game *game, int track_index = 0);
+    ~Race() override;
 
     void update(uint32_t time) override;
     void render() override;
