@@ -39,111 +39,6 @@ Race::~Race() {
     }
 }
 
-void Race::setup_race() {
-    state.countdown = 3000;
-
-    // setup karts
-    auto &info = state.track->get_info();
-
-    auto track_start_dir = state.track->get_starting_dir();
-
-    Vec2 finish_line(info.finish_line[1] - info.finish_line[0]);
-    float w = finish_line.length();
-    finish_line /= w;
-
-    Vec2 start_pos = Vec2(info.finish_line[0]) + finish_line * w * (1.0f / 5.0f);
-
-    float inc = (w / 5.0f) * 3.0f / 3.0f;
-
-    int i = 0;
-    for(auto &kart : state.karts) {
-        kart = Kart();
-        kart.set_race_state(&state);
-        kart.sprite.scale = 0.75f;
-
-        kart.sprite.spritesheet = kart_sprites;
-        kart.sprite.look_dir = Vec3(track_start_dir.x, 0.0f, track_start_dir.y);
-        kart.sprite.world_pos = Vec3(
-            start_pos.x,
-            0.0f,
-            start_pos.y
-        ) - kart.sprite.look_dir * 48.0f;
-
-        i++;
-        if(i == 4) {
-            start_pos -= finish_line * inc * 3.0f;
-        } else
-            start_pos += finish_line * inc;
-
-        start_pos -= track_start_dir * 8.0f;
-    }
-
-    // player kart
-    state.karts[0].is_player = true;
-    cam.look_at = state.karts[0].get_pos();
-    cam.pos = cam.look_at - state.karts[0].sprite.look_dir * 64.0f + Vec3(0, 16.0f, 0);
-    cam.viewport = {{0, 0}, screen.bounds};
-    cam.update();
-}
-
-void Race::render_result() {
-    screen.pen = Pen(0, 0, 0, 150);
-    screen.clear();
-
-    screen.pen = Pen(255, 255, 255);
-
-    // kart index, finish time
-    std::tuple<int, uint32_t> kart_finish_times[8];
-
-    int i = 0;
-    for(auto &kart : state.karts) {
-        if(!kart.has_finished())
-            kart_finish_times[i] = std::make_tuple(i, ~0u);
-        else
-            kart_finish_times[i] = std::make_tuple(i, kart.get_finish_time());
-
-        i++;
-    }
-
-    std::sort(std::begin(kart_finish_times), std::end(kart_finish_times), [](const std::tuple<int, uint32_t> &a, const std::tuple<int, uint32_t> &b) {
-        return std::get<1>(a) < std::get<1>(b);
-    });
-
-
-    const int item_height = 10;
-    int leaderboard_height = 8 * item_height;
-    int y = (screen.bounds.h - leaderboard_height) / 2;
-
-    char buf[40];
-
-    i = 0;
-    for(auto &ft : kart_finish_times) {
-        // reached the non-finished players
-        if(std::get<1>(ft) == ~0u)
-            break;
-
-        int kart_idx = std::get<0>(ft);
-
-        auto &kart = state.karts[kart_idx];
-
-        int time_min, time_sec, time_frac;
-        int time = 0;
-
-        for(int lap = 0; lap < 3; lap++)
-            time += kart.get_lap_time(lap);
-
-        time_min = time / 60000;
-        time_sec = (time / 1000) % 60;
-        time_frac = (time % 1000) / 10;
-
-        snprintf(buf, sizeof(buf), "%i - %s - %02i:%02i.%02i", i + 1, kart_idx == 0 ? "You" : "CPU", time_min, time_sec, time_frac);
-        screen.text(buf, minimal_font, Point(screen.bounds.w / 2, y), true, TextAlign::top_center);
-
-        y += item_height;
-        i++;
-    }
-}
-
 void Race::render() {
     screen.pen = state.track->get_info().background_col;
     screen.clear();
@@ -293,6 +188,110 @@ void Race::update(uint32_t time) {
     minimap.update(state.karts[0].get_tile_pos());
 }
 
+void Race::setup_race() {
+    state.countdown = 3000;
+
+    // setup karts
+    auto &info = state.track->get_info();
+
+    auto track_start_dir = state.track->get_starting_dir();
+
+    Vec2 finish_line(info.finish_line[1] - info.finish_line[0]);
+    float w = finish_line.length();
+    finish_line /= w;
+
+    Vec2 start_pos = Vec2(info.finish_line[0]) + finish_line * w * (1.0f / 5.0f);
+
+    float inc = (w / 5.0f) * 3.0f / 3.0f;
+
+    int i = 0;
+    for(auto &kart : state.karts) {
+        kart = Kart();
+        kart.set_race_state(&state);
+        kart.sprite.scale = 0.75f;
+
+        kart.sprite.spritesheet = kart_sprites;
+        kart.sprite.look_dir = Vec3(track_start_dir.x, 0.0f, track_start_dir.y);
+        kart.sprite.world_pos = Vec3(
+            start_pos.x,
+            0.0f,
+            start_pos.y
+        ) - kart.sprite.look_dir * 48.0f;
+
+        i++;
+        if(i == 4) {
+            start_pos -= finish_line * inc * 3.0f;
+        } else
+            start_pos += finish_line * inc;
+
+        start_pos -= track_start_dir * 8.0f;
+    }
+
+    // player kart
+    state.karts[0].is_player = true;
+    cam.look_at = state.karts[0].get_pos();
+    cam.pos = cam.look_at - state.karts[0].sprite.look_dir * 64.0f + Vec3(0, 16.0f, 0);
+    cam.viewport = {{0, 0}, screen.bounds};
+    cam.update();
+}
+
+void Race::render_result() {
+    screen.pen = Pen(0, 0, 0, 150);
+    screen.clear();
+
+    screen.pen = Pen(255, 255, 255);
+
+    // kart index, finish time
+    std::tuple<int, uint32_t> kart_finish_times[8];
+
+    int i = 0;
+    for(auto &kart : state.karts) {
+        if(!kart.has_finished())
+            kart_finish_times[i] = std::make_tuple(i, ~0u);
+        else
+            kart_finish_times[i] = std::make_tuple(i, kart.get_finish_time());
+
+        i++;
+    }
+
+    std::sort(std::begin(kart_finish_times), std::end(kart_finish_times), [](const std::tuple<int, uint32_t> &a, const std::tuple<int, uint32_t> &b) {
+        return std::get<1>(a) < std::get<1>(b);
+    });
+
+
+    const int item_height = 10;
+    int leaderboard_height = 8 * item_height;
+    int y = (screen.bounds.h - leaderboard_height) / 2;
+
+    char buf[40];
+
+    i = 0;
+    for(auto &ft : kart_finish_times) {
+        // reached the non-finished players
+        if(std::get<1>(ft) == ~0u)
+            break;
+
+        int kart_idx = std::get<0>(ft);
+
+        auto &kart = state.karts[kart_idx];
+
+        int time_min, time_sec, time_frac;
+        int time = 0;
+
+        for(int lap = 0; lap < 3; lap++)
+            time += kart.get_lap_time(lap);
+
+        time_min = time / 60000;
+        time_sec = (time / 1000) % 60;
+        time_frac = (time % 1000) / 10;
+
+        snprintf(buf, sizeof(buf), "%i - %s - %02i:%02i.%02i", i + 1, kart_idx == 0 ? "You" : "CPU", time_min, time_sec, time_frac);
+        screen.text(buf, minimal_font, Point(screen.bounds.w / 2, y), true, TextAlign::top_center);
+
+        y += item_height;
+        i++;
+    }
+}
 
 void Race::on_menu_activated(const ::Menu::Item &item) {
     switch(item.id) {
