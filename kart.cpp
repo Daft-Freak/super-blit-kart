@@ -132,7 +132,8 @@ void Kart::update() {
             if(has_finished()) {
                 is_player = false; // take over after race is done
                 finish_time = now();
-            }
+            } else if(forwards && current_lap >= 0 && !lap_start_time[current_lap])
+                lap_start_time[current_lap] = now();
         }
     }
 
@@ -204,6 +205,19 @@ void Kart::set_race_state(RaceState *race_state) {
 
 bool Kart::has_finished() const {
     return current_lap >= 3;
+}
+
+int Kart::get_lap_time(int lap) const {
+    if(lap < 0)
+        return 0;
+
+    if(lap < 2)
+        return lap_start_time[lap + 1] - lap_start_time[lap];
+
+    if(lap == 2)
+        return finish_time - lap_start_time[2];
+
+    return 0;
 }
 
 void Kart::auto_drive() {

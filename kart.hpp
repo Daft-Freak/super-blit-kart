@@ -25,6 +25,7 @@ public:
 
     bool has_finished() const;
     uint32_t get_finish_time() const {return finish_time;}
+    int get_lap_time(int lap) const;
 
     Sprite3D sprite;
 
@@ -41,7 +42,8 @@ private:
     blit::Vec3 return_pos_v, return_look_v;
 
     int current_lap = -1; // -1 because we start behind the finish line
-    uint32_t finish_time = 0; // TODO: time from start of race?
+    uint32_t lap_start_time[3]{0};
+    uint32_t finish_time = 0;
 
     RaceState *race_state = nullptr;
 };
