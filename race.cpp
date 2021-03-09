@@ -111,10 +111,7 @@ void Race::update(uint32_t time) {
         return;
     }
 
-    if(!state.started && buttons)
-        state.started = true;
-
-    if(state.started && state.countdown)
+    if(state.countdown)
         state.countdown -= 10;
 
     // kart index, "progress"
