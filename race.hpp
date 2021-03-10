@@ -39,7 +39,10 @@ private:
     Game *game;
 
     RaceState state;
-    bool all_finished = false;
+    int num_finished = 0;
+
+    // kart index, finish time
+    std::tuple<int, uint32_t> kart_finish_times[8];
 
     Camera cam;
 

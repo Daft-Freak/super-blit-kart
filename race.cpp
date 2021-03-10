@@ -151,13 +151,15 @@ void Race::update(uint32_t time) {
 
     // kart index, "progress"
     std::tuple<int, float> kart_progress[8];
-    all_finished = true; // TODO: don't bother with the last one
+    // TODO: don't bother with the last one
+    int new_num_finished = 0;
 
     int i = 0;
     for(auto &kart : state.karts) {
         kart.update();
 
-        all_finished = all_finished && kart.has_finished();
+        if(kart.has_finished())
+            new_num_finished++;
 
         // appox progress through race
         float route_t;
@@ -176,8 +178,27 @@ void Race::update(uint32_t time) {
     for(int i = 0; i < 8; i++)
         state.karts[std::get<0>(kart_progress[i])].current_place = i + 1;
 
+    // update the results when someone finishes
+    if(new_num_finished != num_finished) {
+        int i = 0;
+        for(auto &kart : state.karts) {
+            if(!kart.has_finished())
+                kart_finish_times[i] = std::make_tuple(i, ~0u);
+            else
+                kart_finish_times[i] = std::make_tuple(i, kart.get_finish_time());
+
+            i++;
+        }
+
+        std::sort(std::begin(kart_finish_times), std::end(kart_finish_times), [](const std::tuple<int, uint32_t> &a, const std::tuple<int, uint32_t> &b) {
+            return std::get<1>(a) < std::get<1>(b);
+        });
+    }
+
+    num_finished = new_num_finished;
+
     // end of race restart/quit menu
-    if(all_finished)
+    if(num_finished == 8)
         end_menu.update(time);
 
     // update camera
@@ -279,31 +300,13 @@ void Race::render_result() {
 
     screen.pen = Pen(255, 255, 255);
 
-    // kart index, finish time
-    std::tuple<int, uint32_t> kart_finish_times[8];
-
-    int i = 0;
-    for(auto &kart : state.karts) {
-        if(!kart.has_finished())
-            kart_finish_times[i] = std::make_tuple(i, ~0u);
-        else
-            kart_finish_times[i] = std::make_tuple(i, kart.get_finish_time());
-
-        i++;
-    }
-
-    std::sort(std::begin(kart_finish_times), std::end(kart_finish_times), [](const std::tuple<int, uint32_t> &a, const std::tuple<int, uint32_t> &b) {
-        return std::get<1>(a) < std::get<1>(b);
-    });
-
-
     const int item_height = 10;
     int leaderboard_height = 8 * item_height;
     int y = (screen.bounds.h - leaderboard_height) / 2;
 
     char buf[40];
 
-    i = 0;
+    int i = 0;
     for(auto &ft : kart_finish_times) {
         // reached the non-finished players
         if(std::get<1>(ft) == ~0u)
@@ -327,7 +330,7 @@ void Race::render_result() {
         i++;
     }
 
-    if(all_finished)
+    if(num_finished == 8)
         end_menu.render();
 }
 
