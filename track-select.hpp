@@ -3,6 +3,7 @@
 #include "camera.hpp"
 #include "game-state.hpp"
 #include "menu.hpp"
+#include "save.hpp"
 
 class Game;
 class Track;
@@ -25,4 +26,7 @@ private:
 
     Camera cam;
     Track *track = nullptr;
+
+    RaceSaveData race_save;
+    bool race_save_loaded = false;
 };

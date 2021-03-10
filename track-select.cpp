@@ -1,3 +1,4 @@
+#include "engine/save.hpp"
 #include "graphics/font.hpp"
 #include "graphics/tilemap.hpp"
 
@@ -41,6 +42,8 @@ void TrackSelect::update(uint32_t time) {
         delete track;
         track = new Track(track_info[menu_item]);
 
+        race_save_loaded = blit::read_save(race_save, get_save_slot(SaveType::RaceResult, menu_item));
+
         auto bounds = track->get_map().bounds;
         cam.look_at = {bounds.w * 4.0f, 0.0f, bounds.h * 4.0f};
         cam.pos = cam.look_at + blit::Vec3(4.0f, 1.0f, 4.0f) * bounds.w;
@@ -65,9 +68,25 @@ void TrackSelect::render() {
 
     track_menu.render();
 
-    // display some info here?
+    // some info
     screen.pen = {0, 0, 0};
-    screen.rectangle({0, cam.viewport.h, cam.viewport.w, screen.bounds.h - cam.viewport.h});
+    blit::Rect info_rect(0, cam.viewport.h, cam.viewport.w, screen.bounds.h - cam.viewport.h);
+    screen.rectangle(info_rect);
+
+    if(race_save_loaded) {
+        info_rect.inflate(-4);
+
+        const char *suffix[]{"st", "nd", "rd", "th"}; // ...
+
+        screen.pen = {255, 255, 255};
+        char buf[30];
+        snprintf(buf, sizeof(buf), "Best: %i%s place in %02i:%02i.%02i",
+            race_save.place + 1, suffix[std::min(uint8_t(3), race_save.place)],
+            race_save.time / 6000, (race_save.time % 6000) / 100, race_save.time % 100
+        );
+        
+        screen.text(buf, tall_font, info_rect);
+    }
 }
 
 void TrackSelect::on_track_selected(const ::Menu::Item &item) {
