@@ -220,6 +220,15 @@ int Kart::get_lap_time(int lap) const {
     return 0;
 }
 
+int Kart::get_race_time() const {
+    int time = 0;
+
+    for(int lap = 0; lap < 3; lap++)
+        time += get_lap_time(lap);
+
+    return time;
+}
+
 void Kart::auto_drive() {
     // CPU control
     acc = Vec3(sprite.look_dir.x, 0.0f, sprite.look_dir.z) * kart_accel;

@@ -314,10 +314,7 @@ void Race::render_result() {
         auto &kart = state.karts[kart_idx];
 
         int time_min, time_sec, time_frac;
-        int time = 0;
-
-        for(int lap = 0; lap < 3; lap++)
-            time += kart.get_lap_time(lap);
+        int time = kart.get_race_time();
 
         time_min = time / 60000;
         time_sec = (time / 1000) % 60;

@@ -26,6 +26,7 @@ public:
     bool has_finished() const;
     uint32_t get_finish_time() const {return finish_time;}
     int get_lap_time(int lap) const;
+    int get_race_time() const;
 
     Sprite3D sprite;
 
