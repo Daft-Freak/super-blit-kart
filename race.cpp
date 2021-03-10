@@ -1,4 +1,5 @@
 #include "engine/api.hpp"
+#include "engine/save.hpp"
 #include "graphics/color.hpp"
 #include "types/mat4.hpp"
 
@@ -7,6 +8,7 @@
 #include "assets.hpp"
 #include "fonts.hpp"
 #include "game.hpp"
+#include "save.hpp"
 #include "track.hpp"
 #include "track-select.hpp"
 
@@ -49,7 +51,7 @@ static void stretch_text(std::string_view text, const Font &font, const Point &p
     delete[] buf;
 }
 
-Race::Race(Game *game, int track_index) : game(game),
+Race::Race(Game *game, int track_index) : game(game), track_index(track_index),
                                           pause_menu("Paused", {{Menu_Continue, "Continue"}, {Menu_Restart, "Restart"}, {Menu_Quit, "Quit"}}, tall_font),
                                           end_menu("", {{Menu_Restart, "Restart"}, {Menu_Quit, "Quit"}}, tall_font) {
 
@@ -346,6 +348,24 @@ void Race::on_menu_activated(const ::Menu::Item &item) {
         case Menu_Quit:
             game->change_state<TrackSelect>(); // main menu?
             break;
+    }
+
+    // write save on continue/exit
+    if(num_finished == 8) {
+        RaceSaveData save;
+        for(save.place = 0; save.place < 8; save.place++) {
+            if(std::get<0>(kart_finish_times[save.place]) == 0)
+                break;
+        }
+
+        save.time = state.karts[0].get_race_time() / 10;
+
+        RaceSaveData old_save;
+        int slot = get_save_slot(SaveType::RaceResult, track_index);
+
+        // overwrite if improved
+        if(!read_save(old_save, slot) || save.place < old_save.place || (save.place == old_save.place && save.time < old_save.time))
+            write_save(save, slot);
     }
 
     paused = false;

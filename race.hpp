@@ -38,6 +38,8 @@ private:
 
     Game *game;
 
+    int track_index;
+
     RaceState state;
     int num_finished = 0;
 
