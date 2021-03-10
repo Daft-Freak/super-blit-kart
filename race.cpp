@@ -15,6 +15,40 @@ using namespace blit;
 extern const TrackInfo track_info[];
 extern const int num_tracks;
 
+// big text helper
+static void stretch_text(std::string_view text, const Font &font, const Point &pos, float scale, TextAlign align) {
+    auto bounds = screen.measure_text(text, font);
+
+    auto buf = new uint8_t[bounds.area()]();
+    Pen palette[] {
+        {0, 0, 0, 0},
+        screen.pen
+    };
+
+    Surface surf(buf, PixelFormat::P, bounds);
+    surf.palette = palette;
+    surf.pen = {1};
+
+    Rect surf_rect({0, 0}, bounds);
+
+    surf.text(text, font, surf_rect, true, align);
+
+    Rect dest(pos, bounds * scale);
+
+    // (re-)align
+    if(align & TextAlign::center_h)
+        dest.x -= bounds.w * scale / 2;
+    //...right
+
+    if(align & TextAlign::center_v)
+        dest.y -= bounds.h * scale / 2;
+    //...bottom
+
+    screen.stretch_blit(&surf, surf_rect, dest);
+
+    delete[] buf;
+}
+
 Race::Race(Game *game, int track_index) : game(game),
                                           pause_menu("Paused", {{Menu_Continue, "Continue"}, {Menu_Restart, "Restart"}, {Menu_Quit, "Quit"}}, tall_font),
                                           end_menu("", {{Menu_Restart, "Restart"}, {Menu_Quit, "Quit"}}, tall_font) {
@@ -62,8 +96,9 @@ void Race::render() {
 
     if(state.countdown) {
         int num = std::ceil(state.countdown / 1000.0f);
-        // TODO: big obvious numbers so this can be closer to the center
-        screen.text(std::to_string(num), minimal_font, Point(screen.bounds.w / 2, screen.bounds.h / 8), true, center_center);
+
+        float scale = 3.0f + (1.0f - (state.countdown % 1000) / 1000.0f) * 3.0f;
+        stretch_text(std::to_string(num), tall_font, Point(screen.bounds.w / 2, screen.bounds.h / 4), scale, center_center);
     }
 
     char buf[20];
