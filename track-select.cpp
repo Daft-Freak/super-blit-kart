@@ -55,6 +55,8 @@ void TrackSelect::update(uint32_t time) {
 void TrackSelect::render() {
     using blit::screen;
 
+    if(!track) return;
+
     screen.pen = track->get_info().background_col;
     screen.rectangle(cam.viewport);
 
