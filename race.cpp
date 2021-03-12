@@ -364,7 +364,8 @@ void Race::on_menu_activated(const ::Menu::Item &item) {
         int slot = get_save_slot(SaveType::RaceResult, track_index);
 
         // overwrite if improved
-        if(!read_save(old_save, slot) || save.place < old_save.place || (save.place == old_save.place && save.time < old_save.time))
+        bool have_old_save = read_save(old_save, slot) && old_save.save_version == 1 && old_save.time > 0;
+        if(!have_old_save || save.place < old_save.place || (save.place == old_save.place && save.time < old_save.time))
             write_save(save, slot);
     }
 
