@@ -197,6 +197,24 @@ void Kart::update() {
         vel *= dist / kart_radius;
         sprite.world_pos += Vec3(vec.x, 0.0f, vec.y) * penetration;
     }
+
+    // track sprites
+    for(auto &track_sprite : race_state->track->get_sprites()) {
+        float sprite_radius = track_sprite.size.w * 4.0f;
+
+        auto vec = get_2d_pos() - Vec2(track_sprite.world_pos.x, track_sprite.world_pos.z);
+        float dist = vec.length();
+
+        if(dist >= kart_radius + sprite_radius)
+            continue;
+
+        vec /= dist;
+
+        float penetration = kart_radius + sprite_radius - dist;
+
+        sprite.world_pos += Vec3(vec.x, 0.0f, vec.y) * penetration;
+    }
+
 }
 
 void Kart::set_race_state(RaceState *race_state) {
