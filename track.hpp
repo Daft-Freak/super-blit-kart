@@ -12,6 +12,13 @@ namespace blit {
     class TileMap;
 }
 
+class TrackSprite final {
+public:
+    uint16_t pos_x, pos_y;
+    uint8_t sprite_x, sprite_y, sprite_w, sprite_h; // spritesheet coords
+    uint8_t origin_x, origin_y;
+};
+
 class TrackInfo final {
 public:
     const char *name;
@@ -25,6 +32,9 @@ public:
 
     const float *tile_friction;
     size_t tile_friction_len;
+
+    const TrackSprite *sprites;
+    size_t num_sprites;
 
     const uint8_t *map_asset, *tiles_asset;
 

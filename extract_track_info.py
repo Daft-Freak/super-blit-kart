@@ -15,10 +15,17 @@ build_dir = sys.argv[2]
 def parse_points(points_str):
     return [[int(x) for x in p.split(',')] for p in points_str.split(' ')]
 
+def get_template_properties(template_path):
+    root = ET.parse(template_path)
+    props = root.findall('.//property')
+
+    return {x.get('name'): x.get('value') for x in props}
+
 tileset_friction = {}
 
 track_routes = []
 track_collisions = []
+track_sprites = []
 track_structs = []
 
 for name in tracks:
@@ -49,6 +56,8 @@ for name in tracks:
         b = int(background_col[5:7], 16)
         background_col = (r, g, b, 255)
 
+    sprites = []
+
     # route/finish objects
     for obj in objects:
         name = obj.get('name')
@@ -71,6 +80,21 @@ for name in tracks:
             
             points = [[p[0] + x, p[1] + y] for p in points]
             route_list = ', '.join([f'{{{p[0]}, {p[1]}}}' for p in points])
+
+        # template/sprites
+        elif obj.get('template'):
+            props = get_template_properties(Path(tmx_filename).parent / obj.get('template'))
+
+            if 'sprite' in props:
+                sprite_x, sprite_y, sprite_w, sprite_h = (int(x) for x in props['sprite'].split(','))
+
+                origin_x = 0
+                origin_y = 0
+
+                if 'origin' in props:
+                    origin_x, origin_y = (int(x) for x in props['origin'].split(','))
+
+                sprites.append(f'{{{x}, {y}, {sprite_x}, {sprite_y}, {sprite_w}, {sprite_h}, {origin_x}, {origin_y}}}')
 
     # collisions (all rects)
     collsion_rects = []
@@ -108,6 +132,17 @@ for name in tracks:
     # build arrays/structs
     track_routes.append(f'static const blit::Point {map_name}_route[]{{{route_list}}};')
 
+    joined = ', '.join(collsion_rects)
+    track_collisions.append(f'static const blit::Rect {map_name}_collisions[]{{{joined}}};')
+
+    sprites_ptr = 'nullptr'
+    sprites_len = '0'
+    if sprites:
+        joined = ', '.join(sprites)
+        track_sprites.append(f'static const TrackSprite {map_name}_sprites[]{{{joined}}};')
+        sprites_ptr = f'{map_name}_sprites'
+        sprites_len = f'std::size({sprites_ptr})'
+
     bg_pen = ", ".join([str(x) for x in background_col])
 
     track_structs.append(textwrap.dedent('''
@@ -117,19 +152,18 @@ for name in tracks:
             {map_name}_route, std::size({map_name}_route), // route
             {map_name}_collisions, std::size({map_name}_collisions), // collision rects
             {tileset_name}_friction, std::size({tileset_name}_friction), // tile meta
+            {sprites_ptr}, {sprites_len}, // sprites
             asset_{map_name}_map, asset_{tileset_name}_tiles, // assets
             {{{bg_pen}}}
-        }}'''.format(finish_list=finish_list, map_name=map_name, tileset_name=tileset_name, bg_pen=bg_pen)))
-
-    joined = ', '.join(collsion_rects)
-
-    track_collisions.append(f'static const blit::Rect {map_name}_collisions[]{{{joined}}};')
+        }}'''.format(finish_list=finish_list, map_name=map_name, tileset_name=tileset_name, sprites_ptr=sprites_ptr, sprites_len=sprites_len, bg_pen=bg_pen)))
 
 
 indented_tracks = textwrap.indent(','.join(track_structs), '    ')
 joined_routes = '\n'.join(track_routes)
 
 joined_collisions = '\n'.join(track_collisions)
+
+joined_sprites = '\n'.join(track_sprites)
 
 joined_friction = '\n'.join(tileset_friction.values())
 
@@ -153,8 +187,13 @@ out_f.write('''
 
 {joined_routes}
 
+{joined_sprites}
+
 extern const TrackInfo track_info[] {{{indented_tracks}
 }};
 
 extern const int num_tracks = std::size(track_info);
-'''.format(rel_to_src=rel_to_src, joined_routes=joined_routes, indented_tracks=indented_tracks, joined_friction=joined_friction, joined_collisions=joined_collisions))
+'''.format(
+    rel_to_src=rel_to_src, joined_routes=joined_routes, indented_tracks=indented_tracks,
+    joined_friction=joined_friction, joined_collisions=joined_collisions, joined_sprites=joined_sprites
+))
