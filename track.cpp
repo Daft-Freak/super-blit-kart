@@ -44,6 +44,17 @@ static Mat3 mode7_scanline_transform(const Camera &cam, float fog, uint8_t y) {
 Track::Track(const TrackInfo &info) : info(info) {
     tiles = Surface::load(info.tiles_asset);
     load_tilemap();
+
+    sprites.resize(info.num_sprites);
+
+    for(size_t i = 0; i < info.num_sprites; i++) {
+        sprites[i].spritesheet = tiles;
+        sprites[i].world_pos.x = info.sprites[i].pos_x;
+        sprites[i].world_pos.z = info.sprites[i].pos_y;
+        sprites[i].sheet_base = {info.sprites[i].sprite_x, info.sprites[i].sprite_y};
+        sprites[i].size = {info.sprites[i].sprite_w, info.sprites[i].sprite_h};
+        sprites[i].origin = {info.sprites[i].origin_x, info.sprites[i].origin_y};
+    }
 }
 
 Track::~Track() {
@@ -134,6 +145,10 @@ const TrackInfo &Track::get_info() const {
 
 TileMap &Track::get_map() {
     return *map;
+}
+
+std::vector<Sprite3D> &Track::get_sprites() {
+    return sprites;
 }
 
 void Track::load_tilemap() {

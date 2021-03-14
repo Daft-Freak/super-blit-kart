@@ -1,10 +1,13 @@
 #pragma once
 #include <cstdint>
+#include <vector>
 
 #include "graphics/surface.hpp"
 #include "types/point.hpp"
 #include "types/rect.hpp"
 #include "types/vec2.hpp"
+
+#include "sprite3d.hpp"
 
 class Camera;
 
@@ -52,6 +55,8 @@ public:
 
     blit::TileMap &get_map();
 
+    std::vector<Sprite3D> &get_sprites();
+
     unsigned int find_closest_route_segment(blit::Vec2 pos, float &segment_t) const;
 
     float get_friction(blit::Vec2 pos);
@@ -67,6 +72,8 @@ private:
 
     blit::Surface *tiles;
     blit::TileMap *map;
+
+    std::vector<Sprite3D> sprites;
 
     float fog = 170.0f;
 };
