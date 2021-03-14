@@ -104,7 +104,11 @@ void Race::render() {
     }
 
     char buf[20];
-    snprintf(buf, 20, "Place: %i\nLap: %i", state.karts[0].current_place, std::max(0, state.karts[0].get_current_lap()) + 1);
+
+    // uint8 to silence truncation wawning
+    uint8_t place = state.karts[0].current_place;
+    uint8_t lap = std::max(0, state.karts[0].get_current_lap()) + 1;
+    snprintf(buf, 20, "Place: %u\nLap: %u", place, lap);
     screen.text(buf, minimal_font, Point(8, 8));
 
     minimap.render();
