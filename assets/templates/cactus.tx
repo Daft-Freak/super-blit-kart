@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<template>
+ <object name="cactus">
+  <properties>
+   <property name="origin" value="4,24"/>
+   <property name="sprite" value="15,13,1,3"/>
+  </properties>
+  <point/>
+ </object>
+</template>
