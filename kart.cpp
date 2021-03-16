@@ -10,7 +10,7 @@
 
 using namespace blit;
 
-static const float kart_accel = 200.0f, kart_drag = 0.005f, kart_friction = 0.85f, kart_turn_speed = 60.0f;
+static const float kart_accel = 200.0f, kart_drag = 0.005f, kart_friction = 0.85f, kart_turn_speed = 0.5f;
 
 static const float return_to_track_time = 2.0f;
 
@@ -97,7 +97,7 @@ void Kart::update() {
     if(!on_track) // uh oh, we're flying
         acc = Vec3(0.0f, -300.0f, 0.0f); // override acceleration (no traction)
     else
-        sprite.look_dir.transform(Mat4::rotation(turn_speed * dt, Vec3(0.0f, 1.0f, 0.0f)));
+        sprite.look_dir.transform(Mat4::rotation(turn_speed * vel.length() * dt, Vec3(0.0f, 1.0f, 0.0f)));
 
     // update velocity
     auto drag = vel * -kart_drag * vel.length();
