@@ -109,7 +109,7 @@ void Race::render() {
     uint8_t place = state.karts[0].current_place;
     uint8_t lap = std::max(0, state.karts[0].get_current_lap()) + 1;
     snprintf(buf, 20, "Place: %u\nLap: %u", place, lap);
-    screen.text(buf, minimal_font, Point(8, 8));
+    screen.text(buf, tall_font, Point(8, 8));
 
     minimap.render();
 
@@ -311,7 +311,7 @@ void Race::render_result() {
 
     screen.pen = Pen(255, 255, 255);
 
-    const int item_height = 10;
+    const int item_height = 12;
     int leaderboard_height = 8 * item_height;
     int y = (screen.bounds.h - leaderboard_height) / 2;
 
@@ -335,7 +335,7 @@ void Race::render_result() {
         time_frac = (time % 1000) / 10;
 
         snprintf(buf, sizeof(buf), "%i - %s - %02i:%02i.%02i", i + 1, kart_idx == 0 ? "You" : "CPU", time_min, time_sec, time_frac);
-        screen.text(buf, minimal_font, Point(screen.bounds.w / 2, y), true, TextAlign::top_center);
+        screen.text(buf, tall_font, Point(screen.bounds.w / 2, y), true, TextAlign::top_center);
 
         y += item_height;
         i++;
