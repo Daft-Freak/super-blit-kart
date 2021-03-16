@@ -18,3 +18,8 @@ assets.cpp:
     type: font/image
     vertical_spacing: 0
     space_width: 4
+
+  assets/RandomFont3.ttf:
+    name: big_number_font
+    height: 54
+    num_chars: 26
