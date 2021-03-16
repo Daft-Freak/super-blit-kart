@@ -99,17 +99,42 @@ void Race::render() {
     if(state.countdown) {
         int num = std::ceil(state.countdown / 1000.0f);
 
-        float scale = 3.0f + (1.0f - (state.countdown % 1000) / 1000.0f) * 3.0f;
-        stretch_text(std::to_string(num), tall_font, Point(screen.bounds.w / 2, screen.bounds.h / 4), scale, center_center);
+        float scale = 1.0f + (1.0f - (state.countdown % 1000) / 1000.0f);
+        stretch_text(std::to_string(num), big_number_font, Point(screen.bounds.w / 2, screen.bounds.h / 4), scale, center_center);
     }
 
     char buf[20];
 
+    // place
+    int place = state.karts[0].current_place;
+    const char *digits = "012345678";
+    const char *suffix[]{"st", "nd", "rd", "th"};
+
+    // printf/to_string seems overkill for a single digit...
+    std::string_view place_char(digits + place, 1);
+    auto bounds = screen.measure_text(place_char, big_number_font);
+
+    auto col = hsv_to_rgba((place - 1) / 8.0f, 1.0f, 0.7f);
+
+    // "shadow"
+    screen.pen = {col.r / 2, col.g / 2, col.b / 2};
+    screen.text(place_char, big_number_font, Point(9, 9));
+    screen.text(suffix[std::min(place - 1, 3)], tall_font, Point(bounds.w + 11, bounds.h + 5), true, TextAlign::bottom_left);
+
+    screen.pen = col;
+    screen.text(place_char, big_number_font, Point(8, 8));
+    screen.text(suffix[std::min(place - 1, 3)], tall_font, Point(bounds.w + 10, bounds.h + 4), true, TextAlign::bottom_left);
+
+    // lap count
     // uint8 to silence truncation wawning
-    uint8_t place = state.karts[0].current_place;
     uint8_t lap = std::max(0, state.karts[0].get_current_lap()) + 1;
-    snprintf(buf, 20, "Place: %u\nLap: %u", place, lap);
-    screen.text(buf, tall_font, Point(8, 8));
+
+    screen.pen = {255, 255, 255};
+
+    if(lap < 4) {
+        snprintf(buf, 20, "Lap %u/3", lap);
+        screen.text(buf, tall_font, Point(8, bounds.h + 8));
+    }
 
     minimap.render();
 
