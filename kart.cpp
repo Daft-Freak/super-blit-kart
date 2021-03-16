@@ -10,7 +10,7 @@
 
 using namespace blit;
 
-static const float kart_accel = 200.0f, kart_drag = 0.005f, kart_friction = 0.85f, kart_turn_speed = 0.5f;
+static const float kart_accel = 200.0f, kart_brake_rec_accel = -80.0f, kart_drag = 0.005f, kart_friction = 0.85f, kart_turn_speed = 0.5f;
 
 static const float return_to_track_time = 2.0f;
 
@@ -45,6 +45,8 @@ void Kart::update() {
     if(is_player) {
         if(buttons & Button::A)
             acc = Vec3(sprite.look_dir.x, 0.0f, sprite.look_dir.z) * kart_accel;
+        else if(buttons & Button::B)
+            acc = Vec3(sprite.look_dir.x, 0.0f, sprite.look_dir.z) * kart_brake_rec_accel; // braking/reverse
         else
             acc = Vec3();
 
