@@ -270,15 +270,21 @@ void Kart::auto_drive() {
 
     float recenter_turn_speed = 0.0f;
 
-    if(dist > 40.0f) { // ~third of the track width
+    // high friction - almost definitely off the track
+    bool off_track = race_state->track->get_friction(pos_2d) > 1.0f;
+
+    // ~third of the track width for rainbow
+    if(dist > 40.0f || off_track) {
         to_track_center.normalize();
 
         float ang = to_track_center.angle(look_2d);
 
+        float scale = off_track ? 1.0f : 0.5f; // turn harder if we're being slowed down
+
         if(std::abs(ang) < pi / 4.0f) // don't want to fully align with this vector or we'll be going sideways
             recenter_turn_speed = 0.0f;
         else
-            recenter_turn_speed = ang < 0.0f ? -kart_turn_speed * 0.5f : kart_turn_speed * 0.5f;
+            recenter_turn_speed = ang < 0.0f ? -kart_turn_speed * scale : kart_turn_speed * scale;
     }
 
     // turn into corners
