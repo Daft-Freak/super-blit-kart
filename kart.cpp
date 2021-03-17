@@ -144,6 +144,7 @@ void Kart::update() {
         sprite.world_pos.y = 0.0f;
 
     const float kart_radius = 10.0f;
+    const float kart_mass = 30.0f;
 
     // collisions - check every kart before this one
     for(auto other_kart = race_state->karts; other_kart != this; other_kart++) {
@@ -162,8 +163,16 @@ void Kart::update() {
 
         float penetration = kart_radius * 2.0f - dist;
 
-        kart_a.vel += Vec3(vec.x, 0.0f, vec.y) * penetration;// * 0.5f;
-        kart_b.vel -= Vec3(vec.x, 0.0f, vec.y) * penetration;// * 0.5f;
+        // move apart
+        kart_a.sprite.world_pos += Vec3(vec.x, 0.0f, vec.y) * penetration * 0.5f;
+        kart_b.sprite.world_pos -= Vec3(vec.x, 0.0f, vec.y) * penetration * 0.5f;
+
+        // boing
+        float kart_a_mass = kart_mass, kart_b_mass = kart_mass; // maybe in future these will be different
+
+        auto new_a_vel = (kart_a.vel * (kart_a_mass - kart_b_mass) + (kart_b.vel * kart_b_mass * 2.0f)) / (kart_a_mass + kart_b_mass);
+        kart_b.vel     = (kart_b.vel * (kart_b_mass - kart_a_mass) + (kart_a.vel * kart_a_mass * 2.0f)) / (kart_a_mass + kart_b_mass);
+        kart_a.vel = new_a_vel;
     }
 
     // collide with track obstacles
