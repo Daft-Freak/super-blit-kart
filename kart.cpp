@@ -143,7 +143,7 @@ void Kart::update() {
     if(sprite.world_pos.y < 0.0f && track_friction > 0.0f && was_above)
         sprite.world_pos.y = 0.0f;
 
-    const float kart_radius = 10.0f;
+    const float kart_radius = 9.5f;
     const float kart_mass = 30.0f;
 
     // collisions - check every kart before this one
