@@ -307,9 +307,9 @@ void Kart::auto_drive() {
 
     float ang = next_route_vec.angle(look_2d);
 
-    turn_speed = std::min(kart_turn_speed, std::max(-kart_turn_speed, ang * 100.0f));
+    turn_speed = std::min(kart_turn_speed, std::max(-kart_turn_speed, ang * 0.8f));
 
-    // whatever is telling us to turn the hardest
-    if(std::abs(recenter_turn_speed) > std::abs(turn_speed))
+    // whatever is telling us to turn the hardest, unless we're off the track
+    if(off_track || std::abs(recenter_turn_speed) > std::abs(turn_speed))
         turn_speed = recenter_turn_speed;
 }
