@@ -56,4 +56,5 @@ private:
 
     Menu pause_menu, end_menu;
     bool paused = false;
+    int num_karts = 8;
 };

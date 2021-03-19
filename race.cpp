@@ -149,6 +149,8 @@ void Race::render() {
 
     int i = 0;
     for(auto &kart : state.karts) {
+        if(i == num_karts) break;
+
         // this will probably be a sprite eventually
         screen.pen = hsv_to_rgba(i++ / 8.0f, 1.0f, 1.0f);
         screen.rectangle(Rect(off + kart.get_tile_pos() - Point(4, 4), Size(8, 8)));
@@ -187,6 +189,8 @@ void Race::update(uint32_t time) {
 
     int i = 0;
     for(auto &kart : state.karts) {
+        if(i == num_karts) break;
+
         kart.update();
 
         if(kart.has_finished())
@@ -202,11 +206,11 @@ void Race::update(uint32_t time) {
     }
 
     // sort by progress
-    std::sort(std::begin(kart_progress), std::end(kart_progress), [](const std::tuple<int, float> &a, const std::tuple<int, float> &b) {
+    std::sort(kart_progress, kart_progress + num_karts, [](const std::tuple<int, float> &a, const std::tuple<int, float> &b) {
         return std::get<1>(a) > std::get<1>(b);
     });
 
-    for(int i = 0; i < 8; i++)
+    for(int i = 0; i < num_karts; i++)
         state.karts[std::get<0>(kart_progress[i])].current_place = i + 1;
 
     // update the results when someone finishes
@@ -229,7 +233,7 @@ void Race::update(uint32_t time) {
     num_finished = new_num_finished;
 
     // end of race restart/quit menu
-    if(num_finished == 8)
+    if(num_finished == num_karts)
         end_menu.update(time);
 
     // update camera
@@ -264,9 +268,9 @@ void Race::update(uint32_t time) {
     display_sprites.clear();
     display_sprites_below.clear();
 
-    for(auto &kart : state.karts) {
-        kart.sprite.update(cam);
-        check_sprite(kart.sprite);
+    for(int i = 0; i < num_karts; i++) {
+        state.karts[i].sprite.update(cam);
+        check_sprite(state.karts[i].sprite);
     }
 
     for(auto &sprite: state.track->get_sprites()) {
@@ -301,6 +305,9 @@ void Race::setup_race() {
 
     int i = 0;
     for(auto &kart : state.karts) {
+        if(i == num_karts)
+            break;
+
         kart = Kart();
         kart.set_race_state(&state);
         kart.sprite.scale = 0.75f;
@@ -345,7 +352,7 @@ void Race::render_result() {
     int i = 0;
     for(auto &ft : kart_finish_times) {
         // reached the non-finished players
-        if(std::get<1>(ft) == ~0u)
+        if(std::get<1>(ft) == ~0u || i == num_karts)
             break;
 
         int kart_idx = std::get<0>(ft);
