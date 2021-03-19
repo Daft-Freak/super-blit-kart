@@ -233,8 +233,12 @@ void Race::update(uint32_t time) {
     num_finished = new_num_finished;
 
     // end of race restart/quit menu
-    if(num_finished == num_karts)
+    if(show_end_menu)
         end_menu.update(time);
+
+    // don't show the menu if A is still held to avoid accidentally restarting
+    if(num_finished == num_karts && !(buttons & Button::A))
+        show_end_menu = true;
 
     // update camera
     Vec3 cam_look_at_target = state.karts[0].get_pos();
@@ -373,7 +377,7 @@ void Race::render_result() {
         i++;
     }
 
-    if(num_finished == 8)
+    if(show_end_menu)
         end_menu.render();
 }
 

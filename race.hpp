@@ -55,6 +55,6 @@ private:
     Minimap minimap;
 
     Menu pause_menu, end_menu;
-    bool paused = false;
+    bool paused = false, show_end_menu = false;
     int num_karts = 8;
 };
