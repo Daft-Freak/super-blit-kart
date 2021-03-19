@@ -51,9 +51,9 @@ static void stretch_text(std::string_view text, const Font &font, const Point &p
     delete[] buf;
 }
 
-Race::Race(Game *game, int track_index) : game(game), track_index(track_index),
-                                          pause_menu("Paused", {{Menu_Continue, "Continue"}, {Menu_Restart, "Restart"}, {Menu_Quit, "Quit"}}, tall_font),
-                                          end_menu("", {{Menu_Restart, "Restart"}, {Menu_Quit, "Quit"}}, tall_font) {
+Race::Race(Game *game, int track_index, RaceMode mode) : game(game), track_index(track_index), mode(mode),
+    pause_menu("Paused", {{Menu_Continue, "Continue"}, {Menu_Restart, "Restart"}, {Menu_Quit, "Quit"}}, tall_font),
+    end_menu("", {{Menu_Restart, "Restart"}, {Menu_Quit, "Quit"}}, tall_font) {
 
     state.track = new Track(track_info[track_index]);
 
@@ -74,6 +74,8 @@ Race::Race(Game *game, int track_index) : game(game), track_index(track_index),
 
 Race::~Race() {
     delete state.track;
+
+    delete[] time_trial_data;
 
     if(kart_sprites) {
         delete[] kart_sprites->data;
@@ -292,6 +294,10 @@ void Race::update(uint32_t time) {
 }
 
 void Race::setup_race() {
+    // max two karts for time trial
+    if(mode == RaceMode::TimeTrial)
+        num_karts = 2;
+
     state.countdown = 3000;
 
     // setup karts
@@ -339,6 +345,45 @@ void Race::setup_race() {
     cam.pos = cam.look_at - state.karts[0].sprite.look_dir * 64.0f + Vec3(0, 16.0f, 0);
     cam.viewport = {{0, 0}, screen.bounds};
     cam.update();
+
+    // time trial setup
+    if(mode == RaceMode::TimeTrial) {
+        delete[] time_trial_data;
+        time_trial_data = new TimeTrialSaveData[2]; // one for the ghost, one to record
+
+        unsigned int best_time = ~0, worst_time = 0;
+        int best_slot = 0, worst_slot = 0;
+
+        for(int i = 0; i < 10; i++) {
+
+            TimeTrialSaveData save;
+            unsigned int this_time = ~0;
+            if(read_save(save, get_save_slot(SaveType::TimeTrial, track_index, i)) && save.save_version == 1) {
+                this_time = std::min(std::min(save.lap_time[0], save.lap_time[1]), save.lap_time[2]); // best lap
+            }
+
+            if(this_time < best_time) {
+                best_time = this_time;
+                best_slot = i;
+            } else if(this_time > worst_time) {
+                worst_time = this_time;
+                worst_slot = i;
+            }
+        }
+
+        // this is where we'll save to
+        worst_time_trial_slot = worst_slot;
+
+        state.karts[0].set_time_trial_data(time_trial_data);
+
+        // attempt to load the "best" result as a ghost
+        if(read_save(time_trial_data[1], get_save_slot(SaveType::TimeTrial, track_index, best_slot))) {
+            state.karts[1].set_time_trial_data(time_trial_data + 1);
+            state.karts[1].sprite.alpha = 0.5f;
+            num_karts = 2;
+        } else
+            num_karts = 1;
+    }
 }
 
 void Race::render_result() {
@@ -396,22 +441,44 @@ void Race::on_menu_activated(const ::Menu::Item &item) {
     }
 
     // write save on continue/exit
-    if(num_finished == 8) {
-        RaceSaveData save;
-        for(save.place = 0; save.place < 8; save.place++) {
-            if(std::get<0>(kart_finish_times[save.place]) == 0)
-                break;
+    if(num_finished == num_karts) {
+        if(mode == RaceMode::Race) {
+            RaceSaveData save;
+            for(save.place = 0; save.place < 8; save.place++) {
+                if(std::get<0>(kart_finish_times[save.place]) == 0)
+                    break;
+            }
+
+            save.time = state.karts[0].get_race_time() / 10;
+
+            RaceSaveData old_save;
+            int slot = get_save_slot(SaveType::RaceResult, track_index);
+
+            // overwrite if improved
+            bool have_old_save = read_save(old_save, slot) && old_save.save_version == 1 && old_save.time > 0;
+            if(!have_old_save || save.place < old_save.place || (save.place == old_save.place && save.time < old_save.time))
+                write_save(save, slot);
+        } else if(mode == RaceMode::TimeTrial) {
+            int slot = get_save_slot(SaveType::TimeTrial, track_index, worst_time_trial_slot);
+
+            auto &save = time_trial_data[0];
+            auto &old_save = time_trial_data[1]; // use the ghost data, we don't need it any more
+
+            for(int i = 0; i < 3; i++)
+                save.lap_time[i] = state.karts[0].get_lap_time(i) / 10;
+
+            unsigned int best_lap = std::min(std::min(save.lap_time[0], save.lap_time[1]), save.lap_time[2]);
+
+            // make sure this is actually an improvement
+            bool have_old_save = read_save(time_trial_data[1], slot) && time_trial_data[1].save_version == 1;
+
+            unsigned int old_best = ~0;
+            if(have_old_save)
+                old_best = std::min(std::min(old_save.lap_time[0], old_save.lap_time[1]), old_save.lap_time[2]);
+
+            if(best_lap < old_best)
+                write_save(save, slot);
         }
-
-        save.time = state.karts[0].get_race_time() / 10;
-
-        RaceSaveData old_save;
-        int slot = get_save_slot(SaveType::RaceResult, track_index);
-
-        // overwrite if improved
-        bool have_old_save = read_save(old_save, slot) && old_save.save_version == 1 && old_save.time > 0;
-        if(!have_old_save || save.place < old_save.place || (save.place == old_save.place && save.time < old_save.time))
-            write_save(save, slot);
     }
 
     paused = false;

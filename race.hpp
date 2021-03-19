@@ -14,10 +14,16 @@ namespace blit {
 };
 
 class Game;
+class TimeTrialSaveData;
+
+enum class RaceMode {
+    Race = 0,
+    TimeTrial
+};
 
 class Race final : public GameState {
 public:
-    Race(Game *game, int track_index = 0);
+    Race(Game *game, int track_index = 0, RaceMode mode = RaceMode::Race);
     ~Race() override;
 
     void update(uint32_t time) override;
@@ -39,6 +45,7 @@ private:
     Game *game;
 
     int track_index;
+    RaceMode mode;
 
     RaceState state;
     int num_finished = 0;
@@ -57,4 +64,7 @@ private:
     Menu pause_menu, end_menu;
     bool paused = false, show_end_menu = false;
     int num_karts = 8;
+
+    TimeTrialSaveData *time_trial_data = nullptr; // x2
+    int worst_time_trial_slot = 0;
 };
