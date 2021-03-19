@@ -153,7 +153,10 @@ void Kart::update() {
     for(auto other_kart = race_state->karts; other_kart != this; other_kart++) {
         auto &kart_a = *this, &kart_b = *other_kart;
 
-        if(std::abs(kart_a.sprite.world_pos.y - kart_b.sprite.world_pos.y) > 1.0f)
+        if(is_ghost())
+            break;
+
+        if(other_kart->is_ghost() || std::abs(kart_a.sprite.world_pos.y - kart_b.sprite.world_pos.y) > 1.0f)
             continue;
 
         auto vec = kart_a.get_2d_pos() - kart_b.get_2d_pos();
