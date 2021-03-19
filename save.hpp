@@ -4,11 +4,11 @@
 
 enum class SaveType {
     RaceResult = 0,
-    UserData = 0xFF
+    UserData = 0xF
 };
 
-inline int get_save_slot(SaveType type, int track) {
-    return (static_cast<int>(type) << 8) | track;
+inline int get_save_slot(SaveType type, int track, int slot = 0) {
+    return (static_cast<int>(type) << 12) | (track << 4) | slot;
 }
 
 struct RaceSaveData {
