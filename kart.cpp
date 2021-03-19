@@ -6,6 +6,7 @@
 #include "types/mat4.hpp"
 
 #include "race-state.hpp"
+#include "save.hpp"
 #include "track.hpp"
 
 using namespace blit;
@@ -105,7 +106,9 @@ void Kart::update() {
     auto drag = vel * -kart_drag * vel.length();
     auto friction = vel * -kart_friction * track_friction;
 
-    if(!race_state->countdown)
+    // ignore accel if the race hasn't started or replaying a ghost (and not falling)
+    bool ghost_finished = !is_ghost() || ghost_timer / 10 >= time_trial_data->ghost_data_used;
+    if(!race_state->countdown && (ghost_finished || acc.y != 0.0f))
         vel += (acc + drag + friction) * dt;
 
     bool was_above = sprite.world_pos.y >= 0.0f;
@@ -226,6 +229,14 @@ void Kart::update() {
         sprite.world_pos += Vec3(vec.x, 0.0f, vec.y) * penetration;
     }
 
+    // record
+    if(time_trial_data && is_player && ghost_timer++ % 10 == 0 && !has_finished()) {
+        auto &ghost_entry = time_trial_data->ghost_data[time_trial_data->ghost_data_used++];
+        ghost_entry.pos_x = std::floor(get_2d_pos().x * 8);
+        ghost_entry.pos_z = std::floor(get_2d_pos().y * 8);
+
+        ghost_entry.look_ang = std::floor(std::atan2(sprite.look_dir.z, sprite.look_dir.x) * 10430.0f); // ~0x7FFF / pi
+    }
 }
 
 void Kart::set_race_state(RaceState *race_state) {
@@ -258,7 +269,34 @@ int Kart::get_race_time() const {
     return time;
 }
 
+void Kart::set_time_trial_data(TimeTrialSaveData *data) {
+    time_trial_data = data;
+}
+
 void Kart::auto_drive() {
+    // replay ghost
+    if(is_ghost() && ghost_timer++ % 10 == 0) {
+        int index = ghost_timer / 10;
+
+        if(index < time_trial_data->ghost_data_used) {
+            auto &ghost_entry = time_trial_data->ghost_data[index];
+            auto &next_entry = time_trial_data->ghost_data[std::min(time_trial_data->ghost_data_used - 1, index + 1)];
+
+            sprite.world_pos.x = ghost_entry.pos_x / 8.0f;
+            sprite.world_pos.z = ghost_entry.pos_z / 8.0f;
+
+            // calculate a velocity
+            vel.x = (next_entry.pos_x - ghost_entry.pos_x) / 8.0f * 10.0f;
+            vel.z = (next_entry.pos_z - ghost_entry.pos_z) / 8.0f * 10.0f;
+
+            sprite.look_dir.x = std::cos(ghost_entry.look_ang / 10430.0f);
+            sprite.look_dir.z = std::sin(ghost_entry.look_ang / 10430.0f);
+
+            acc = Vec3();
+            return;
+        }
+    }
+
     // CPU control
     acc = Vec3(sprite.look_dir.x, 0.0f, sprite.look_dir.z) * kart_accel;
 

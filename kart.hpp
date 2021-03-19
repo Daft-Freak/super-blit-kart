@@ -7,6 +7,7 @@
 #include "types/vec3.hpp"
 
 class RaceState;
+class TimeTrialSaveData;
 
 class Kart final {
 public:
@@ -28,6 +29,9 @@ public:
     int get_lap_time(int lap) const;
     int get_race_time() const;
 
+    void set_time_trial_data(TimeTrialSaveData *data);
+    bool is_ghost() const {return time_trial_data && !is_player;}
+
     Sprite3D sprite;
 
     bool is_player = false;
@@ -45,6 +49,9 @@ private:
     int current_lap = -1; // -1 because we start behind the finish line
     uint32_t lap_start_time[3]{0};
     uint32_t finish_time = 0;
+
+    TimeTrialSaveData *time_trial_data = nullptr; // if this is set we're either recording a time trial (is_player), or a ghost
+    int ghost_timer = 0; // read/write every 10 updates
 
     RaceState *race_state = nullptr;
 };
