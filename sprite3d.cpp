@@ -45,7 +45,9 @@ void Sprite3D::render(const Camera &cam) {
     float fade_start = cam.far * 0.6f;
 
     if(z > fade_start)
-        screen.alpha = std::max(0, static_cast<int>((1.0f - (z - fade_start) / (cam.far - fade_start)) * 255.0f));
+        screen.alpha = std::max(0, static_cast<int>((1.0f - (z - fade_start) / (cam.far - fade_start)) * 255.0f * alpha));
+    else
+        screen.alpha = alpha * 255.0f;
 
     screen.sprites = spritesheet;
     screen.sprite(Rect(sheet_base.x + frame * size.w, sheet_base.y, size.w, size.h), screen_pos, origin, screen_scale * scale, transform);

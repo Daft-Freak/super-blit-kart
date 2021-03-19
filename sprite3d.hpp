@@ -17,6 +17,7 @@ public:
 
     blit::Point origin;
     float scale = 1.0f;
+    float alpha = 1.0f;
 
     blit::Surface *spritesheet = nullptr;
     blit::Point sheet_base;
