@@ -6,6 +6,7 @@
 
 #include "fonts.hpp"
 #include "game.hpp"
+#include "main-menu.hpp"
 #include "race.hpp"
 #include "track.hpp"
 
@@ -33,6 +34,11 @@ TrackSelect::~TrackSelect() {
 
 void TrackSelect::update(uint32_t time) {
     track_menu.update(time);
+
+    if(blit::buttons.released & blit::Button::B) {
+        game->change_state<MainMenu>();
+        return;
+    }
 
     int menu_item = track_menu.get_current_item();
 
