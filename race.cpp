@@ -8,9 +8,9 @@
 #include "assets.hpp"
 #include "fonts.hpp"
 #include "game.hpp"
+#include "main-menu.hpp"
 #include "save.hpp"
 #include "track.hpp"
-#include "track-select.hpp"
 
 using namespace blit;
 
@@ -436,7 +436,7 @@ void Race::on_menu_activated(const ::Menu::Item &item) {
             break;
 
         case Menu_Quit:
-            game->change_state<TrackSelect>(); // main menu?
+            game->change_state<MainMenu>();
             break;
     }
 
