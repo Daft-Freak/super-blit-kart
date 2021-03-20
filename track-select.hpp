@@ -20,6 +20,8 @@ public:
 private:
     void on_track_selected(const Menu::Item &item);
 
+    void load_time_trial_data();
+
     Game *game;
     RaceMode mode;
 
@@ -29,6 +31,7 @@ private:
     Camera cam;
     Track *track = nullptr;
 
-    RaceSaveData race_save;
+    RaceSaveData race_save; // race
+    uint16_t lap_times[3]{0}; // time trial
     bool race_save_loaded = false;
 };
