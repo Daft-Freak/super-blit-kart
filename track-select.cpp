@@ -13,7 +13,7 @@
 extern const TrackInfo track_info[];
 extern const int num_tracks;
 
-TrackSelect::TrackSelect(Game *game) : game(game), track_menu("", {}, tall_font) {
+TrackSelect::TrackSelect(Game *game, RaceMode mode) : game(game), mode(mode), track_menu("", {}, tall_font) {
     const int w = 120;
     track_menu.set_display_rect({blit::screen.bounds.w - w, 0, w, blit::screen.bounds.h});
 
@@ -92,5 +92,5 @@ void TrackSelect::render() {
 }
 
 void TrackSelect::on_track_selected(const ::Menu::Item &item) {
-    game->change_state<Race>(item.id);
+    game->change_state<Race>(item.id, mode);
 }
