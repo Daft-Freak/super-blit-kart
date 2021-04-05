@@ -10,11 +10,11 @@
 #include "race-state.hpp"
 
 namespace blit {
-    class Surface;
+    struct Surface;
 };
 
 class Game;
-class TimeTrialSaveData;
+struct TimeTrialSaveData;
 
 enum class RaceMode {
     Race = 0,

@@ -12,7 +12,7 @@
 class Camera;
 
 namespace blit {
-    class TileMap;
+    struct TileMap;
 }
 
 class TrackSprite final {

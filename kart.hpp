@@ -7,7 +7,7 @@
 #include "types/vec3.hpp"
 
 class RaceState;
-class TimeTrialSaveData;
+struct TimeTrialSaveData;
 
 class Kart final {
 public:
