@@ -8,6 +8,7 @@
 #include "assets.hpp"
 #include "fonts.hpp"
 #include "game.hpp"
+#include "kart-info.hpp"
 #include "main-menu.hpp"
 #include "save.hpp"
 #include "track.hpp"
@@ -59,8 +60,6 @@ Race::Race(Game *game, int track_index, RaceMode mode) : game(game), track_index
 
     minimap.set_track(state.track);
 
-    kart_sprites = Surface::load(asset_kart);
-
     setup_race();
 
     Size menu_size(90, 90);
@@ -77,10 +76,13 @@ Race::~Race() {
 
     delete[] time_trial_data;
 
-    if(kart_sprites) {
-        delete[] kart_sprites->data;
-        delete[] kart_sprites->palette;
-        delete kart_sprites;
+    for(auto &kart : state.karts)
+        delete kart.sprite.spritesheet;
+
+    for(auto &sprite: kart_sprite_cache){
+        delete[] sprite.second->data;
+        delete[] sprite.second->palette;
+        delete sprite.second;
     }
 }
 
@@ -318,11 +320,15 @@ void Race::setup_race() {
         if(i == num_karts)
             break;
 
+        delete kart.sprite.spritesheet;
+
         kart = Kart();
         kart.set_race_state(&state);
         kart.sprite.scale = 0.75f;
 
-        kart.sprite.spritesheet = kart_sprites;
+        auto &info = kart_info[blit::random() % std::size(kart_info)]; // random kart info
+        kart.sprite.spritesheet = load_kart_sprite(info);
+
         kart.sprite.look_dir = Vec3(track_start_dir.x, 0.0f, track_start_dir.y);
         kart.sprite.world_pos = Vec3(
             start_pos.x,
@@ -482,4 +488,26 @@ void Race::on_menu_activated(const ::Menu::Item &item) {
     }
 
     paused = false;
+}
+
+Surface *Race::load_kart_sprite(const KartInfo &info) {
+    // only load asset once
+    auto it = kart_sprite_cache.find(info.sprite_asset);
+
+    if(it == kart_sprite_cache.end()) {
+        auto new_surf = Surface::load(info.sprite_asset);
+        if(!new_surf)
+            return nullptr;
+
+        it = std::get<0>(kart_sprite_cache.emplace(info.sprite_asset, new_surf));
+    }
+
+    // create new Surface sharing the same data (but possibly unique palette)
+    auto ret = new Surface(it->second->data, it->second->format, it->second->bounds);
+    if(info.alt_palette)
+        ret->palette = (Pen *)info.alt_palette;
+    else
+        ret->palette = it->second->palette;
+
+    return ret;
 }

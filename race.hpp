@@ -2,6 +2,7 @@
 
 #include <cstdint>
 #include <forward_list>
+#include <unordered_map>
 
 #include "camera.hpp"
 #include "game-state.hpp"
@@ -14,6 +15,7 @@ namespace blit {
 };
 
 class Game;
+class KartInfo;
 struct TimeTrialSaveData;
 
 enum class RaceMode {
@@ -42,6 +44,8 @@ private:
 
     void on_menu_activated(const Menu::Item &item);
 
+    blit::Surface *load_kart_sprite(const KartInfo &info);
+
     Game *game;
 
     int track_index;
@@ -57,7 +61,7 @@ private:
 
     std::forward_list<Sprite3D *> display_sprites, display_sprites_below;
 
-    blit::Surface *kart_sprites;
+    std::unordered_map<const uint8_t *, blit::Surface *> kart_sprite_cache;
 
     Minimap minimap;
 
