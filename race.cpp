@@ -183,8 +183,12 @@ void Race::update(uint32_t time) {
         return;
     }
 
-    if(state.countdown)
+    if(state.countdown) {
         state.countdown -= 10;
+
+        if(!state.countdown)
+            start_time = now();
+    }
 
     // kart index, "progress"
     std::tuple<int, float> kart_progress[8];
@@ -415,7 +419,7 @@ void Race::render_result() {
         auto &kart = state.karts[kart_idx];
 
         int time_min, time_sec, time_frac;
-        int time = kart.get_race_time();
+        int time = kart.get_finish_time() - start_time;
 
         time_min = time / 60000;
         time_sec = (time / 1000) % 60;

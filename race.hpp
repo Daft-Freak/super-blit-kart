@@ -52,6 +52,7 @@ private:
     RaceMode mode;
 
     RaceState state;
+    uint32_t start_time = 0;
     int num_finished = 0;
 
     // kart index, finish time
