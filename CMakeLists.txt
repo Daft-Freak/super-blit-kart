@@ -2,7 +2,7 @@
 cmake_minimum_required(VERSION 3.9)
 
 # Replace "game" with a name for your project (this is used the name of the output)
-project(game)
+project(blit-kart)
 
 # Add your sources here (adding headers is optional, but helps some CMake generators)
 set(PROJECT_SOURCE

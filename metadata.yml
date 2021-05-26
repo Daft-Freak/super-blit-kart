@@ -5,6 +5,6 @@ splash:
   file: assets/no-image.png
 icon:
   file: assets/no-icon.png
-version: v0.3.1
+version: v0.4.0
 category: game
-#url: https://github.com/32blit/32blit-boilerplate
+url: https://github.com/Daft-Freak/super-blit-kart
