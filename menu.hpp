@@ -17,6 +17,8 @@ public:
     int get_current_item() const {return current_item;}
 
 private:
+    void render_item(const Item &item, int y, int index) const override;
+
     void item_activated(const Item &item) override;
 
     std::vector<Item> items_vec;

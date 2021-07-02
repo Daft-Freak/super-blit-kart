@@ -7,6 +7,7 @@ Menu::Menu(std::string_view title, std::vector<Item> items, const blit::Font &fo
     num_items = items_vec.size();
 
     item_h = font.char_h + 10;
+    item_padding_x = 9;
     item_adjust_y = 0;
 
     header_h = title.empty() ? 0 : item_h;
@@ -27,6 +28,19 @@ void Menu::add_item(Item &&item) {
 
 void Menu::set_on_item_activated(std::function<void(const Item &)> func) {
     on_item_pressed = func;
+}
+
+void Menu::render_item(const Item &item, int y, int index) const {
+    blit::Menu::render_item(item, y, index);
+
+    if(index == current_item) {
+        blit::screen.pen = foreground_colour;
+        int x = display_rect.x + 2;
+        int size = item_h / 3;
+        int pointer_y = y + (item_h - size) / 2;
+    
+        blit::screen.triangle({x, pointer_y}, {x + size / 2, pointer_y + size / 2}, {x, pointer_y + size});
+    }
 }
 
 void Menu::item_activated(const Item &item) {
