@@ -4,7 +4,7 @@ author: Daft_Freak
 splash:
   file: assets/no-image.png
 icon:
-  file: assets/no-icon.png
+  file: assets/icon.png
 version: v0.4.0
 category: game
 url: https://github.com/Daft-Freak/super-blit-kart
