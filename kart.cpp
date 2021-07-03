@@ -251,16 +251,18 @@ bool Kart::has_finished() const {
 }
 
 int Kart::get_lap_time(int lap) const {
-    if(lap < 0)
+    if(lap < 0 || lap >= 3)
         return 0;
+
+    // not finished yet
+    if(lap == current_lap)
+        return blit::now() - lap_start_time[lap];
 
     if(lap < 2)
         return lap_start_time[lap + 1] - lap_start_time[lap];
 
-    if(lap == 2)
-        return finish_time - lap_start_time[2];
-
-    return 0;
+    // final lap
+    return finish_time - lap_start_time[2];
 }
 
 int Kart::get_race_time() const {
