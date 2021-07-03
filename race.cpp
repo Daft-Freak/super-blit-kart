@@ -140,6 +140,19 @@ void Race::render() {
         screen.text(buf, tall_font, Point(8, bounds.h + 8));
     }
 
+    // current/best time
+    if(mode == RaceMode::TimeTrial) {
+        auto cur_lap_time = state.karts[0].get_lap_time(state.karts[0].get_current_lap());
+
+        snprintf(buf, 20, "Time: %02i:%02i.%02i", cur_lap_time / 60000, (cur_lap_time / 1000) % 60, (cur_lap_time % 1000) / 10);
+        screen.text(buf, tall_font, Point(8, bounds.h + 20));
+
+        if(best_lap_time != ~0) {
+            snprintf(buf, 20, "Best: %02i:%02i.%02i", best_lap_time / 6000, (best_lap_time / 100) % 60, (best_lap_time % 100));
+            screen.text(buf, tall_font, Point(8, bounds.h + 32));
+        }
+    }
+
     minimap.render();
 
     // kart locations on minimap
@@ -391,6 +404,7 @@ void Race::setup_race() {
             state.karts[1].set_time_trial_data(time_trial_data + 1);
             state.karts[1].sprite.alpha = 0.5f;
             num_karts = 2;
+            best_lap_time = best_time;
         } else
             num_karts = 1;
     }

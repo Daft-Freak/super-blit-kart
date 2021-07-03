@@ -72,4 +72,5 @@ private:
 
     TimeTrialSaveData *time_trial_data = nullptr; // x2
     int worst_time_trial_slot = 0;
+    unsigned best_lap_time = 0;
 };
