@@ -328,7 +328,7 @@ void Race::setup_race() {
     float w = finish_line.length();
     finish_line /= w;
 
-    Vec2 start_pos = Vec2(info.finish_line[0]) + finish_line * w * (1.0f / 5.0f);
+    Vec2 start_pos = Vec2(info.finish_line[0]) + finish_line * w * (3.0f / 20.0f);
 
     float inc = (w / 5.0f) * 3.0f / 3.0f;
 
@@ -355,7 +355,7 @@ void Race::setup_race() {
 
         i++;
         if(i == 4) {
-            start_pos -= finish_line * inc * 3.0f;
+            start_pos -= finish_line * inc * 2.5f;
         } else
             start_pos += finish_line * inc;
 
