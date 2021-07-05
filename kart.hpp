@@ -36,6 +36,7 @@ public:
 
     bool is_player = false;
     int current_place = 0;
+    int kart_index = 0; // index into kart_info
 
 private:
     void auto_drive();

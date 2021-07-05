@@ -352,6 +352,7 @@ void Race::setup_race() {
 
         auto &info = kart_info[kart_index];
         kart.sprite.spritesheet = load_kart_sprite(info);
+        kart.kart_index = kart_index;
 
         kart.sprite.look_dir = Vec3(track_start_dir.x, 0.0f, track_start_dir.y);
         kart.sprite.world_pos = Vec3(
@@ -411,6 +412,7 @@ void Race::setup_race() {
             state.karts[1].set_time_trial_data(time_trial_data + 1);
             state.karts[1].sprite.alpha = 0.5f;
             state.karts[1].sprite.spritesheet = load_kart_sprite(kart_info[time_trial_data[1].kart]);
+            state.karts[1].kart_index = time_trial_data[1].kart;
 
             num_karts = 2;
             best_lap_time = best_time;
