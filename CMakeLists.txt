@@ -8,6 +8,7 @@ project(blit-kart)
 set(PROJECT_SOURCE
   game.cpp
   kart.cpp
+  kart-select.cpp
   main-menu.cpp
   menu.cpp
   minimap.cpp

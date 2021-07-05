@@ -25,7 +25,7 @@ enum class RaceMode {
 
 class Race final : public GameState {
 public:
-    Race(Game *game, int track_index = 0, RaceMode mode = RaceMode::Race);
+    Race(Game *game, int player_kart, int track_index, RaceMode mode = RaceMode::Race);
     ~Race() override;
 
     void update(uint32_t time) override;
@@ -48,7 +48,7 @@ private:
 
     Game *game;
 
-    int track_index;
+    int player_kart, track_index;
     RaceMode mode;
 
     RaceState state;

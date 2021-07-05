@@ -52,7 +52,7 @@ static void stretch_text(std::string_view text, const Font &font, const Point &p
     delete[] buf;
 }
 
-Race::Race(Game *game, int track_index, RaceMode mode) : game(game), track_index(track_index), mode(mode),
+Race::Race(Game *game, int player_kart, int track_index, RaceMode mode) : game(game), player_kart(player_kart), track_index(track_index), mode(mode),
     pause_menu("Paused", {{Menu_Continue, "Continue"}, {Menu_Restart, "Restart"}, {Menu_Quit, "Quit"}}, tall_font),
     end_menu("", {{Menu_Restart, "Restart"}, {Menu_Quit, "Quit"}}, tall_font) {
 
@@ -343,7 +343,14 @@ void Race::setup_race() {
         kart.set_race_state(&state);
         kart.sprite.scale = 0.75f;
 
-        auto &info = kart_info[blit::random() % std::size(kart_info)]; // random kart info
+        int kart_index;
+
+        if(i == 0)
+            kart_index = player_kart;
+        else
+            kart_index = blit::random() % std::size(kart_info); // random kart info
+
+        auto &info = kart_info[kart_index];
         kart.sprite.spritesheet = load_kart_sprite(info);
 
         kart.sprite.look_dir = Vec3(track_start_dir.x, 0.0f, track_start_dir.y);

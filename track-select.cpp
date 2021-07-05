@@ -6,7 +6,7 @@
 
 #include "fonts.hpp"
 #include "game.hpp"
-#include "main-menu.hpp"
+#include "kart-select.hpp"
 #include "race.hpp"
 #include "track.hpp"
 
@@ -14,7 +14,7 @@
 extern const TrackInfo track_info[];
 extern const int num_tracks;
 
-TrackSelect::TrackSelect(Game *game, RaceMode mode) : game(game), mode(mode), track_menu("", {}, tall_font) {
+TrackSelect::TrackSelect(Game *game, int player_kart, RaceMode mode) : game(game), player_kart(player_kart), mode(mode), track_menu("", {}, tall_font) {
     const int w = 120;
     track_menu.set_display_rect({blit::screen.bounds.w - w, 0, w, blit::screen.bounds.h});
 
@@ -36,7 +36,7 @@ void TrackSelect::update(uint32_t time) {
     track_menu.update(time);
 
     if(blit::buttons.released & blit::Button::B) {
-        game->change_state<MainMenu>();
+        game->change_state<KartSelect>(mode);
         return;
     }
 
@@ -110,7 +110,7 @@ void TrackSelect::render() {
 }
 
 void TrackSelect::on_track_selected(const ::Menu::Item &item) {
-    game->change_state<Race>(item.id, mode);
+    game->change_state<Race>(player_kart, item.id, mode);
 }
 
 void TrackSelect::load_time_trial_data() {

@@ -11,7 +11,7 @@ class Track;
 
 class TrackSelect final : public GameState {
 public:
-    TrackSelect(Game *game, RaceMode mode = RaceMode::Race);
+    TrackSelect(Game *game, int player_kart, RaceMode mode = RaceMode::Race);
     ~TrackSelect() override;
 
     void update(uint32_t time) override;
@@ -23,6 +23,7 @@ private:
     void load_time_trial_data();
 
     Game *game;
+    int player_kart;
     RaceMode mode;
 
     int preview_index = -1;
