@@ -69,6 +69,8 @@ Race::Race(Game *game, int player_kart, int track_index, RaceMode mode) : game(g
     menu_size.h = 44;
     end_menu.set_display_rect({{(screen.bounds.w - menu_size.w) / 2, (screen.bounds.h - (menu_size.h + 16))}, menu_size});
     end_menu.set_on_item_activated(std::bind(&Race::on_menu_activated, this, std::placeholders::_1));
+
+    kart_icons = blit::Surface::load(asset_kart_icons);
 }
 
 Race::~Race() {
@@ -83,6 +85,12 @@ Race::~Race() {
         delete[] sprite.second->data;
         delete[] sprite.second->palette;
         delete sprite.second;
+    }
+
+    if(kart_icons) {
+        delete[] kart_icons->palette;
+        delete[] kart_icons->data;
+        delete kart_icons;
     }
 }
 
@@ -164,13 +172,19 @@ void Race::render() {
 
     auto off = minimap_pos - viewport.tl();
 
+    screen.sprites = kart_icons;
+
     int i = 0;
     for(auto &kart : state.karts) {
         if(i == num_karts) break;
 
+        Point icon_pos = off + kart.get_tile_pos() - Point(4, 4);
+
         // this will probably be a sprite eventually
         screen.pen = hsv_to_rgba(i++ / 8.0f, 1.0f, 1.0f);
-        screen.rectangle(Rect(off + kart.get_tile_pos() - Point(4, 4), Size(8, 8)));
+        screen.rectangle(Rect(icon_pos, Size(8, 8)));
+
+        screen.sprite(kart.kart_index, icon_pos);
     }
 
     screen.clip = old_clip;

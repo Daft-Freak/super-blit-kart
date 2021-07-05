@@ -16,6 +16,8 @@ assets.cpp:
     name: "{filename}"
     palette: assets/kart_robot_default_palette.png
 
+  assets/kart_icons.png: kart_icons
+
   assets/*.tmx:
     name: "{filename}_map"
     output_struct: true

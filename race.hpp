@@ -64,6 +64,8 @@ private:
 
     std::unordered_map<const uint8_t *, blit::Surface *> kart_sprite_cache;
 
+    blit::Surface *kart_icons = nullptr;
+
     Minimap minimap;
 
     Menu pause_menu, end_menu;
