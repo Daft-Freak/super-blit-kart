@@ -20,7 +20,7 @@ struct RaceSaveData {
 
 struct TimeTrialSaveData {
     uint8_t save_version = 1;
-    uint8_t pad = 0;
+    uint8_t kart = 0;
     uint16_t lap_time[3];
 
     char name[8]{0};

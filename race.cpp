@@ -410,6 +410,8 @@ void Race::setup_race() {
         if(read_save(time_trial_data[1], get_save_slot(SaveType::TimeTrial, track_index, best_slot))) {
             state.karts[1].set_time_trial_data(time_trial_data + 1);
             state.karts[1].sprite.alpha = 0.5f;
+            state.karts[1].sprite.spritesheet = load_kart_sprite(kart_info[time_trial_data[1].kart]);
+
             num_karts = 2;
             best_lap_time = best_time;
         } else
@@ -494,6 +496,8 @@ void Race::on_menu_activated(const ::Menu::Item &item) {
 
             auto &save = time_trial_data[0];
             auto &old_save = time_trial_data[1]; // use the ghost data, we don't need it any more
+
+            save.kart = player_kart;
 
             for(int i = 0; i < 3; i++)
                 save.lap_time[i] = state.karts[0].get_lap_time(i) / 10;
