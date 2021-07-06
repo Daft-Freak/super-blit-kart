@@ -139,7 +139,7 @@ for name in tracks:
     sprites_len = '0'
     if sprites:
         joined = ', '.join(sprites)
-        track_sprites.append(f'static const TrackSprite {map_name}_sprites[]{{{joined}}};')
+        track_sprites.append(f'static const TrackObjectInfo {map_name}_sprites[]{{{joined}}};')
         sprites_ptr = f'{map_name}_sprites'
         sprites_len = f'std::size({sprites_ptr})'
 

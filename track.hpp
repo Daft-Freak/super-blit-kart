@@ -15,7 +15,7 @@ namespace blit {
     struct TileMap;
 }
 
-class TrackSprite final {
+class TrackObjectInfo final {
 public:
     uint16_t pos_x, pos_y;
     uint8_t sprite_x, sprite_y, sprite_w, sprite_h; // spritesheet coords
@@ -36,12 +36,18 @@ public:
     const float *tile_friction;
     size_t tile_friction_len;
 
-    const TrackSprite *sprites;
+    const TrackObjectInfo *sprites;
     size_t num_sprites;
 
     const uint8_t *map_asset, *tiles_asset;
 
     blit::Pen background_col;
+};
+
+class TrackObject final {
+public:
+    TrackObject(const TrackObjectInfo &info, blit::Surface *spritesheet);
+    Sprite3D sprite;
 };
 
 class Track final {
@@ -55,7 +61,7 @@ public:
 
     blit::TileMap &get_map();
 
-    std::vector<Sprite3D> &get_sprites();
+    std::vector<TrackObject> &get_objects();
 
     unsigned int find_closest_route_segment(blit::Vec2 pos, float &segment_t) const;
 
@@ -73,7 +79,7 @@ private:
     blit::Surface *tiles;
     blit::TileMap *map;
 
-    std::vector<Sprite3D> sprites;
+    std::vector<TrackObject> objects;
 
     float fog = 170.0f;
 };

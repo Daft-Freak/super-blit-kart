@@ -41,20 +41,23 @@ static Mat3 mode7_scanline_transform(const Camera &cam, float fog, uint8_t y) {
     return mat;
 }
 
+TrackObject::TrackObject(const TrackObjectInfo &info, blit::Surface *spritesheet) {
+    sprite.spritesheet = spritesheet;
+    sprite.world_pos.x = info.pos_x;
+    sprite.world_pos.z = info.pos_y;
+    sprite.sheet_base = {info.sprite_x, info.sprite_y};
+    sprite.size = {info.sprite_w, info.sprite_h};
+    sprite.origin = {info.origin_x, info.origin_y};
+}
+
 Track::Track(const TrackInfo &info) : info(info) {
     tiles = Surface::load(info.tiles_asset);
     load_tilemap();
 
-    sprites.resize(info.num_sprites);
+    objects.reserve(info.num_sprites);
 
-    for(size_t i = 0; i < info.num_sprites; i++) {
-        sprites[i].spritesheet = tiles;
-        sprites[i].world_pos.x = info.sprites[i].pos_x;
-        sprites[i].world_pos.z = info.sprites[i].pos_y;
-        sprites[i].sheet_base = {info.sprites[i].sprite_x, info.sprites[i].sprite_y};
-        sprites[i].size = {info.sprites[i].sprite_w, info.sprites[i].sprite_h};
-        sprites[i].origin = {info.sprites[i].origin_x, info.sprites[i].origin_y};
-    }
+    for(size_t i = 0; i < info.num_sprites; i++)
+        objects.emplace_back(info.sprites[i], tiles);
 }
 
 Track::~Track() {
@@ -73,6 +76,9 @@ void Track::render(const Camera &cam) {
     int horizon = (screen.bounds.h / 2) - (((cam.far * -cam.forward.y) - cam.pos.y) * cam.focal_distance) /  (cam.far * cam.up.y);
 
     map->draw(&screen, Rect(cam.viewport.x, cam.viewport.y + horizon, cam.viewport.w, cam.viewport.h - horizon), std::bind(mode7_scanline_transform, cam, fog, _1));
+
+    //map->transform = /*Mat3::translation(Vec2(cam.look_at.x - screen.bounds.w / 2, cam.look_at.z - screen.bounds.h / 2)) */ Mat3::scale(Vec2(0.5f, 0.5f));
+    //map->draw(&screen, Rect({0, 0}, screen.bounds));
 
     screen.alpha = 255;
 }
@@ -147,8 +153,8 @@ TileMap &Track::get_map() {
     return *map;
 }
 
-std::vector<Sprite3D> &Track::get_sprites() {
-    return sprites;
+std::vector<TrackObject> &Track::get_objects() {
+    return objects;
 }
 
 void Track::load_tilemap() {

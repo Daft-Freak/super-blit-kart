@@ -216,7 +216,8 @@ void Kart::update() {
     }
 
     // track sprites
-    for(auto &track_sprite : race_state->track->get_sprites()) {
+    for(auto &track_obj : race_state->track->get_objects()) {
+        auto &track_sprite = track_obj.sprite;
         float sprite_radius = track_sprite.size.w * 4.0f;
 
         auto vec = get_2d_pos() - Vec2(track_sprite.world_pos.x, track_sprite.world_pos.z);

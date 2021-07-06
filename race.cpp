@@ -312,9 +312,9 @@ void Race::update(uint32_t time) {
         check_sprite(state.karts[i].sprite);
     }
 
-    for(auto &sprite: state.track->get_sprites()) {
-        sprite.update(cam);
-        check_sprite(sprite);
+    for(auto &obj : state.track->get_objects()) {
+        obj.sprite.update(cam);
+        check_sprite(obj.sprite);
     }
 
     auto sort_func = [](Sprite3D *a, Sprite3D *b) {return a->z > b->z;};
