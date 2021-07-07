@@ -15,8 +15,14 @@ namespace blit {
     struct TileMap;
 }
 
+enum class ObjectType : uint8_t {
+    Static, // obstacle
+};
+
 class TrackObjectInfo final {
 public:
+    ObjectType type;
+    uint8_t scale; //*16
     uint16_t pos_x, pos_y;
     uint8_t sprite_x, sprite_y, sprite_w, sprite_h; // spritesheet coords
     uint8_t origin_x, origin_y;
@@ -47,6 +53,8 @@ public:
 class TrackObject final {
 public:
     TrackObject(const TrackObjectInfo &info, blit::Surface *spritesheet);
+
+    ObjectType type;
     Sprite3D sprite;
 };
 

@@ -88,13 +88,23 @@ for name in tracks:
             if 'sprite' in props:
                 sprite_x, sprite_y, sprite_w, sprite_h = (int(x) for x in props['sprite'].split(','))
 
+                type = 'Static'
+                scale = 1.0
                 origin_x = 0
                 origin_y = 0
+
+                if 'scale' in props:
+                    scale = float(props['scale'])
+                
+                if 'type' in props:
+                    type = props['type']
 
                 if 'origin' in props:
                     origin_x, origin_y = (int(x) for x in props['origin'].split(','))
 
-                sprites.append(f'{{{x}, {y}, {sprite_x}, {sprite_y}, {sprite_w}, {sprite_h}, {origin_x}, {origin_y}}}')
+                scale = int(scale * 16)
+
+                sprites.append(f'{{ObjectType::{type}, {scale}, {x}, {y}, {sprite_x}, {sprite_y}, {sprite_w}, {sprite_h}, {origin_x}, {origin_y}}}')
 
     # collisions (all rects)
     collsion_rects = []

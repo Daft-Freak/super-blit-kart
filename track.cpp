@@ -41,10 +41,11 @@ static Mat3 mode7_scanline_transform(const Camera &cam, float fog, uint8_t y) {
     return mat;
 }
 
-TrackObject::TrackObject(const TrackObjectInfo &info, blit::Surface *spritesheet) {
+TrackObject::TrackObject(const TrackObjectInfo &info, blit::Surface *spritesheet) : type(info.type) {
     sprite.spritesheet = spritesheet;
     sprite.world_pos.x = info.pos_x;
     sprite.world_pos.z = info.pos_y;
+    sprite.scale = info.scale / 16.0f;
     sprite.sheet_base = {info.sprite_x, info.sprite_y};
     sprite.size = {info.sprite_w, info.sprite_h};
     sprite.origin = {info.origin_x, info.origin_y};
