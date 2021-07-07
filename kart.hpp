@@ -22,6 +22,8 @@ public:
     blit::Vec2 get_2d_pos() const {return blit::Vec2(sprite.world_pos.x, sprite.world_pos.z);}
     blit::Point get_tile_pos() const {return blit::Point(sprite.world_pos.x / 8.0f, sprite.world_pos.z / 8.0f);}
 
+    float get_radius() const;
+
     int get_current_lap() const {return current_lap;}
 
     bool has_finished() const;

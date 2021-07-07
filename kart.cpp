@@ -11,6 +11,9 @@
 
 using namespace blit;
 
+static const float kart_radius = 9.5f;
+static const float kart_mass = 30.0f;
+
 static const float kart_accel = 200.0f, kart_brake_rec_accel = -80.0f, kart_drag = 0.005f, kart_friction = 0.85f, kart_turn_speed = 0.5f;
 
 static const float return_to_track_time = 2.0f;
@@ -146,9 +149,6 @@ void Kart::update() {
     if(sprite.world_pos.y < 0.0f && track_friction > 0.0f && was_above)
         sprite.world_pos.y = 0.0f;
 
-    const float kart_radius = 9.5f;
-    const float kart_mass = 30.0f;
-
     // collisions - check every kart before this one
     for(auto other_kart = race_state->karts; other_kart != this; other_kart++) {
         auto &kart_a = *this, &kart_b = *other_kart;
@@ -245,6 +245,10 @@ void Kart::update() {
 
 void Kart::set_race_state(RaceState *race_state) {
     this->race_state = race_state;
+}
+
+float Kart::get_radius() const {
+    return kart_radius;
 }
 
 bool Kart::has_finished() const {
