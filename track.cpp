@@ -52,8 +52,16 @@ TrackObject::TrackObject(const TrackObjectInfo &info, blit::Surface *spritesheet
     sprite.origin = {info.origin_x, info.origin_y};
 }
 
+void TrackObject::update() {
+    if(respawn_timer)
+        respawn_timer -= 10;
+}
+
 void TrackObject::collide(Kart &kart) {
-    float sprite_radius = sprite.size.w * 4.0f;
+    if(!is_active())
+        return;
+
+    float sprite_radius = sprite.size.w * 4.0f * sprite.scale;
     float kart_radius = kart.get_radius();
 
     auto vec = kart.get_2d_pos() - Vec2(sprite.world_pos.x, sprite.world_pos.z);
@@ -62,11 +70,22 @@ void TrackObject::collide(Kart &kart) {
     if(dist >= kart_radius + sprite_radius)
         return;
 
+    if(type == ObjectType::Item) {
+        // pick up
+        respawn_timer = 10000; // 10s
+        return;
+    }
+
+    // do collision
     vec /= dist;
 
     float penetration = kart_radius + sprite_radius - dist;
 
     kart.sprite.world_pos += Vec3(vec.x, 0.0f, vec.y) * penetration;
+}
+
+bool TrackObject::is_active() const {
+    return respawn_timer == 0;
 }
 
 Track::Track(const TrackInfo &info) : info(info) {

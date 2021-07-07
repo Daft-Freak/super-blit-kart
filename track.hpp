@@ -18,6 +18,7 @@ namespace blit {
 
 enum class ObjectType : uint8_t {
     Static, // obstacle
+    Item
 };
 
 class TrackObjectInfo final {
@@ -55,10 +56,16 @@ class TrackObject final {
 public:
     TrackObject(const TrackObjectInfo &info, blit::Surface *spritesheet);
 
+    void update();
     void collide(Kart &kart);
 
+    bool is_active() const;
+
     ObjectType type;
+
     Sprite3D sprite;
+
+    uint32_t respawn_timer = 0;
 };
 
 class Track final {

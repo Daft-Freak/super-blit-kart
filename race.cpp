@@ -240,6 +240,10 @@ void Race::update(uint32_t time) {
         i++;
     }
 
+    // objects
+    for(auto &obj : state.track->get_objects())
+        obj.update();
+
     // sort by progress
     std::sort(kart_progress, kart_progress + num_karts, [](const std::tuple<int, float> &a, const std::tuple<int, float> &b) {
         return std::get<1>(a) > std::get<1>(b);
@@ -313,6 +317,9 @@ void Race::update(uint32_t time) {
     }
 
     for(auto &obj : state.track->get_objects()) {
+        if(!obj.is_active())
+            continue;
+
         obj.sprite.update(cam);
         check_sprite(obj.sprite);
     }
