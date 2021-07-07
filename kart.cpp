@@ -149,75 +149,74 @@ void Kart::update() {
     if(sprite.world_pos.y < 0.0f && track_friction > 0.0f && was_above)
         sprite.world_pos.y = 0.0f;
 
-    // collisions - check every kart before this one
-    for(auto other_kart = race_state->karts; other_kart != this; other_kart++) {
-        auto &kart_a = *this, &kart_b = *other_kart;
+    if(!is_ghost()) {
+        // collisions - check every kart before this one
+        for(auto other_kart = race_state->karts; other_kart != this; other_kart++) {
+            auto &kart_a = *this, &kart_b = *other_kart;
 
-        if(is_ghost())
-            break;
+            if(other_kart->is_ghost() || std::abs(kart_a.sprite.world_pos.y - kart_b.sprite.world_pos.y) > 1.0f)
+                continue;
 
-        if(other_kart->is_ghost() || std::abs(kart_a.sprite.world_pos.y - kart_b.sprite.world_pos.y) > 1.0f)
-            continue;
+            auto vec = kart_a.get_2d_pos() - kart_b.get_2d_pos();
+            float dist = vec.length();
 
-        auto vec = kart_a.get_2d_pos() - kart_b.get_2d_pos();
-        float dist = vec.length();
+            if(dist >= kart_radius * 2.0f)
+                continue;
 
-        if(dist >= kart_radius * 2.0f)
-            continue;
+            vec /= dist;
 
-        vec /= dist;
+            float penetration = kart_radius * 2.0f - dist;
 
-        float penetration = kart_radius * 2.0f - dist;
+            // move apart
+            kart_a.sprite.world_pos += Vec3(vec.x, 0.0f, vec.y) * penetration * 0.5f;
+            kart_b.sprite.world_pos -= Vec3(vec.x, 0.0f, vec.y) * penetration * 0.5f;
 
-        // move apart
-        kart_a.sprite.world_pos += Vec3(vec.x, 0.0f, vec.y) * penetration * 0.5f;
-        kart_b.sprite.world_pos -= Vec3(vec.x, 0.0f, vec.y) * penetration * 0.5f;
+            // boing
+            float kart_a_mass = kart_mass, kart_b_mass = kart_mass; // maybe in future these will be different
 
-        // boing
-        float kart_a_mass = kart_mass, kart_b_mass = kart_mass; // maybe in future these will be different
+            auto new_a_vel = (kart_a.vel * (kart_a_mass - kart_b_mass) + (kart_b.vel * kart_b_mass * 2.0f)) / (kart_a_mass + kart_b_mass);
+            kart_b.vel     = (kart_b.vel * (kart_b_mass - kart_a_mass) + (kart_a.vel * kart_a_mass * 2.0f)) / (kart_a_mass + kart_b_mass);
+            kart_a.vel = new_a_vel;
+        }
 
-        auto new_a_vel = (kart_a.vel * (kart_a_mass - kart_b_mass) + (kart_b.vel * kart_b_mass * 2.0f)) / (kart_a_mass + kart_b_mass);
-        kart_b.vel     = (kart_b.vel * (kart_b_mass - kart_a_mass) + (kart_a.vel * kart_a_mass * 2.0f)) / (kart_a_mass + kart_b_mass);
-        kart_a.vel = new_a_vel;
+        // collide with track obstacles
+        for(size_t i = 0; i < track_info.num_collision_rects; i++) {
+            auto &rect = track_info.collision_rects[i];
+            if(rect.empty())
+                continue;
+
+            Vec2 kart_pos(get_2d_pos());
+
+            Vec2 obstacle_pos(kart_pos);
+
+            if(kart_pos.x < rect.x)
+                obstacle_pos.x = rect.x;
+            else if(kart_pos.x >= rect.x + rect.w)
+                obstacle_pos.x = rect.x + rect.w;
+
+            if(kart_pos.y < rect.y)
+                obstacle_pos.y = rect.y;
+            else if(kart_pos.y >= rect.y + rect.h)
+                obstacle_pos.y = rect.y + rect.h;
+
+            auto vec = kart_pos - obstacle_pos;
+            float dist = vec.length();
+
+            if(dist > kart_radius)
+                continue;
+
+            vec /= dist;
+
+            float penetration = kart_radius - dist;
+
+            vel *= dist / kart_radius;
+            sprite.world_pos += Vec3(vec.x, 0.0f, vec.y) * penetration;
+        }
+
+        // track sprites
+        for(auto &track_obj : race_state->track->get_objects())
+            track_obj.collide(*this);
     }
-
-    // collide with track obstacles
-    for(size_t i = 0; i < track_info.num_collision_rects; i++) {
-        auto &rect = track_info.collision_rects[i];
-        if(rect.empty())
-            continue;
-
-        Vec2 kart_pos(get_2d_pos());
-
-        Vec2 obstacle_pos(kart_pos);
-
-        if(kart_pos.x < rect.x)
-            obstacle_pos.x = rect.x;
-        else if(kart_pos.x >= rect.x + rect.w)
-            obstacle_pos.x = rect.x + rect.w;
-
-        if(kart_pos.y < rect.y)
-            obstacle_pos.y = rect.y;
-        else if(kart_pos.y >= rect.y + rect.h)
-            obstacle_pos.y = rect.y + rect.h;
-
-        auto vec = kart_pos - obstacle_pos;
-        float dist = vec.length();
-
-        if(dist > kart_radius)
-            continue;
-
-        vec /= dist;
-
-        float penetration = kart_radius - dist;
-
-        vel *= dist / kart_radius;
-        sprite.world_pos += Vec3(vec.x, 0.0f, vec.y) * penetration;
-    }
-
-    // track sprites
-    for(auto &track_obj : race_state->track->get_objects())
-        track_obj.collide(*this);
 
     // record
     if(time_trial_data && is_player && ghost_timer++ % 10 == 0 && !has_finished()) {
