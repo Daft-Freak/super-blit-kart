@@ -4,6 +4,7 @@
 #include "graphics/tilemap.hpp"
 
 #include "camera.hpp"
+#include "kart.hpp"
 
 using namespace blit;
 
@@ -49,6 +50,23 @@ TrackObject::TrackObject(const TrackObjectInfo &info, blit::Surface *spritesheet
     sprite.sheet_base = {info.sprite_x, info.sprite_y};
     sprite.size = {info.sprite_w, info.sprite_h};
     sprite.origin = {info.origin_x, info.origin_y};
+}
+
+void TrackObject::collide(Kart &kart) {
+    float sprite_radius = sprite.size.w * 4.0f;
+    float kart_radius = kart.get_radius();
+
+    auto vec = kart.get_2d_pos() - Vec2(sprite.world_pos.x, sprite.world_pos.z);
+    float dist = vec.length();
+
+    if(dist >= kart_radius + sprite_radius)
+        return;
+
+    vec /= dist;
+
+    float penetration = kart_radius + sprite_radius - dist;
+
+    kart.sprite.world_pos += Vec3(vec.x, 0.0f, vec.y) * penetration;
 }
 
 Track::Track(const TrackInfo &info) : info(info) {

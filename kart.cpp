@@ -216,22 +216,8 @@ void Kart::update() {
     }
 
     // track sprites
-    for(auto &track_obj : race_state->track->get_objects()) {
-        auto &track_sprite = track_obj.sprite;
-        float sprite_radius = track_sprite.size.w * 4.0f;
-
-        auto vec = get_2d_pos() - Vec2(track_sprite.world_pos.x, track_sprite.world_pos.z);
-        float dist = vec.length();
-
-        if(dist >= kart_radius + sprite_radius)
-            continue;
-
-        vec /= dist;
-
-        float penetration = kart_radius + sprite_radius - dist;
-
-        sprite.world_pos += Vec3(vec.x, 0.0f, vec.y) * penetration;
-    }
+    for(auto &track_obj : race_state->track->get_objects())
+        track_obj.collide(*this);
 
     // record
     if(time_trial_data && is_player && ghost_timer++ % 10 == 0 && !has_finished()) {

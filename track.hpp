@@ -10,6 +10,7 @@
 #include "sprite3d.hpp"
 
 class Camera;
+class Kart;
 
 namespace blit {
     struct TileMap;
@@ -53,6 +54,8 @@ public:
 class TrackObject final {
 public:
     TrackObject(const TrackObjectInfo &info, blit::Surface *spritesheet);
+
+    void collide(Kart &kart);
 
     ObjectType type;
     Sprite3D sprite;
