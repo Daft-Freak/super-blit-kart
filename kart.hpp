@@ -1,5 +1,6 @@
 #pragma once
 
+#include "items.hpp"
 #include "sprite3d.hpp"
 
 #include "types/point.hpp"
@@ -34,6 +35,9 @@ public:
     int get_lap_time(int lap) const;
     int get_race_time() const;
 
+    void collect_item();
+    ItemType get_current_item() const {return current_item;}
+
     void set_time_trial_data(TimeTrialSaveData *data);
     bool is_ghost() const {return time_trial_data && !is_player;}
 
@@ -55,6 +59,8 @@ private:
     int current_lap = -1; // -1 because we start behind the finish line
     uint32_t lap_start_time[3]{0};
     uint32_t finish_time = 0;
+
+    ItemType current_item = ItemType::None;
 
     TimeTrialSaveData *time_trial_data = nullptr; // if this is set we're either recording a time trial (is_player), or a ghost
     int ghost_timer = 0; // read/write every 10 updates

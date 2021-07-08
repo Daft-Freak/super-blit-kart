@@ -73,7 +73,7 @@ void TrackObject::collide(Kart &kart) {
         return;
 
     if(type == ObjectType::Item) {
-        // pick up
+        kart.collect_item();
         respawn_timer = 10000; // 10s
         return;
     }

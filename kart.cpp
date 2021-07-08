@@ -47,6 +47,7 @@ void Kart::update() {
     }
 
     if(is_player) {
+        // player input
         if(buttons & Button::A)
             acc = Vec3(sprite.look_dir.x, 0.0f, sprite.look_dir.z) * kart_accel;
         else if(buttons & Button::B)
@@ -60,6 +61,22 @@ void Kart::update() {
             turn_speed = -kart_turn_speed;
         else
             turn_speed = joystick.x * -kart_turn_speed;
+
+
+        // use item
+        if(current_item != ItemType::None && (buttons.released & Button::X)) {
+            auto &item_sprite = item_sprites[static_cast<int>(current_item)];
+            TrackObject obj(ObjectType::DroppedItem);
+
+            obj.sprite.world_pos = sprite.world_pos - sprite.look_dir * (kart_radius + 4.0f);
+            obj.sprite.origin = {item_sprite.w * 4, item_sprite.h * 8}; // center bottom
+            obj.sprite.sheet_base = item_sprite.tl();
+            obj.sprite.size = item_sprite.size();
+
+            race_state->track->add_object(obj);
+
+            current_item = ItemType::None;
+        }
     } else
         auto_drive();
 
@@ -270,6 +287,15 @@ int Kart::get_race_time() const {
         time += get_lap_time(lap);
 
     return time;
+}
+
+void Kart::collect_item() {
+    if(current_item != ItemType::None)
+        return;
+
+    // pick up a random item
+    // TODO as there's only one
+    current_item = ItemType::Drop;
 }
 
 void Kart::set_time_trial_data(TimeTrialSaveData *data) {
