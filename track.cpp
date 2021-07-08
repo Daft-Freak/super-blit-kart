@@ -195,6 +195,10 @@ const TrackInfo &Track::get_info() const {
     return info;
 }
 
+blit::Surface *Track::get_tiles() {
+    return tiles;
+}
+
 TileMap &Track::get_map() {
     return *map;
 }

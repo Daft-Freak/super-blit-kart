@@ -80,6 +80,7 @@ public:
 
     const TrackInfo &get_info() const;
 
+    blit::Surface *get_tiles();
     blit::TileMap &get_map();
 
     void reset_objects();

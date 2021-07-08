@@ -161,6 +161,25 @@ void Race::render() {
         }
     }
 
+    // item
+    screen.pen = {0xFF, 0xFF, 0xFF};
+    int item_container_size = 48;
+    Point item_container_pos(screen.bounds.w - item_container_size - 8, 8);
+    screen.h_span(item_container_pos, item_container_size);
+    screen.h_span(item_container_pos + Point(0, item_container_size - 1), item_container_size);
+    screen.v_span(item_container_pos, item_container_size);
+    screen.v_span(item_container_pos + Point(item_container_size - 1, 0), item_container_size);
+
+    auto item = state.karts[0].get_current_item();
+    if(item != ItemType::None) {
+        auto &sprite = item_sprites[static_cast<int>(item)];
+        auto center = item_container_pos + Point(item_container_size / 2, item_container_size / 2);
+
+        screen.sprites = state.track->get_tiles();
+        screen.sprite(sprite, center, Point(sprite.w * 4, sprite.h * 4), 2.0f);
+    }
+
+    // minimap
     minimap.render();
 
     // kart locations on minimap
