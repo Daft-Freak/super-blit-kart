@@ -17,8 +17,10 @@ namespace blit {
 }
 
 enum class ObjectType : uint8_t {
+    Removed,
     Static, // obstacle
-    Item
+    Item,
+    DroppedItem, // usualy an obstacale, removed when hit
 };
 
 class TrackObjectInfo final {
@@ -54,6 +56,7 @@ public:
 
 class TrackObject final {
 public:
+    TrackObject(ObjectType type);
     TrackObject(const TrackObjectInfo &info, blit::Surface *spritesheet);
 
     void update();
@@ -79,7 +82,9 @@ public:
 
     blit::TileMap &get_map();
 
+    void reset_objects();
     std::vector<TrackObject> &get_objects();
+    void add_object(TrackObject object);
 
     unsigned int find_closest_route_segment(blit::Vec2 pos, float &segment_t) const;
 

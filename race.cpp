@@ -398,6 +398,9 @@ void Race::setup_race() {
     cam.viewport = {{0, 0}, screen.bounds};
     cam.update();
 
+    // reset track objects
+    state.track->reset_objects();
+
     // time trial setup
     if(mode == RaceMode::TimeTrial) {
         delete[] time_trial_data;

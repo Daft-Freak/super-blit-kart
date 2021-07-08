@@ -42,6 +42,8 @@ static Mat3 mode7_scanline_transform(const Camera &cam, float fog, uint8_t y) {
     return mat;
 }
 
+TrackObject::TrackObject(ObjectType type) : type(type) {}
+
 TrackObject::TrackObject(const TrackObjectInfo &info, blit::Surface *spritesheet) : type(info.type) {
     sprite.spritesheet = spritesheet;
     sprite.world_pos.x = info.pos_x;
@@ -82,20 +84,26 @@ void TrackObject::collide(Kart &kart) {
     float penetration = kart_radius + sprite_radius - dist;
 
     kart.sprite.world_pos += Vec3(vec.x, 0.0f, vec.y) * penetration;
+
+    if(type == ObjectType::DroppedItem) {
+        // assume hitting this is bad (okay unless we allow dropped boosts)
+        kart.set_vel({});
+
+        type = ObjectType::Removed;
+    }
 }
 
 bool TrackObject::is_active() const {
-    return respawn_timer == 0;
+    return type != ObjectType::Removed && respawn_timer == 0;
 }
 
 Track::Track(const TrackInfo &info) : info(info) {
     tiles = Surface::load(info.tiles_asset);
     load_tilemap();
 
-    objects.reserve(info.num_sprites);
-
-    for(size_t i = 0; i < info.num_sprites; i++)
-        objects.emplace_back(info.sprites[i], tiles);
+    // some extra for dynamic objects
+    objects.reserve(info.num_sprites + 16);
+    reset_objects(); // hmm, this will always be called by setup_race
 }
 
 Track::~Track() {
@@ -191,8 +199,31 @@ TileMap &Track::get_map() {
     return *map;
 }
 
+void Track::reset_objects() {
+    objects.clear();
+
+    for(size_t i = 0; i < info.num_sprites; i++)
+        objects.emplace_back(info.sprites[i], tiles);
+}
+
 std::vector<TrackObject> &Track::get_objects() {
     return objects;
+}
+
+void Track::add_object(TrackObject object) {
+
+    if(!object.sprite.spritesheet)
+        object.sprite.spritesheet = tiles;
+
+    // attempt reuse
+    for(auto it = objects.begin() + info.num_sprites; it != objects.end(); ++it) {
+        if(it->type == ObjectType::Removed) {
+            *it = object;
+            return;
+        }
+    }
+
+    objects.emplace_back(std::move(object));
 }
 
 void Track::load_tilemap() {
