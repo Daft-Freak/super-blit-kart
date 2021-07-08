@@ -22,6 +22,9 @@ public:
     blit::Vec2 get_2d_pos() const {return blit::Vec2(sprite.world_pos.x, sprite.world_pos.z);}
     blit::Point get_tile_pos() const {return blit::Point(sprite.world_pos.x / 8.0f, sprite.world_pos.z / 8.0f);}
 
+    const blit::Vec3 &get_vel() const;
+    void set_vel(const blit::Vec3 &vel);
+
     float get_radius() const;
 
     int get_current_lap() const {return current_lap;}

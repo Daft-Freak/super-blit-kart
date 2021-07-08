@@ -232,6 +232,14 @@ void Kart::set_race_state(RaceState *race_state) {
     this->race_state = race_state;
 }
 
+const Vec3 &Kart::get_vel() const {
+    return vel;
+}
+
+void Kart::set_vel(const Vec3 &vel) {
+    this->vel = vel;
+}
+
 float Kart::get_radius() const {
     return kart_radius;
 }
