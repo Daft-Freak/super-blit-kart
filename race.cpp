@@ -155,7 +155,7 @@ void Race::render() {
         snprintf(buf, 20, "Time: %02i:%02i.%02i", cur_lap_time / 60000, (cur_lap_time / 1000) % 60, (cur_lap_time % 1000) / 10);
         screen.text(buf, tall_font, Point(8, bounds.h + 20));
 
-        if(best_lap_time != ~0) {
+        if(best_lap_time != ~0u) {
             snprintf(buf, 20, "Best: %02i:%02i.%02i", best_lap_time / 6000, (best_lap_time / 100) % 60, (best_lap_time % 100));
             screen.text(buf, tall_font, Point(8, bounds.h + 32));
         }
