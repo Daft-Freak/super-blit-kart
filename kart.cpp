@@ -66,12 +66,24 @@ void Kart::update() {
         // use item
         if(current_item != ItemType::None && (buttons.released & Button::X)) {
             auto &item_sprite = item_sprites[static_cast<int>(current_item)];
-            TrackObject obj(ObjectType::DroppedItem);
 
-            obj.sprite.world_pos = sprite.world_pos - sprite.look_dir * (kart_radius + 4.0f);
+            Vec3 pos;
+            auto type = ObjectType::DroppedItem;
+            if(current_item == ItemType::Drop) {
+                pos = sprite.world_pos - sprite.look_dir * (kart_radius + item_sprite.w * 4.0f);
+            } else { // projectile
+                pos = sprite.world_pos + sprite.look_dir * (kart_radius + item_sprite.w * 4.0f + 2.0f);
+                type = ObjectType::Projectile;
+            }
+
+            TrackObject obj(type);
+
+            obj.sprite.world_pos = pos;
             obj.sprite.origin = {item_sprite.w * 4, item_sprite.h * 8}; // center bottom
             obj.sprite.sheet_base = item_sprite.tl();
             obj.sprite.size = item_sprite.size();
+
+            obj.vel = sprite.look_dir * 200.0f; // only used for projectiles
 
             race_state->track->add_object(obj);
 

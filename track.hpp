@@ -21,6 +21,7 @@ enum class ObjectType : uint8_t {
     Static, // obstacle
     Item,
     DroppedItem, // usualy an obstacale, removed when hit
+    Projectile, // moving obstacle
 };
 
 class TrackObjectInfo final {
@@ -69,6 +70,7 @@ public:
     Sprite3D sprite;
 
     uint32_t respawn_timer = 0;
+    blit::Vec3 vel;
 };
 
 class Track final {

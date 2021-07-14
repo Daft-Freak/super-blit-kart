@@ -57,6 +57,11 @@ TrackObject::TrackObject(const TrackObjectInfo &info, blit::Surface *spritesheet
 void TrackObject::update() {
     if(respawn_timer)
         respawn_timer -= 10;
+
+    if(type == ObjectType::Projectile) {
+        sprite.world_pos += vel * 0.01f;
+        // TODO: collide
+    }
 }
 
 void TrackObject::collide(Kart &kart) {
@@ -85,7 +90,7 @@ void TrackObject::collide(Kart &kart) {
 
     kart.sprite.world_pos += Vec3(vec.x, 0.0f, vec.y) * penetration;
 
-    if(type == ObjectType::DroppedItem) {
+    if(type == ObjectType::DroppedItem || type == ObjectType::Projectile) {
         // assume hitting this is bad (okay unless we allow dropped boosts)
         kart.set_vel({});
 
