@@ -50,6 +50,8 @@ public:
 private:
     void auto_drive();
 
+    void use_item();
+
     blit::Vec3 vel, acc;
     float turn_speed = 0.0f;
 

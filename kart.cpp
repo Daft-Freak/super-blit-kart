@@ -62,33 +62,9 @@ void Kart::update() {
         else
             turn_speed = joystick.x * -kart_turn_speed;
 
-
         // use item
-        if(current_item != ItemType::None && (buttons.released & Button::X)) {
-            auto &item_sprite = item_sprites[static_cast<int>(current_item)];
-
-            Vec3 pos;
-            auto type = ObjectType::DroppedItem;
-            if(current_item == ItemType::Drop) {
-                pos = sprite.world_pos - sprite.look_dir * (kart_radius + item_sprite.w * 4.0f);
-            } else { // projectile
-                pos = sprite.world_pos + sprite.look_dir * (kart_radius + item_sprite.w * 4.0f + 2.0f);
-                type = ObjectType::Projectile;
-            }
-
-            TrackObject obj(type);
-
-            obj.sprite.world_pos = pos;
-            obj.sprite.origin = {item_sprite.w * 4, item_sprite.h * 8}; // center bottom
-            obj.sprite.sheet_base = item_sprite.tl();
-            obj.sprite.size = item_sprite.size();
-
-            obj.vel = sprite.look_dir * 200.0f; // only used for projectiles
-
-            race_state->track->add_object(obj);
-
-            current_item = ItemType::None;
-        }
+        if(current_item != ItemType::None && (buttons.released & Button::X))
+            use_item();
     } else
         auto_drive();
 
@@ -391,4 +367,30 @@ void Kart::auto_drive() {
     // whatever is telling us to turn the hardest, unless we're off the track
     if(off_track || std::abs(recenter_turn_speed) > std::abs(turn_speed))
         turn_speed = recenter_turn_speed;
+}
+
+void Kart::use_item() {
+    auto &item_sprite = item_sprites[static_cast<int>(current_item)];
+
+    Vec3 pos;
+    auto type = ObjectType::DroppedItem;
+    if(current_item == ItemType::Drop) {
+        pos = sprite.world_pos - sprite.look_dir * (kart_radius + item_sprite.w * 4.0f);
+    } else { // projectile
+        pos = sprite.world_pos + sprite.look_dir * (kart_radius + item_sprite.w * 4.0f + 2.0f);
+        type = ObjectType::Projectile;
+    }
+
+    TrackObject obj(type);
+
+    obj.sprite.world_pos = pos;
+    obj.sprite.origin = {item_sprite.w * 4, item_sprite.h * 8}; // center bottom
+    obj.sprite.sheet_base = item_sprite.tl();
+    obj.sprite.size = item_sprite.size();
+
+    obj.vel = sprite.look_dir * 200.0f; // only used for projectiles
+
+    race_state->track->add_object(obj);
+
+    current_item = ItemType::None;
 }
