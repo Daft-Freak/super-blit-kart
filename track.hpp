@@ -11,6 +11,7 @@
 
 class Camera;
 class Kart;
+class Track;
 
 namespace blit {
     struct TileMap;
@@ -71,6 +72,8 @@ public:
 
     uint32_t respawn_timer = 0;
     blit::Vec3 vel;
+
+    Track *track = nullptr;
 };
 
 class Track final {

@@ -60,7 +60,48 @@ void TrackObject::update() {
 
     if(type == ObjectType::Projectile) {
         sprite.world_pos += vel * 0.01f;
-        // TODO: collide
+        
+        auto &track_info = track->get_info();
+
+        // collide with track obstacles
+        // TODO: mostly copy/pasted from kart
+        for(size_t i = 0; i < track_info.num_collision_rects; i++) {
+            auto &rect = track_info.collision_rects[i];
+            if(rect.empty())
+                continue;
+
+            Vec2 pos_2d(sprite.world_pos.x, sprite.world_pos.z);
+            float radius = sprite.size.w * 4.0f;
+
+            Vec2 obstacle_pos(pos_2d);
+
+            if(pos_2d.x < rect.x)
+                obstacle_pos.x = rect.x;
+            else if(pos_2d.x >= rect.x + rect.w)
+                obstacle_pos.x = rect.x + rect.w;
+
+            if(pos_2d.y < rect.y)
+                obstacle_pos.y = rect.y;
+            else if(pos_2d.y >= rect.y + rect.h)
+                obstacle_pos.y = rect.y + rect.h;
+
+            auto vec = pos_2d - obstacle_pos;
+            float dist = vec.length();
+
+            if(dist > radius)
+                continue;
+
+            vec /= dist;
+
+            float penetration = radius - dist;
+            sprite.world_pos += Vec3(vec.x, 0.0f, vec.y) * penetration;
+
+            // boing
+            Vec3 vec3(vec.x, 0.0f, vec.y);
+            vel -= vec3 * vec3.dot(vel) * 2.0f;
+        }
+
+        // TODO: collide with other objects
     }
 }
 
@@ -211,8 +252,10 @@ TileMap &Track::get_map() {
 void Track::reset_objects() {
     objects.clear();
 
-    for(size_t i = 0; i < info.num_sprites; i++)
+    for(size_t i = 0; i < info.num_sprites; i++) {
         objects.emplace_back(info.sprites[i], tiles);
+        objects.back().track = this;
+    }
 }
 
 std::vector<TrackObject> &Track::get_objects() {
@@ -223,6 +266,8 @@ void Track::add_object(TrackObject object) {
 
     if(!object.sprite.spritesheet)
         object.sprite.spritesheet = tiles;
+
+    object.track = this;
 
     // attempt reuse
     for(auto it = objects.begin() + info.num_sprites; it != objects.end(); ++it) {
