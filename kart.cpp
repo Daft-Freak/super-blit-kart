@@ -313,6 +313,10 @@ void Kart::auto_drive() {
         }
     }
 
+    // maybe use item if we have one
+    if(current_item != ItemType::None && (blit::random() & 0x3FF) < 1)
+        use_item();
+
     // CPU control
     acc = Vec3(sprite.look_dir.x, 0.0f, sprite.look_dir.z) * kart_accel;
 
