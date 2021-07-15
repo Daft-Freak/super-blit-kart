@@ -282,8 +282,7 @@ void Kart::collect_item() {
         return;
 
     // pick up a random item
-    // TODO as there's only one
-    current_item = ItemType::Drop;
+    current_item = static_cast<ItemType>(blit::random() % std::size(item_sprites));
 }
 
 void Kart::set_time_trial_data(TimeTrialSaveData *data) {
