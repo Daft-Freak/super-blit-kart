@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<template>
+ <object name="cactus">
+  <properties>
+   <property name="origin" value="8,24"/>
+   <property name="scale" type="float" value="0.625"/>
+   <property name="sprite" value="0,14,2,2"/>
+   <property name="type" value="Item"/>
+  </properties>
+  <point/>
+ </object>
+</template>
