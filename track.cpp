@@ -133,7 +133,7 @@ void TrackObject::collide(Kart &kart) {
 
     if(type == ObjectType::DroppedItem || type == ObjectType::Projectile) {
         // assume hitting this is bad (okay unless we allow dropped boosts)
-        kart.set_vel({});
+        kart.disable();
 
         type = ObjectType::Removed;
     }

@@ -38,6 +38,8 @@ public:
     void collect_item();
     ItemType get_current_item() const {return current_item;}
 
+    void disable();
+
     void set_time_trial_data(TimeTrialSaveData *data);
     bool is_ghost() const {return time_trial_data && !is_player;}
 
@@ -55,7 +57,7 @@ private:
     blit::Vec3 vel, acc;
     float turn_speed = 0.0f;
 
-    int boost_time = 0;
+    int boost_time = 0, disable_time = 0;
 
     float return_to_track_timer = 0.0f;
     blit::Vec3 return_pos_v, return_look_v;

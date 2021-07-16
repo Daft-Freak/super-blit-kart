@@ -28,6 +28,9 @@ Kart::Kart() {
 void Kart::update() {
     const float dt = 0.01f;
 
+    if(disable_time)
+        disable_time--;
+
     // put back on track
     if(return_to_track_timer > 0.0f) {
         const float half = return_to_track_time / 2.0f;
@@ -129,7 +132,7 @@ void Kart::update() {
 
     // ignore accel if the race hasn't started or replaying a ghost (and not falling)
     bool ghost_finished = !is_ghost() || ghost_timer / 10 >= time_trial_data->ghost_data_used;
-    if(!race_state->countdown && (ghost_finished || acc.y != 0.0f))
+    if(!race_state->countdown && (acc.y != 0.0f || (ghost_finished && disable_time == 0)))
         vel += (acc + drag + friction + boost_acc) * dt;
 
     bool was_above = sprite.world_pos.y >= 0.0f;
@@ -296,6 +299,16 @@ void Kart::collect_item() {
 
     // pick up a random item
     current_item = static_cast<ItemType>(blit::random() % std::size(item_sprites));
+}
+
+void Kart::disable() {
+    // still disabled from previous hit, ignore
+    if(disable_time)
+        return;
+
+    vel = {};
+
+    disable_time = 50;
 }
 
 void Kart::set_time_trial_data(TimeTrialSaveData *data) {
