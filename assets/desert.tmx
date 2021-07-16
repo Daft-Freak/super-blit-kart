@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.5" tiledversion="2021.02.15" orientation="orthogonal" renderorder="right-down" width="256" height="256" tilewidth="8" tileheight="8" infinite="0" backgroundcolor="#639bff" nextlayerid="6" nextobjectid="80">
+<map version="1.5" tiledversion="2021.02.15" orientation="orthogonal" renderorder="right-down" width="256" height="256" tilewidth="8" tileheight="8" infinite="0" backgroundcolor="#639bff" nextlayerid="6" nextobjectid="136">
  <tileset firstgid="1" source="track.tsx"/>
  <layer id="1" name="track" width="256" height="256">
   <data encoding="csv">
@@ -332,6 +332,54 @@
   <object id="77" template="templates/cactus.tx" x="1287" y="1170"/>
   <object id="78" template="templates/cactus.tx" x="581" y="825"/>
   <object id="79" template="templates/cactus.tx" x="867" y="199"/>
+  <object id="80" template="templates/item.tx" name="item" x="1200" y="264"/>
+  <object id="81" template="templates/item.tx" name="item" x="1200" y="280"/>
+  <object id="82" template="templates/item.tx" name="item" x="1200" y="296"/>
+  <object id="83" template="templates/item.tx" name="item" x="1200" y="312"/>
+  <object id="84" template="templates/item.tx" name="item" x="1200" y="328"/>
+  <object id="85" template="templates/item.tx" name="item" x="1200" y="344"/>
+  <object id="86" template="templates/item.tx" name="item" x="1200" y="360"/>
+  <object id="87" template="templates/item.tx" name="item" x="1200" y="376"/>
+  <object id="88" template="templates/item.tx" name="item" x="1594" y="826"/>
+  <object id="89" template="templates/item.tx" name="item" x="1668" y="1300"/>
+  <object id="90" template="templates/item.tx" name="item" x="1584" y="816"/>
+  <object id="91" template="templates/item.tx" name="item" x="1658" y="1310"/>
+  <object id="92" template="templates/item.tx" name="item" x="1648" y="1320"/>
+  <object id="93" template="templates/item.tx" name="item" x="1638" y="1330"/>
+  <object id="94" template="templates/item.tx" name="item" x="1628" y="1340"/>
+  <object id="95" template="templates/item.tx" name="item" x="1618" y="1350"/>
+  <object id="104" template="templates/item.tx" name="item" x="1574" y="806"/>
+  <object id="105" template="templates/item.tx" name="item" x="1564" y="796"/>
+  <object id="106" template="templates/item.tx" name="item" x="1554" y="786"/>
+  <object id="107" template="templates/item.tx" name="item" x="1544" y="776"/>
+  <object id="108" template="templates/item.tx" name="item" x="1534" y="766"/>
+  <object id="109" template="templates/item.tx" name="item" x="1524" y="756"/>
+  <object id="110" template="templates/item.tx" name="item" x="1608" y="1360"/>
+  <object id="111" template="templates/item.tx" name="item" x="1598" y="1370"/>
+  <object id="112" template="templates/item.tx" name="item" x="808" y="1672"/>
+  <object id="113" template="templates/item.tx" name="item" x="808" y="1688"/>
+  <object id="114" template="templates/item.tx" name="item" x="808" y="1704"/>
+  <object id="115" template="templates/item.tx" name="item" x="968" y="1720"/>
+  <object id="116" template="templates/item.tx" name="item" x="968" y="1736"/>
+  <object id="117" template="templates/item.tx" name="item" x="808" y="1752"/>
+  <object id="118" template="templates/item.tx" name="item" x="808" y="1768"/>
+  <object id="119" template="templates/item.tx" name="item" x="808" y="1784"/>
+  <object id="120" template="templates/item.tx" name="item" x="1024" y="1024"/>
+  <object id="121" template="templates/item.tx" name="item" x="1008" y="1024"/>
+  <object id="122" template="templates/item.tx" name="item" x="992" y="1024"/>
+  <object id="123" template="templates/item.tx" name="item" x="976" y="1024"/>
+  <object id="124" template="templates/item.tx" name="item" x="960" y="1024"/>
+  <object id="125" template="templates/item.tx" name="item" x="944" y="1024"/>
+  <object id="126" template="templates/item.tx" name="item" x="928" y="1024"/>
+  <object id="127" template="templates/item.tx" name="item" x="912" y="1024"/>
+  <object id="128" template="templates/item.tx" name="item" x="468" y="468"/>
+  <object id="129" template="templates/item.tx" name="item" x="458" y="458"/>
+  <object id="130" template="templates/item.tx" name="item" x="448" y="448"/>
+  <object id="131" template="templates/item.tx" name="item" x="438" y="438"/>
+  <object id="132" template="templates/item.tx" name="item" x="428" y="428"/>
+  <object id="133" template="templates/item.tx" name="item" x="418" y="418"/>
+  <object id="134" template="templates/item.tx" name="item" x="408" y="408"/>
+  <object id="135" template="templates/item.tx" name="item" x="398" y="398"/>
  </objectgroup>
  <objectgroup id="5" name="collisions">
   <object id="8" x="448" y="1016" width="448" height="16"/>
