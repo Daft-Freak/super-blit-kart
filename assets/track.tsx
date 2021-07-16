@@ -13,17 +13,17 @@
  </tile>
  <tile id="13">
   <properties>
-   <property name="friction" type="float" value="-10"/>
+   <property name="friction" type="float" value="-1"/>
   </properties>
  </tile>
  <tile id="14">
   <properties>
-   <property name="friction" type="float" value="-10"/>
+   <property name="friction" type="float" value="-1"/>
   </properties>
  </tile>
  <tile id="15">
   <properties>
-   <property name="friction" type="float" value="-10"/>
+   <property name="friction" type="float" value="-1"/>
   </properties>
  </tile>
  <tile id="18">
@@ -43,47 +43,47 @@
  </tile>
  <tile id="29">
   <properties>
-   <property name="friction" type="float" value="-10"/>
+   <property name="friction" type="float" value="-1"/>
   </properties>
  </tile>
  <tile id="30">
   <properties>
-   <property name="friction" type="float" value="-10"/>
+   <property name="friction" type="float" value="-1"/>
   </properties>
  </tile>
  <tile id="31">
   <properties>
-   <property name="friction" type="float" value="-10"/>
+   <property name="friction" type="float" value="-1"/>
   </properties>
  </tile>
  <tile id="45">
   <properties>
-   <property name="friction" type="float" value="-10"/>
+   <property name="friction" type="float" value="-1"/>
   </properties>
  </tile>
  <tile id="46">
   <properties>
-   <property name="friction" type="float" value="-10"/>
+   <property name="friction" type="float" value="-1"/>
   </properties>
  </tile>
  <tile id="47">
   <properties>
-   <property name="friction" type="float" value="-10"/>
+   <property name="friction" type="float" value="-1"/>
   </properties>
  </tile>
  <tile id="61">
   <properties>
-   <property name="friction" type="float" value="-10"/>
+   <property name="friction" type="float" value="-1"/>
   </properties>
  </tile>
  <tile id="62">
   <properties>
-   <property name="friction" type="float" value="-10"/>
+   <property name="friction" type="float" value="-1"/>
   </properties>
  </tile>
  <tile id="63">
   <properties>
-   <property name="friction" type="float" value="-10"/>
+   <property name="friction" type="float" value="-1"/>
   </properties>
  </tile>
  <tile id="64" probability="0.7">
@@ -108,17 +108,17 @@
  </tile>
  <tile id="77">
   <properties>
-   <property name="friction" type="float" value="-10"/>
+   <property name="friction" type="float" value="-1"/>
   </properties>
  </tile>
  <tile id="78">
   <properties>
-   <property name="friction" type="float" value="-10"/>
+   <property name="friction" type="float" value="-1"/>
   </properties>
  </tile>
  <tile id="79">
   <properties>
-   <property name="friction" type="float" value="-10"/>
+   <property name="friction" type="float" value="-1"/>
   </properties>
  </tile>
 </tileset>

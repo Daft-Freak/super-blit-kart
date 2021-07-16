@@ -72,6 +72,12 @@ void Kart::update() {
     float track_friction = race_state->track->get_friction(pos_2d);
     bool on_track = track_friction != 0.0f;
 
+    // trigger boosts if friction is negative
+    if(track_friction < 0.0f) {
+        track_friction *= -1.0f;
+        boost_time = 25;
+    }
+
     auto &track_info = race_state->track->get_info();
 
     // under track
