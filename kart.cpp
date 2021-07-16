@@ -110,6 +110,13 @@ void Kart::update() {
     else
         sprite.look_dir.transform(Mat4::rotation(turn_speed * vel.length() * dt, Vec3(0.0f, 1.0f, 0.0f)));
 
+    // boost
+    Vec3 boost_acc;
+    if(boost_time) {
+        boost_acc = Vec3(sprite.look_dir.x, 0.0f, sprite.look_dir.z) * kart_accel * 4.0f;
+        boost_time--;
+    }
+
     // update velocity
     auto drag = vel * -kart_drag * vel.length();
     auto friction = vel * -kart_friction * track_friction;
@@ -117,7 +124,7 @@ void Kart::update() {
     // ignore accel if the race hasn't started or replaying a ghost (and not falling)
     bool ghost_finished = !is_ghost() || ghost_timer / 10 >= time_trial_data->ghost_data_used;
     if(!race_state->countdown && (ghost_finished || acc.y != 0.0f))
-        vel += (acc + drag + friction) * dt;
+        vel += (acc + drag + friction + boost_acc) * dt;
 
     bool was_above = sprite.world_pos.y >= 0.0f;
 
@@ -373,6 +380,13 @@ void Kart::auto_drive() {
 }
 
 void Kart::use_item() {
+    // doesn't create an object
+    if(current_item == ItemType::Boost) {
+        boost_time = 50;
+        current_item = ItemType::None;
+        return;
+    }
+
     auto &item_sprite = item_sprites[static_cast<int>(current_item)];
 
     Vec3 pos;
