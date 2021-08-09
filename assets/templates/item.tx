@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <template>
- <object name="cactus">
+ <object name="item">
   <properties>
    <property name="origin" value="8,24"/>
    <property name="scale" type="float" value="0.625"/>
