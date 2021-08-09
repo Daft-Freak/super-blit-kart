@@ -19,9 +19,10 @@ static const float kart_accel = 200.0f, kart_brake_rec_accel = -80.0f, kart_drag
 static const float return_to_track_time = 2.0f;
 
 Kart::Kart() {
-    sprite.origin = Point(16, 26);
+    sprite.origin_x = 16;
+    sprite.origin_y = 26;
 
-    sprite.size = Size(4, 4);
+    sprite.size_w = sprite.size_h = 4;
     sprite.rotation_frames = 16;
 }
 
@@ -420,9 +421,14 @@ void Kart::use_item() {
     TrackObject obj(type);
 
     obj.sprite.world_pos = pos;
-    obj.sprite.origin = {item_sprite.w * 4, item_sprite.h * 8}; // center bottom
-    obj.sprite.sheet_base = item_sprite.tl();
-    obj.sprite.size = item_sprite.size();
+    // center bottom
+    obj.sprite.origin_x = item_sprite.w * 4;
+    obj.sprite.origin_y = item_sprite.h * 8;
+
+    obj.sprite.sheet_x = item_sprite.x;
+    obj.sprite.sheet_y = item_sprite.y;
+    obj.sprite.size_w = item_sprite.w;
+    obj.sprite.size_h = item_sprite.h;
 
     obj.vel = sprite.look_dir * 200.0f; // only used for projectiles
 

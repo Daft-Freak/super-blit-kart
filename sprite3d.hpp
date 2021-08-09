@@ -1,8 +1,6 @@
 #pragma once
 
 #include "graphics/surface.hpp"
-#include "types/point.hpp"
-#include "types/size.hpp"
 #include "types/vec3.hpp"
 
 class Camera;
@@ -13,18 +11,18 @@ public:
     void render(const Camera &cam);
 
     blit::Vec3 world_pos;
-    blit::Vec3 look_dir;
+    blit::Vec3 look_dir; // y ignored
 
-    blit::Point origin;
     float scale = 1.0f;
-    float alpha = 1.0f;
+    float alpha = 1.0f; // uint8?
+    uint8_t origin_x = 0, origin_y = 0;
 
+    uint8_t sheet_x = 0, sheet_y = 0;
+    uint8_t size_w = 1, size_h = 1;
+    uint16_t rotation_frames = 0;
     blit::Surface *spritesheet = nullptr;
-    blit::Point sheet_base;
-    blit::Size size = blit::Size(1, 1);
-    int rotation_frames = 0;
 
-    blit::Point screen_pos;
+    int16_t screen_x = 0, screen_y = 0;
     float screen_scale = 1.0f;
     float z = 0.0f; // used for sorting/culling
 };

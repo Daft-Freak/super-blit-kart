@@ -49,9 +49,12 @@ TrackObject::TrackObject(const TrackObjectInfo &info, blit::Surface *spritesheet
     sprite.world_pos.x = info.pos_x;
     sprite.world_pos.z = info.pos_y;
     sprite.scale = info.scale / 16.0f;
-    sprite.sheet_base = {info.sprite_x, info.sprite_y};
-    sprite.size = {info.sprite_w, info.sprite_h};
-    sprite.origin = {info.origin_x, info.origin_y};
+    sprite.sheet_x = info.sprite_x;
+    sprite.sheet_y = info.sprite_y;
+    sprite.size_w = info.sprite_w;
+    sprite.size_h = info.sprite_h;
+    sprite.origin_x = info.origin_x;
+    sprite.origin_y = info.origin_y;
 }
 
 void TrackObject::update() {
@@ -71,7 +74,7 @@ void TrackObject::update() {
                 continue;
 
             Vec2 pos_2d(sprite.world_pos.x, sprite.world_pos.z);
-            float radius = sprite.size.w * 4.0f;
+            float radius = sprite.size_w * 4.0f;
 
             Vec2 obstacle_pos(pos_2d);
 
@@ -109,7 +112,7 @@ void TrackObject::collide(Kart &kart) {
     if(!is_active())
         return;
 
-    float sprite_radius = sprite.size.w * 4.0f * sprite.scale;
+    float sprite_radius = sprite.size_w * 4.0f * sprite.scale;
     float kart_radius = kart.get_radius();
 
     auto vec = kart.get_2d_pos() - Vec2(sprite.world_pos.x, sprite.world_pos.z);
