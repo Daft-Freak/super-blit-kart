@@ -517,6 +517,7 @@ void Race::on_menu_activated(const ::Menu::Item &item) {
 
         case Menu_Restart:
             setup_race();
+            show_end_menu = false;
             break;
 
         case Menu_Quit:
