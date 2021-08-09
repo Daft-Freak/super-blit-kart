@@ -461,6 +461,12 @@ void Race::setup_race() {
             best_lap_time = best_time;
         } else
             num_karts = 1;
+
+        // disable items
+        for(auto &obj : state.track->get_objects()) {
+            if(obj.type == ObjectType::Item)
+                obj.type = ObjectType::Removed;
+        }
     }
 }
 
