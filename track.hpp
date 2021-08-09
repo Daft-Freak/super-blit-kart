@@ -67,10 +67,10 @@ public:
     bool is_active() const;
 
     ObjectType type;
+    uint16_t respawn_timer = 0;
 
     Sprite3D sprite;
 
-    uint32_t respawn_timer = 0;
     blit::Vec3 vel;
 
     Track *track = nullptr;
