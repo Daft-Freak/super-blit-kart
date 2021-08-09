@@ -120,7 +120,7 @@ void Race::render() {
     // place
     int place = state.karts[0].current_place;
     const char *digits = "012345678";
-    const char *suffix[]{"st", "nd", "rd", "th"};
+    const char *suffix[]{"", "st", "nd", "rd", "th"};
 
     // printf/to_string seems overkill for a single digit...
     std::string_view place_char(digits + place, 1);
@@ -131,11 +131,11 @@ void Race::render() {
     // "shadow"
     screen.pen = {col.r / 2, col.g / 2, col.b / 2};
     screen.text(place_char, big_number_font, Point(9, 9));
-    screen.text(suffix[std::min(place - 1, 3)], tall_font, Point(bounds.w + 11, bounds.h + 5), true, TextAlign::bottom_left);
+    screen.text(suffix[std::min(place, 4)], tall_font, Point(bounds.w + 11, bounds.h + 5), true, TextAlign::bottom_left);
 
     screen.pen = col;
     screen.text(place_char, big_number_font, Point(8, 8));
-    screen.text(suffix[std::min(place - 1, 3)], tall_font, Point(bounds.w + 10, bounds.h + 4), true, TextAlign::bottom_left);
+    screen.text(suffix[std::min(place, 4)], tall_font, Point(bounds.w + 10, bounds.h + 4), true, TextAlign::bottom_left);
 
     // lap count
     // uint8 to silence truncation wawning
