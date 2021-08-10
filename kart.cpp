@@ -76,6 +76,8 @@ void Kart::update() {
     float track_friction = race_state->track->get_friction(pos_2d);
     bool on_track = track_friction != 0.0f;
 
+    current_route_segment = race_state->track->find_closest_route_segment(pos_2d, current_route_frac);
+
     // trigger boosts if friction is negative
     if(track_friction < 0.0f) {
         track_friction *= -1.0f;
@@ -91,13 +93,12 @@ void Kart::update() {
         return_to_track_timer = return_to_track_time;
 
         // find a position somewhere on the nearest segment
-        float route_t;
-        auto route_index = race_state->track->find_closest_route_segment(pos_2d, route_t);
+        auto route_index = current_route_segment;
         auto &info = race_state->track->get_info();
 
         Vec2 route_vec(info.route[route_index + 1] - info.route[route_index]);
-        route_t = std::max(0.0f, std::min(1.0f, route_t));
-        Vec2 route_point = Vec2(info.route[route_index]) + route_vec * route_t;
+        current_route_frac = std::max(0.0f, std::min(1.0f, current_route_frac));
+        Vec2 route_point = Vec2(info.route[route_index]) + route_vec * current_route_frac;
 
         Vec3 return_pos(route_point.x, 16.0f, route_point.y);
 
@@ -149,12 +150,8 @@ void Kart::update() {
     bool crossed_finish = (finish_side_before < 0.0f) != (finish_side_after < 0.0f);
 
     if(crossed_finish && !has_finished()) {
-
-        float route_t;
-        auto route_index = race_state->track->find_closest_route_segment(pos_2d, route_t);
-
         // if we're not at the start/end of the route, we didn't cross the line
-        if(route_index == 0 || route_index == track_info.route_len - 2) {
+        if(current_route_segment == 0 || current_route_segment == track_info.route_len - 2) {
             bool forwards = finish_side_after < 0.0f;
 
             current_lap += forwards ? 1 : -1; // uh, negative laps just so you can't cheat
@@ -294,6 +291,10 @@ int Kart::get_race_time() const {
     return time;
 }
 
+float Kart::get_route_estimate() const {
+    return current_route_segment + current_route_frac;
+}
+
 void Kart::collect_item() {
     if(current_item != ItemType::None)
         return;
@@ -350,13 +351,11 @@ void Kart::auto_drive() {
     // try to face the right way
     Vec2 look_2d(sprite.look_dir.x, sprite.look_dir.z);
     auto pos_2d = get_2d_pos();
-    float route_t;
-    auto route_index = race_state->track->find_closest_route_segment(pos_2d, route_t);
+    auto route_index = current_route_segment;
     auto &info = race_state->track->get_info();
 
     Vec2 route_vec(info.route[route_index + 1] - info.route[route_index]);
-    Vec2 route_point = Vec2(info.route[route_index]) + route_vec * route_t;
-    route_vec.normalize();
+    Vec2 route_point = Vec2(info.route[route_index]) + route_vec * current_route_frac;
 
     // try to stay on track
     auto to_track_center = route_point - pos_2d;

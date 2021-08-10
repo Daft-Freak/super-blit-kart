@@ -252,8 +252,8 @@ void Race::update(uint32_t time) {
 
         // appox progress through race
         float route_t;
-        float progress = static_cast<int>(kart.get_current_lap() * state.track->get_info().route_len
-                       + state.track->find_closest_route_segment(kart.get_2d_pos(), route_t)) + route_t;
+        float progress = static_cast<int>(kart.get_current_lap() * state.track->get_info().route_len)
+                       + kart.get_route_estimate();
 
         kart_progress[i] = std::make_tuple(i, progress);
         i++;

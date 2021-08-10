@@ -35,6 +35,8 @@ public:
     int get_lap_time(int lap) const;
     int get_race_time() const;
 
+    float get_route_estimate() const;
+
     void collect_item();
     ItemType get_current_item() const {return current_item;}
 
@@ -65,6 +67,9 @@ private:
     int current_lap = -1; // -1 because we start behind the finish line
     uint32_t lap_start_time[3]{0};
     uint32_t finish_time = 0;
+
+    unsigned int current_route_segment = 0;
+    float current_route_frac = 0.0f;
 
     ItemType current_item = ItemType::None;
 
