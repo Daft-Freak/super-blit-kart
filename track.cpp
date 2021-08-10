@@ -116,9 +116,9 @@ void TrackObject::collide(Kart &kart) {
     float kart_radius = kart.get_radius();
 
     auto vec = kart.get_2d_pos() - Vec2(sprite.world_pos.x, sprite.world_pos.z);
-    float dist = vec.length();
+    float dist = vec.x * vec.x + vec.y * vec.y; // squared length
 
-    if(dist >= kart_radius + sprite_radius)
+    if(dist >= (kart_radius + sprite_radius) * (kart_radius + sprite_radius))
         return;
 
     if(type == ObjectType::Item) {
@@ -128,6 +128,7 @@ void TrackObject::collide(Kart &kart) {
     }
 
     // do collision
+    dist = std::sqrt(dist);
     vec /= dist;
 
     float penetration = kart_radius + sprite_radius - dist;

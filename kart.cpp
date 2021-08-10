@@ -177,10 +177,12 @@ void Kart::update() {
                 continue;
 
             auto vec = kart_a.get_2d_pos() - kart_b.get_2d_pos();
-            float dist = vec.length();
+            float dist = vec.x * vec.x + vec.y * vec.y; // squared length
 
-            if(dist >= kart_radius * 2.0f)
+            if(dist >= (kart_radius + kart_radius) * (kart_radius + kart_radius))
                 continue;
+
+            dist = std::sqrt(dist);
 
             vec /= dist;
 
@@ -219,10 +221,12 @@ void Kart::update() {
                 obstacle_pos.y = rect.y + rect.h;
 
             auto vec = kart_pos - obstacle_pos;
-            float dist = vec.length();
+            float dist = vec.x * vec.x + vec.y * vec.y; // squared length
 
-            if(dist > kart_radius)
+            if(dist > kart_radius * kart_radius)
                 continue;
+
+            dist = std::sqrt(dist);
 
             vec /= dist;
 
