@@ -251,7 +251,6 @@ void Race::update(uint32_t time) {
             new_num_finished++;
 
         // appox progress through race
-        float route_t;
         float progress = static_cast<int>(kart.get_current_lap() * state.track->get_info().route_len)
                        + kart.get_route_estimate();
 
