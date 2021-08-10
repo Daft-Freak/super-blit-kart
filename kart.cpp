@@ -143,15 +143,15 @@ void Kart::update() {
     sprite.world_pos += vel * dt;
 
     // check if we crossed the finish line
-    Vec2 finish_vec(track_info.finish_line[1] - track_info.finish_line[0]);
+    if(current_route_segment == 0 || current_route_segment == track_info.route_len - 2) {
+        // at start/end of route;
+        Vec2 finish_vec(track_info.finish_line[1] - track_info.finish_line[0]);
 
-    float finish_side_before = finish_vec.x * (pos_2d.y - track_info.finish_line[0].y) - finish_vec.y * (pos_2d.x - track_info.finish_line[0].x);
-    float finish_side_after = finish_vec.x * ((pos_2d.y + vel.y * dt) - track_info.finish_line[0].y) - finish_vec.y * ((pos_2d.x + vel.x * dt) - track_info.finish_line[0].x);
-    bool crossed_finish = (finish_side_before < 0.0f) != (finish_side_after < 0.0f);
+        float finish_side_before = finish_vec.x * (pos_2d.y - track_info.finish_line[0].y) - finish_vec.y * (pos_2d.x - track_info.finish_line[0].x);
+        float finish_side_after = finish_vec.x * ((pos_2d.y + vel.y * dt) - track_info.finish_line[0].y) - finish_vec.y * ((pos_2d.x + vel.x * dt) - track_info.finish_line[0].x);
+        bool crossed_finish = (finish_side_before < 0.0f) != (finish_side_after < 0.0f);
 
-    if(crossed_finish && !has_finished()) {
-        // if we're not at the start/end of the route, we didn't cross the line
-        if(current_route_segment == 0 || current_route_segment == track_info.route_len - 2) {
+        if(crossed_finish && !has_finished()) {
             bool forwards = finish_side_after < 0.0f;
 
             current_lap += forwards ? 1 : -1; // uh, negative laps just so you can't cheat
