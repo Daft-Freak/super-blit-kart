@@ -29,6 +29,9 @@ assets.cpp:
     space_width: 4
 
   assets/RandomFont3.ttf:
-    name: big_number_font
+  - name: big_number_font
     height: 54
     num_chars: 26
+
+  - name: menu_font
+    height: 24

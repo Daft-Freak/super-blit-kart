@@ -8,7 +8,7 @@
 #include "game.hpp"
 #include "kart-select.hpp"
 
-MainMenu::MainMenu(Game *game) : game(game), menu("Super Blit Kart (TODO: Improved Menu)", {{Menu_Race, "Race"}, {Menu_TimeTrial, "Time Trial"}, {Menu_Multiplayer, "Multiplayer"}}, tall_font) {
+MainMenu::MainMenu(Game *game) : game(game), menu("Super Blit Kart", {{Menu_Race, "Race"}, {Menu_TimeTrial, "Time Trial"}, {Menu_Multiplayer, "Multiplayer"}}, menu_font) {
     menu.set_display_rect({{0, 0}, blit::screen.bounds});
 
     // TODO: nicer menu, maybe some sprites or something
