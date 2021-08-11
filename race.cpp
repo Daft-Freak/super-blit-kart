@@ -18,6 +18,18 @@ using namespace blit;
 extern const TrackInfo track_info[];
 extern const int num_tracks;
 
+#ifdef PICO_BUILD
+static auto &number_font = medium_number_font;
+static auto &main_font = eight_font;
+const int item_container_size = 24;
+const float item_preview_scale = 1.0f;
+#else
+static auto &number_font = big_number_font;
+static auto &main_font = tall_font;
+const int item_container_size = 48;
+const float item_preview_scale = 2.0f;
+#endif
+
 // big text helper
 static void stretch_text(std::string_view text, const Font &font, const Point &pos, float scale, TextAlign align) {
     auto bounds = screen.measure_text(text, font);
@@ -53,12 +65,23 @@ static void stretch_text(std::string_view text, const Font &font, const Point &p
 }
 
 Race::Race(Game *game, int player_kart, int track_index, RaceMode mode) : game(game), player_kart(player_kart), track_index(track_index), mode(mode),
-    pause_menu("Paused", {{Menu_Continue, "Continue"}, {Menu_Restart, "Restart"}, {Menu_Quit, "Quit"}}, tall_font),
-    end_menu("", {{Menu_Restart, "Restart"}, {Menu_Quit, "Quit"}}, tall_font) {
+    pause_menu("Paused", {{Menu_Continue, "Continue"}, {Menu_Restart, "Restart"}, {Menu_Quit, "Quit"}}, main_font),
+    end_menu("", {{Menu_Restart, "Restart"}, {Menu_Quit, "Quit"}}, main_font) {
 
     state.track = new Track(track_info[track_index]);
 
+
+#ifdef PICO_BUILD
+    set_screen_mode(ScreenMode::lores);
+    cam.focal_distance = 140.0f;
+    state.track->set_fog(80.0f);
+
+    const int end_menu_margin = 4;
+#else
     minimap.set_track(state.track);
+
+    const int end_menu_margin = 16;
+#endif
 
     setup_race();
 
@@ -66,8 +89,8 @@ Race::Race(Game *game, int player_kart, int track_index, RaceMode mode) : game(g
     pause_menu.set_display_rect({{(screen.bounds.w - menu_size.w) / 2, (screen.bounds.h - menu_size.h) / 2}, menu_size});
     pause_menu.set_on_item_activated(std::bind(&Race::on_menu_activated, this, std::placeholders::_1));
 
-    menu_size.h = 44;
-    end_menu.set_display_rect({{(screen.bounds.w - menu_size.w) / 2, (screen.bounds.h - (menu_size.h + 16))}, menu_size});
+    menu_size.h = (main_font.char_h + 10) * 2;
+    end_menu.set_display_rect({{(screen.bounds.w - menu_size.w) / 2, (screen.bounds.h - (menu_size.h + end_menu_margin))}, menu_size});
     end_menu.set_on_item_activated(std::bind(&Race::on_menu_activated, this, std::placeholders::_1));
 
     kart_icons = blit::Surface::load(asset_kart_icons);
@@ -112,7 +135,7 @@ void Race::render() {
         int num = std::ceil(state.countdown / 1000.0f);
 
         float scale = 1.0f + (1.0f - (state.countdown % 1000) / 1000.0f);
-        stretch_text(std::to_string(num), big_number_font, Point(screen.bounds.w / 2, screen.bounds.h / 4), scale, center_center);
+        stretch_text(std::to_string(num), number_font, Point(screen.bounds.w / 2, screen.bounds.h / 4), scale, center_center);
     }
 
     char buf[20];
@@ -124,18 +147,18 @@ void Race::render() {
 
     // printf/to_string seems overkill for a single digit...
     std::string_view place_char(digits + place, 1);
-    auto bounds = screen.measure_text(place_char, big_number_font);
+    auto bounds = screen.measure_text(place_char, number_font);
 
     auto col = hsv_to_rgba((place - 1) / 8.0f, 1.0f, 0.7f);
 
     // "shadow"
     screen.pen = {col.r / 2, col.g / 2, col.b / 2};
-    screen.text(place_char, big_number_font, Point(9, 9));
-    screen.text(suffix[std::min(place, 4)], tall_font, Point(bounds.w + 11, bounds.h + 5), true, TextAlign::bottom_left);
+    screen.text(place_char, number_font, Point(9, 9));
+    screen.text(suffix[std::min(place, 4)], main_font, Point(bounds.w + 11, bounds.h + 5), true, TextAlign::bottom_left);
 
     screen.pen = col;
-    screen.text(place_char, big_number_font, Point(8, 8));
-    screen.text(suffix[std::min(place, 4)], tall_font, Point(bounds.w + 10, bounds.h + 4), true, TextAlign::bottom_left);
+    screen.text(place_char, number_font, Point(8, 8));
+    screen.text(suffix[std::min(place, 4)], main_font, Point(bounds.w + 10, bounds.h + 4), true, TextAlign::bottom_left);
 
     // lap count
     // uint8 to silence truncation wawning
@@ -145,7 +168,7 @@ void Race::render() {
 
     if(lap < 4) {
         snprintf(buf, 20, "Lap %u/3", lap);
-        screen.text(buf, tall_font, Point(8, bounds.h + 8));
+        screen.text(buf, main_font, Point(8, bounds.h + 8));
     }
 
     // current/best time
@@ -153,17 +176,17 @@ void Race::render() {
         auto cur_lap_time = state.karts[0].get_lap_time(state.karts[0].get_current_lap());
 
         snprintf(buf, 20, "Time: %02i:%02i.%02i", cur_lap_time / 60000, (cur_lap_time / 1000) % 60, (cur_lap_time % 1000) / 10);
-        screen.text(buf, tall_font, Point(8, bounds.h + 20));
+        screen.text(buf, main_font, Point(8, bounds.h + 20));
 
         if(best_lap_time != ~0u) {
             snprintf(buf, 20, "Best: %02i:%02i.%02i", best_lap_time / 6000, (best_lap_time / 100) % 60, (best_lap_time % 100));
-            screen.text(buf, tall_font, Point(8, bounds.h + 32));
+            screen.text(buf, main_font, Point(8, bounds.h + 32));
         }
     }
 
     // item
     screen.pen = {0xFF, 0xFF, 0xFF};
-    int item_container_size = 48;
+
     Point item_container_pos(screen.bounds.w - item_container_size - 8, 8);
     screen.h_span(item_container_pos, item_container_size);
     screen.h_span(item_container_pos + Point(0, item_container_size - 1), item_container_size);
@@ -176,9 +199,10 @@ void Race::render() {
         auto center = item_container_pos + Point(item_container_size / 2, item_container_size / 2);
 
         screen.sprites = state.track->get_tiles();
-        screen.sprite(sprite, center, Point(sprite.w * 4, sprite.h * 4), 2.0f);
+        screen.sprite(sprite, center, Point(sprite.w * 4, sprite.h * 4), item_preview_scale);
     }
 
+#ifndef PICO_BUILD
     // minimap
     minimap.render();
 
@@ -207,6 +231,7 @@ void Race::render() {
     }
 
     screen.clip = old_clip;
+#endif
 
     // we've finished - display the result
     if(state.karts[0].has_finished())
@@ -346,9 +371,11 @@ void Race::update(uint32_t time) {
     display_sprites.sort(sort_func);
     display_sprites_below.sort(sort_func);
 
+#ifndef PICO_BUILD
     // minimap
     // TODO: maybe don't constantly recreate this
     minimap.update(state.karts[0].get_tile_pos());
+#endif
 }
 
 void Race::setup_race() {
@@ -475,9 +502,14 @@ void Race::render_result() {
 
     screen.pen = Pen(255, 255, 255);
 
-    const int item_height = 12;
+    const int item_height = main_font.char_h + 1;
     int leaderboard_height = 8 * item_height;
+
+#ifdef PICO_BUILD
+    int y = 4;
+#else
     int y = (screen.bounds.h - leaderboard_height) / 2;
+#endif
 
     char buf[40];
 
@@ -499,7 +531,7 @@ void Race::render_result() {
         time_frac = (time % 1000) / 10;
 
         snprintf(buf, sizeof(buf), "%i - %s - %02i:%02i.%02i", i + 1, kart_idx == 0 ? "You" : "CPU", time_min, time_sec, time_frac);
-        screen.text(buf, tall_font, Point(screen.bounds.w / 2, y), true, TextAlign::top_center);
+        screen.text(buf, main_font, Point(screen.bounds.w / 2, y), true, TextAlign::top_center);
 
         y += item_height;
         i++;
@@ -520,6 +552,9 @@ void Race::on_menu_activated(const ::Menu::Item &item) {
             break;
 
         case Menu_Quit:
+#ifdef PICO_BUILD
+            set_screen_mode(ScreenMode::hires);
+#endif
             game->change_state<MainMenu>();
             break;
     }

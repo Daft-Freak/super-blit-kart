@@ -66,7 +66,9 @@ private:
 
     blit::Surface *kart_icons = nullptr;
 
+#ifndef PICO_BUILD
     Minimap minimap;
+#endif
 
     Menu pause_menu, end_menu;
     bool paused = false, show_end_menu = false;
