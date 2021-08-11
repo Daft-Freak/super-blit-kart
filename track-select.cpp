@@ -15,11 +15,12 @@ extern const TrackInfo track_info[];
 extern const int num_tracks;
 
 TrackSelect::TrackSelect(Game *game, int player_kart, RaceMode mode) : game(game), player_kart(player_kart), mode(mode), track_menu("", {}, tall_font) {
-    const int w = 120;
+    const int w = 80;
     track_menu.set_display_rect({blit::screen.bounds.w - w, 0, w, blit::screen.bounds.h});
 
-    int size = blit::screen.bounds.w - w;
-    cam.viewport = {0, 0, size, size};
+    int preview_w = blit::screen.bounds.w - w;
+    int preview_h = blit::screen.bounds.h - 40;
+    cam.viewport = {0, 0, preview_w, preview_h};
     cam.far = 10000.0f; // basically don't clip
 
     for(int i = 0; i < num_tracks; i++)
