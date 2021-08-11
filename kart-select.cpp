@@ -21,6 +21,11 @@ KartSelect::KartSelect(Game *game, RaceMode mode) : game(game), mode(mode), kart
 }
 
 KartSelect::~KartSelect() {
+    if(kart_sprites) {
+        delete[] kart_sprites->data;
+        delete[] orig_kart_palette;
+        delete kart_sprites;
+    }
 }
 
 void KartSelect::update(uint32_t time) {
