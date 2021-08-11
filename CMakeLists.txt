@@ -1,6 +1,11 @@
 # Basic parameters; check that these match your project / environment
 cmake_minimum_required(VERSION 3.9)
 
+if(PICO_SDK_PATH)
+  include(${32BLIT_DIR}/32blit-pico/pico_sdk_import.cmake)
+  include(${32BLIT_DIR}/32blit-pico/pico_extras_import.cmake)
+endif()
+
 # Replace "game" with a name for your project (this is used the name of the output)
 project(blit-kart)
 
