@@ -8,7 +8,7 @@ class Game;
 
 class MainMenu final : public GameState {
 public:
-    MainMenu(Game *game);
+    MainMenu(Game *game, bool initial_state = false);
     ~MainMenu() override;
 
     void update(uint32_t time) override;
@@ -25,7 +25,11 @@ private:
 
     Game *game;
 
+    bool display_menu = false;
+
     blit::Surface *logo = nullptr;
+    int logo_y;
+    int fade = 0xFF;
 
     Menu menu;
     std::string message;

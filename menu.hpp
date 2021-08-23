@@ -16,6 +16,8 @@ public:
 
     int get_current_item() const {return current_item;}
 
+    const blit::Rect &get_display_rect() {return display_rect;}
+
 private:
     void render_item(const Item &item, int y, int index) const override;
 

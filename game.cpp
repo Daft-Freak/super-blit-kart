@@ -35,7 +35,7 @@ static Game game;
 
 void init() {
     set_screen_mode(ScreenMode::hires);
-    game.change_state<MainMenu>();
+    game.change_state<MainMenu>(true);
 }
 
 void render(uint32_t time) {
