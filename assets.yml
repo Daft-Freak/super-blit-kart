@@ -11,6 +11,8 @@ assets.cpp:
     name: kart
     palette: assets/kart_robot_rust_palette.png
 
+  assets/sbklogo.png: logo
+
   # really only want the palette...
   assets/kart_robot_default_palette.png:
     name: "{filename}"
