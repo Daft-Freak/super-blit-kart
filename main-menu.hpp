@@ -3,6 +3,7 @@
 #include "camera.hpp"
 #include "game-state.hpp"
 #include "menu.hpp"
+#include "surface-helper.hpp"
 
 class Game;
 
@@ -27,7 +28,7 @@ private:
 
     bool display_menu = false;
 
-    blit::Surface *logo = nullptr;
+    OwnedSurface logo;
     int logo_y;
     int fade = 0xFF;
 

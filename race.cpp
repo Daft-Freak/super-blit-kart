@@ -103,18 +103,6 @@ Race::~Race() {
 
     for(auto &kart : state.karts)
         delete kart.sprite.spritesheet;
-
-    for(auto &sprite: kart_sprite_cache){
-        delete[] sprite.second->data;
-        delete[] sprite.second->palette;
-        delete sprite.second;
-    }
-
-    if(kart_icons) {
-        delete[] kart_icons->palette;
-        delete[] kart_icons->data;
-        delete kart_icons;
-    }
 }
 
 void Race::render() {

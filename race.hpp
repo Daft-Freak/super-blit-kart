@@ -9,6 +9,7 @@
 #include "menu.hpp"
 #include "minimap.hpp"
 #include "race-state.hpp"
+#include "surface-helper.hpp"
 
 namespace blit {
     struct Surface;
@@ -62,9 +63,9 @@ private:
 
     std::forward_list<Sprite3D *> display_sprites, display_sprites_below;
 
-    std::unordered_map<const uint8_t *, blit::Surface *> kart_sprite_cache;
+    std::unordered_map<const uint8_t *, OwnedSurface> kart_sprite_cache;
 
-    blit::Surface *kart_icons = nullptr;
+    OwnedSurface kart_icons;
 
 #ifndef PICO_BUILD
     Minimap minimap;

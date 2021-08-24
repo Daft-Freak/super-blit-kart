@@ -8,6 +8,7 @@
 #include "types/vec2.hpp"
 
 #include "sprite3d.hpp"
+#include "surface-helper.hpp"
 
 class Camera;
 class Kart;
@@ -105,7 +106,7 @@ private:
 
     const TrackInfo &info;
 
-    blit::Surface *tiles;
+    OwnedSurface tiles;
     blit::TileMap *map;
 
     std::vector<TrackObject> objects;

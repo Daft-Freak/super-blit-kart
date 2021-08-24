@@ -157,12 +157,6 @@ Track::Track(const TrackInfo &info) : info(info) {
 }
 
 Track::~Track() {
-    if(tiles) {
-        delete[] tiles->palette;
-        delete[] tiles->data;
-        delete tiles;
-    }
-
     delete map;
 }
 

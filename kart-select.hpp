@@ -3,6 +3,7 @@
 #include "game-state.hpp"
 #include "menu.hpp"
 #include "race.hpp" // RaceMode
+#include "surface-helper.hpp"
 
 class Game;
 class Track;
@@ -24,7 +25,7 @@ private:
     int preview_index = -1;
     Menu kart_menu;
 
-    blit::Surface *kart_sprites = nullptr;
+    OwnedSurface kart_sprites;
     blit::Pen *orig_kart_palette = nullptr;
     const uint8_t *cur_sprites_asset = nullptr;
 };

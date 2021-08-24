@@ -21,11 +21,9 @@ KartSelect::KartSelect(Game *game, RaceMode mode) : game(game), mode(mode), kart
 }
 
 KartSelect::~KartSelect() {
-    if(kart_sprites) {
-        delete[] kart_sprites->data;
-        delete[] orig_kart_palette;
-        delete kart_sprites;
-    }
+    // restore palette before cleaning up
+    if(kart_sprites)
+        kart_sprites->palette = orig_kart_palette;
 }
 
 void KartSelect::update(uint32_t time) {
@@ -45,11 +43,8 @@ void KartSelect::update(uint32_t time) {
 
         // load stuff
         if(cur_sprites_asset != info.sprite_asset) {
-            if(kart_sprites) {
-                delete[] kart_sprites->data;
-                delete[] orig_kart_palette;
-                delete kart_sprites;
-            }
+            if(kart_sprites)
+                kart_sprites->palette = orig_kart_palette;
 
             kart_sprites = blit::Surface::load(info.sprite_asset);
             orig_kart_palette = kart_sprites->palette;

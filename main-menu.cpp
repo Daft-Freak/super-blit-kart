@@ -36,11 +36,6 @@ MainMenu::MainMenu(Game *game, bool initial_state) : game(game), menu("", {{Menu
 }
 
 MainMenu::~MainMenu() {
-    if(logo) {
-        delete[] logo->data;
-        delete[] logo->palette;
-        delete logo;
-    }
 }
 
 void MainMenu::update(uint32_t time) {
