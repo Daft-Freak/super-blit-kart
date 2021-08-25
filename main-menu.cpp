@@ -21,10 +21,12 @@ MainMenu::MainMenu(Game *game, bool initial_state) : game(game), menu("", {{Menu
     if(initial_state) {
         logo_y = ((blit::screen.bounds.h - 16) - logo->bounds.h) / 2;
         menu_y = blit::screen.bounds.h;
+
+        sprites = blit::Surface::load(asset_menu_sprites);
     } else {
         logo_y = logo_target_y;
         menu_y = menu_target_y;
-        display_menu = true;
+        display_menu = intro_done = true;
         fade = 0;
     }
 
@@ -43,6 +45,34 @@ void MainMenu::update(uint32_t time) {
     if(fade)
         fade--;
 
+    if(!intro_done) {
+        for(auto &kart : karts) {
+            if(kart.pos.x < -32 || kart.pos.x > blit::screen.bounds.w) {
+                // maybe reset
+                auto rand = blit::random();
+                if(rand & 0x1FF)
+                    continue;
+
+                if(((rand >> 10) & 0x3F) == 0) {
+                    // go backwards for fun
+                    kart.pos.x = blit::screen.bounds.w;
+                    kart.speed = -1;
+                } else {
+                    kart.pos.x = -32;
+                    kart.speed = ((rand >> 16) & 3) + 1;
+                }
+
+                kart.pos.y = blit::screen.bounds.h - 44 + ((rand >> 18) & 0xF);
+                kart.kart = (rand >> 22) & 1;
+            }
+
+            kart.pos.x += kart.speed;
+        }
+
+        // sort by y
+        std::sort(std::begin(karts), std::end(karts), [](auto &a, auto &b){return a.pos.y < b.pos.y;});
+    }
+
     if(!display_menu) {
         if(blit::buttons.released) {
             display_menu = true;
@@ -59,7 +89,8 @@ void MainMenu::update(uint32_t time) {
     auto &menu_rect = menu.get_display_rect();
     if(menu_rect.y > menu_target_y) {
         menu.set_display_rect({menu_rect.x, menu_rect.y - 1, menu_rect.w, menu_rect.h});
-    }
+    } else
+        intro_done = true;
 
     menu.update(time);
 }
@@ -75,11 +106,19 @@ void MainMenu::render() {
 
     // road
     screen.pen = {0x59, 0x56, 0x52};
-    screen.rectangle({0, screen.bounds.h - 16, screen.bounds.h, 16});
+    screen.rectangle({0, screen.bounds.h - 24, screen.bounds.h, 24});
 
     if(!display_menu && blit::now() % 1000 < 500) {
         screen.pen = {255, 255, 255};
         screen.text("Press a button!", tall_font, {screen.bounds.w / 2, screen.bounds.h - 40}, true, blit::TextAlign::center_center);
+    }
+
+    // karts
+    // display until menu has finished scrolling
+    if(!intro_done) {
+        screen.sprites = sprites;
+        for(auto &kart : karts)
+            screen.sprite({kart.kart * 4, 0, 4, 4}, kart.pos);
     }
 
     menu.render();

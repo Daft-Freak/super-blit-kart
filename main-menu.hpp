@@ -26,11 +26,20 @@ private:
 
     Game *game;
 
-    bool display_menu = false;
+    bool display_menu = false, intro_done = false;
 
     OwnedSurface logo;
     int logo_y;
     int fade = 0xFF;
+
+    // background karts driving past
+    OwnedSurface sprites;
+
+    struct {
+        blit::Point pos{-64, 0};
+        int kart = 0;
+        int speed = 0;
+    } karts[4];
 
     Menu menu;
     std::string message;

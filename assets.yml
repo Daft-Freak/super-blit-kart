@@ -12,6 +12,7 @@ assets.cpp:
     palette: assets/kart_robot_rust_palette.png
 
   assets/sbklogo.png: logo
+  assets/menu_sprites.png: menu_sprites
 
   # really only want the palette...
   assets/kart_robot_default_palette.png:
