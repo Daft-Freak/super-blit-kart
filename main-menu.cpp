@@ -106,7 +106,7 @@ void MainMenu::render() {
 
     // road
     screen.pen = {0x59, 0x56, 0x52};
-    screen.rectangle({0, screen.bounds.h - 24, screen.bounds.h, 24});
+    screen.rectangle({0, screen.bounds.h - 24, screen.bounds.w, 24});
 
     if(!display_menu && blit::now() % 1000 < 500) {
         screen.pen = {255, 255, 255};
