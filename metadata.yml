@@ -2,7 +2,7 @@ title: Super Blit Kart
 description: '"Mode7"-based racing game.'
 author: Daft_Freak
 splash:
-  file: assets/no-image.png
+  file: assets/splash.png
 icon:
   file: assets/icon.png
 version: v0.6.1
