@@ -5,6 +5,6 @@ splash:
   file: assets/splash.png
 icon:
   file: assets/icon.png
-version: v0.6.1
+version: v0.7.0
 category: game
 url: https://github.com/Daft-Freak/super-blit-kart
