@@ -170,4 +170,4 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         name: ${{env.RELEASE_FILE}}
-        path: ${{env.RELEASE_FILE}}.zip
+        path: main/build/${{env.RELEASE_FILE}}.zip
