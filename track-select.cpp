@@ -1,6 +1,7 @@
 #include "engine/save.hpp"
 #include "graphics/font.hpp"
 #include "graphics/tilemap.hpp"
+#include "types/mat4.hpp"
 
 #include "track-select.hpp"
 

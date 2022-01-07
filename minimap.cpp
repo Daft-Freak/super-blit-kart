@@ -1,5 +1,6 @@
 #include "minimap.hpp"
 
+#include "engine/engine.hpp"
 #include "graphics/tilemap.hpp"
 
 #include "track.hpp"
