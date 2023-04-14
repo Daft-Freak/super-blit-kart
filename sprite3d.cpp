@@ -1,6 +1,6 @@
 #include "sprite3d.hpp"
 
-#include "graphics/sprite.hpp"
+#include "graphics/surface.hpp"
 #include "math/constants.hpp"
 
 #include "camera.hpp"
