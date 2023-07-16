@@ -15,9 +15,9 @@ assets.cpp:
   assets/menu_sprites.png: menu_sprites
 
   # really only want the palette...
-  assets/kart_robot_default_palette.png:
-    name: "{filename}"
-    palette: assets/kart_robot_default_palette.png
+  #assets/kart_robot_default_palette.png:
+  #  name: "{filename}"
+  #  palette: assets/kart_robot_default_palette.png
 
   assets/kart_icons.png: kart_icons
 
