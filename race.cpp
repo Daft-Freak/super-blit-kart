@@ -15,10 +15,14 @@
 
 using namespace blit;
 
+#if PICO_BUILD
+#define LORES_RACE
+#endif
+
 extern const TrackInfo track_info[];
 extern const int num_tracks;
 
-#ifdef PICO_BUILD
+#ifdef LORES_RACE
 static auto &number_font = medium_number_font;
 static auto &main_font = eight_font;
 const int item_container_size = 24;
@@ -71,16 +75,18 @@ Race::Race(Game *game, int player_kart, int track_index, RaceMode mode) : game(g
     state.track = new Track(track_info[track_index]);
 
 
-#ifdef PICO_BUILD
+#ifdef LORES_RACE
     set_screen_mode(ScreenMode::lores);
     cam.focal_distance = 140.0f;
     state.track->set_fog(80.0f);
 
     const int end_menu_margin = 4;
 #else
-    minimap.set_track(state.track);
-
     const int end_menu_margin = 16;
+#endif
+
+#ifndef PICO_BUILD
+    minimap.set_track(state.track);
 #endif
 
     setup_race();
@@ -493,7 +499,7 @@ void Race::render_result() {
     const int item_height = main_font.char_h + 1;
     int leaderboard_height = 8 * item_height;
 
-#ifdef PICO_BUILD
+#ifdef LORES_RACE
     int y = 4;
 #else
     int y = (screen.bounds.h - leaderboard_height) / 2;
@@ -540,7 +546,7 @@ void Race::on_menu_activated(const ::Menu::Item &item) {
             break;
 
         case Menu_Quit:
-#ifdef PICO_BUILD
+#ifdef LORES_RACE
             set_screen_mode(ScreenMode::hires);
 #endif
             game->change_state<MainMenu>();
