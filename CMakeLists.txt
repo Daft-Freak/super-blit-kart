@@ -1,8 +1,6 @@
 # Basic parameters; check that these match your project / environment
 cmake_minimum_required(VERSION 3.9...3.26)
 
-include(${32BLIT_DIR}/32blit-pico/sdk_import.cmake OPTIONAL)
-
 # Replace "game" with a name for your project (this is used the name of the output)
 project(blit-kart)
 
@@ -34,7 +32,7 @@ find_package (32BLIT CONFIG REQUIRED PATHS ../32blit-sdk)
 
 # track info generation
 add_custom_command(COMMAND
-  ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/extract_track_info.py "${CMAKE_CURRENT_SOURCE_DIR}" "${CMAKE_CURRENT_BINARY_DIR}"
+  ${Python_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/extract_track_info.py "${CMAKE_CURRENT_SOURCE_DIR}" "${CMAKE_CURRENT_BINARY_DIR}"
   OUTPUT track-info.cpp
   DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/extract_track_info.py ${CMAKE_CURRENT_BINARY_DIR}/assets.hpp
 )
