@@ -239,11 +239,11 @@ const TrackInfo &Track::get_info() const {
     return info;
 }
 
-blit::Surface *Track::get_tiles() {
+Surface *Track::get_tiles() {
     return tiles;
 }
 
-TileMap &Track::get_map() {
+TransformedTileLayer &Track::get_map() {
     return *map;
 }
 
@@ -279,6 +279,6 @@ void Track::add_object(TrackObject object) {
 }
 
 void Track::load_tilemap() {
-    map = TileMap::load_tmx(info.map_asset, tiles, 0, 0);
-    map->repeat_mode = TileMap::CLAMP_TO_EDGE;
+    map = TransformedTileLayer::load_tmx(info.map_asset, tiles, 0, 0);
+    map->repeat_mode = TileLayer::CLAMP_TO_EDGE;
 }

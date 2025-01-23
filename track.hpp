@@ -15,7 +15,7 @@ class Kart;
 class Track;
 
 namespace blit {
-    struct TileMap;
+    struct TransformedTileLayer;
 }
 
 enum class ObjectType : uint8_t {
@@ -87,7 +87,7 @@ public:
     const TrackInfo &get_info() const;
 
     blit::Surface *get_tiles();
-    blit::TileMap &get_map();
+    blit::TransformedTileLayer &get_map();
 
     void reset_objects();
     std::vector<TrackObject> &get_objects();
@@ -107,7 +107,7 @@ private:
     const TrackInfo &info;
 
     OwnedSurface tiles;
-    blit::TileMap *map;
+    blit::TransformedTileLayer *map;
 
     std::vector<TrackObject> objects;
 
