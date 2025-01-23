@@ -216,7 +216,9 @@ float Track::get_friction(blit::Vec2 pos) {
     if(tile_coord.x < 0 || tile_coord.y < 0 || tile_coord.x >= map->bounds.w || tile_coord.y >= map->bounds.h)
         return 0.0f;
 
-    auto tile_id = map->tile_at(tile_coord);
+    // we know that the coord is in bounds so skip the offset calcs
+    //auto tile_id = map->tile_at(tile_coord);
+    auto tile_id = map->tiles[tile_coord.x + tile_coord.y * map->bounds.w];
 
     // default
     if(tile_id >= info.tile_friction_len)
