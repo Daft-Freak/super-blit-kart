@@ -32,7 +32,7 @@ find_package (32BLIT CONFIG REQUIRED PATHS ../32blit-sdk)
 
 # track info generation
 add_custom_command(COMMAND
-  ${Python_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/extract_track_info.py "${CMAKE_CURRENT_SOURCE_DIR}" "${CMAKE_CURRENT_BINARY_DIR}"
+  ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/extract_track_info.py "${CMAKE_CURRENT_SOURCE_DIR}" "${CMAKE_CURRENT_BINARY_DIR}"
   OUTPUT track-info.cpp
   DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/extract_track_info.py ${CMAKE_CURRENT_BINARY_DIR}/assets.hpp
 )
