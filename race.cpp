@@ -585,7 +585,7 @@ void Race::on_menu_activated(const ::Menu::Item &item) {
             unsigned int best_lap = std::min(std::min(save.lap_time[0], save.lap_time[1]), save.lap_time[2]);
 
             // make sure this is actually an improvement
-            bool have_old_save = read_save(time_trial_data[1], slot) && time_trial_data[1].save_version == 1;
+            bool have_old_save = read_save(old_save, slot) && old_save.save_version == 1;
 
             unsigned int old_best = ~0;
             if(have_old_save)
