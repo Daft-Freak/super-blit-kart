@@ -450,7 +450,7 @@ void Race::setup_race() {
 
         for(int i = 0; i < 10; i++) {
 
-            TimeTrialSaveData save;
+            TimeTrialSaveData &save = time_trial_data[1];
             unsigned int this_time = ~0;
             if(read_save(save, get_save_slot(SaveType::TimeTrial, track_index, i)) && save.save_version == 1) {
                 this_time = std::min(std::min(save.lap_time[0], save.lap_time[1]), save.lap_time[2]); // best lap
