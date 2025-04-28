@@ -467,6 +467,7 @@ void Race::setup_race() {
 
         // this is where we'll save to
         worst_time_trial_slot = worst_slot;
+        worst_time_trial_time = worst_time;
 
         state.karts[0].set_time_trial_data(time_trial_data);
 
@@ -575,7 +576,6 @@ void Race::on_menu_activated(const ::Menu::Item &item) {
             int slot = get_save_slot(SaveType::TimeTrial, track_index, worst_time_trial_slot);
 
             auto &save = time_trial_data[0];
-            auto &old_save = time_trial_data[1]; // use the ghost data, we don't need it any more
 
             save.kart = player_kart;
 
@@ -585,13 +585,7 @@ void Race::on_menu_activated(const ::Menu::Item &item) {
             unsigned int best_lap = std::min(std::min(save.lap_time[0], save.lap_time[1]), save.lap_time[2]);
 
             // make sure this is actually an improvement
-            bool have_old_save = read_save(old_save, slot) && old_save.save_version == 1;
-
-            unsigned int old_best = ~0;
-            if(have_old_save)
-                old_best = std::min(std::min(old_save.lap_time[0], old_save.lap_time[1]), old_save.lap_time[2]);
-
-            if(best_lap < old_best)
+            if(best_lap < worst_time_trial_time)
                 write_save(save, slot);
         }
     }
