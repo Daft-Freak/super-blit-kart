@@ -42,7 +42,7 @@ public:
 
     void disable();
 
-    void set_time_trial_data(TimeTrialSaveData *data);
+    void set_time_trial_data(TimeTrialSaveData *data, int offset = 0, int length = 0);
     bool is_ghost() const {return time_trial_data && !is_player;}
 
     Sprite3D sprite;
@@ -74,6 +74,7 @@ private:
     ItemType current_item = ItemType::None;
 
     TimeTrialSaveData *time_trial_data = nullptr; // if this is set we're either recording a time trial (is_player), or a ghost
+    int ghost_offset = 0, ghost_len = 0; // used for replay
     int ghost_timer = 0; // read/write every 10 updates
 
     RaceState *race_state = nullptr;

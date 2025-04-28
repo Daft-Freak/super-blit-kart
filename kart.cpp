@@ -317,8 +317,10 @@ void Kart::disable() {
     disable_time = 50;
 }
 
-void Kart::set_time_trial_data(TimeTrialSaveData *data) {
+void Kart::set_time_trial_data(TimeTrialSaveData *data, int offset, int length) {
     time_trial_data = data;
+    ghost_offset = offset;
+    ghost_len = length;
 }
 
 void Kart::auto_drive() {
@@ -326,9 +328,10 @@ void Kart::auto_drive() {
     if(is_ghost() && ghost_timer++ % 10 == 0) {
         int index = ghost_timer / 10;
 
-        if(index < time_trial_data->ghost_data_used) {
-            auto &ghost_entry = time_trial_data->ghost_data[index];
-            auto &next_entry = time_trial_data->ghost_data[std::min(time_trial_data->ghost_data_used - 1, index + 1)];
+        // can't use ghost_data_used here (player is updating it for record)
+        if(index < ghost_len) {
+            auto &ghost_entry = time_trial_data->ghost_data[index + ghost_offset];
+            auto &next_entry = time_trial_data->ghost_data[std::min(ghost_len - 1, index + 1) + ghost_offset];
 
             sprite.world_pos.x = ghost_entry.pos_x / 8.0f;
             sprite.world_pos.z = ghost_entry.pos_z / 8.0f;

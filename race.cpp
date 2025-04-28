@@ -1,3 +1,5 @@
+#include <cstring>
+
 #include "engine/api.hpp"
 #include "engine/save.hpp"
 #include "graphics/color.hpp"
@@ -105,7 +107,7 @@ Race::Race(Game *game, int player_kart, int track_index, RaceMode mode) : game(g
 Race::~Race() {
     delete state.track;
 
-    delete[] time_trial_data;
+    delete time_trial_data;
 
     for(auto &kart : state.karts)
         delete kart.sprite.spritesheet;
@@ -442,15 +444,15 @@ void Race::setup_race() {
 
     // time trial setup
     if(mode == RaceMode::TimeTrial) {
-        delete[] time_trial_data;
-        time_trial_data = new TimeTrialSaveData[2]; // one for the ghost, one to record
+        delete time_trial_data;
+        time_trial_data = new TimeTrialSaveData; // shared between ghost and recording
 
         unsigned int best_time = ~0, worst_time = 0;
         int best_slot = 0, worst_slot = 0;
 
         for(int i = 0; i < 10; i++) {
 
-            TimeTrialSaveData &save = time_trial_data[1];
+            TimeTrialSaveData &save = *time_trial_data;
             unsigned int this_time = ~0;
             if(read_save(save, get_save_slot(SaveType::TimeTrial, track_index, i)) && save.save_version == 1) {
                 this_time = std::min(std::min(save.lap_time[0], save.lap_time[1]), save.lap_time[2]); // best lap
@@ -472,16 +474,25 @@ void Race::setup_race() {
         state.karts[0].set_time_trial_data(time_trial_data);
 
         // attempt to load the "best" result as a ghost
-        if(read_save(time_trial_data[1], get_save_slot(SaveType::TimeTrial, track_index, best_slot))) {
-            state.karts[1].set_time_trial_data(time_trial_data + 1);
+        if(read_save(*time_trial_data, get_save_slot(SaveType::TimeTrial, track_index, best_slot))) {
+            // move any existing data to the end of the buffer
+            // (the new data will be recorded at the start)
+            int offset = std::size(time_trial_data->ghost_data) - time_trial_data->ghost_data_used;
+            memmove(time_trial_data->ghost_data + offset, time_trial_data->ghost_data, time_trial_data->ghost_data_used * sizeof(time_trial_data->ghost_data[0]));
+
+            state.karts[1].set_time_trial_data(time_trial_data, offset, time_trial_data->ghost_data_used);
             state.karts[1].sprite.alpha = 0.5f;
-            state.karts[1].sprite.spritesheet = load_kart_sprite(kart_info[time_trial_data[1].kart]);
-            state.karts[1].kart_index = time_trial_data[1].kart;
+            state.karts[1].sprite.spritesheet = load_kart_sprite(kart_info[time_trial_data->kart]);
+            state.karts[1].kart_index = time_trial_data->kart;
 
             num_karts = 2;
             best_lap_time = best_time;
         } else
             num_karts = 1;
+
+        // reset data used/version
+        time_trial_data->save_version = 1;
+        time_trial_data->ghost_data_used = 0;
 
         // disable items
         for(auto &obj : state.track->get_objects()) {
@@ -575,7 +586,7 @@ void Race::on_menu_activated(const ::Menu::Item &item) {
         } else if(mode == RaceMode::TimeTrial) {
             int slot = get_save_slot(SaveType::TimeTrial, track_index, worst_time_trial_slot);
 
-            auto &save = time_trial_data[0];
+            auto &save = *time_trial_data;
 
             save.kart = player_kart;
 

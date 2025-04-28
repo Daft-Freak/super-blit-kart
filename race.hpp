@@ -75,7 +75,7 @@ private:
     bool paused = false, show_end_menu = false;
     int num_karts = 8;
 
-    TimeTrialSaveData *time_trial_data = nullptr; // x2
+    TimeTrialSaveData *time_trial_data = nullptr;
     int worst_time_trial_slot = 0;
     unsigned int worst_time_trial_time = ~0;
     unsigned best_lap_time = 0;
